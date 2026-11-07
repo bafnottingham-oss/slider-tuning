@@ -155,6 +155,7 @@ footer{padding-block:12px 36px;color:var(--muted);font-size:.8rem}
 .fam span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fam:hover{border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
 .fam[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.fam.two{flex-direction:column;align-items:flex-start;gap:1px}.fam .tg2{font:500 .74rem var(--bodyf);color:var(--muted);white-space:normal}
 .fam .vn{font:600 .66rem var(--mono);color:var(--muted);flex:none}
 .chip.ver{display:inline-flex;align-items:center;gap:6px}
 .dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--muted)}
@@ -215,6 +216,8 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
 .htable thead th{border-top:0;font:600 .62rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .htable td.h{font:600 .8rem var(--mono);color:var(--accent);white-space:nowrap}
 .htable td.e{color:var(--muted)}
+.htable tr.g th{font:600 .62rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding-top:10px}
+.ginfo{margin-top:0}.ginfo p{font-size:.9rem}
 .sims{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:12px}
 @media (max-width:700px){.sims{grid-template-columns:1fr}}
 .dialwrap{display:grid;place-items:center;padding:4px 0}
@@ -254,6 +257,11 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
         <button class="tab" role="tab" data-tab="setups" aria-selected="true">Setups</button>
         <button class="tab" role="tab" data-tab="mix" aria-selected="false">Mix your own</button>
         <button class="tab" role="tab" data-tab="kit" aria-selected="false">Kit &amp; tips</button>
+      </div>
+      <div class="tabs" role="tablist" aria-label="MOT Groove sections" data-g="groove">
+        <button class="tab" role="tab" data-tab="setups" aria-selected="true">Setups</button>
+        <button class="tab" role="tab" data-tab="build" aria-selected="false">Build your own</button>
+        <button class="tab" role="tab" data-tab="parts" aria-selected="false">Parts &amp; tips</button>
       </div>
       <div class="tabs" role="tablist" aria-label="Aura Sand sections" data-g="aura">
         <button class="tab" role="tab" data-tab="setups" aria-selected="true">Setups</button>
@@ -306,6 +314,48 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
       </div>
     </div>
     <p class="note">Unofficial, written from PEL Studio's <a href="https://nxedc.com/blogs/mastery-hub/tita-pro-complete-instruction-manual" target="_blank" rel="noopener">TITA Pro manual</a>. <span class="src off">Official</span> setups are from the manual; <span class="src var">Manual variant</span> setups use a tweak the manual suggests; <span class="src ours">Our idea</span> setups are worked out from the official ones, so try them and see. Drawings are simplified and detent positions approximate.</p>
+  </section>
+
+  <!-- ===== MOT Groove ===== -->
+  <section id="g-groove" hidden>
+    <div data-panel="setups">
+      <div class="bench">
+        <div class="list"><div id="gvitems"></div></div>
+        <div class="card" id="gvsheet" aria-live="polite"></div>
+      </div>
+    </div>
+    <div data-panel="build" hidden>
+      <div class="bench">
+        <div class="card ctl" id="gvctl"></div>
+        <div class="card" id="gvout" aria-live="polite"></div>
+      </div>
+    </div>
+    <div data-panel="parts" hidden>
+      <div class="kitgrid">
+        <div style="display:grid;gap:10px"><h2>The holes</h2>
+          <div class="magnets ginfo">
+            <p><b>Straight (push) face.</b> <b>A</b> is the paragraph track, the main clicks. <b>B</b> adds density: more clicks between A's. <b>C</b> adds resistance: the slide drags and feels damped.</p>
+            <p><b>Rotating face.</b> <b>D</b> is the paragraph track, the main clicks as you turn. <b>E</b> adds density: more clicks per turn.</p>
+            <div class="tbl"><table class="htable"><thead><tr><th scope="col">Bead</th><th scope="col">Crispness (card ranking)</th></tr></thead><tbody>
+              <tr><td>Zirconia</td><td class="up">Crispest</td></tr><tr><td>Tungsten</td><td>Crisp, and heaviest, so lower and weightier</td></tr><tr><td>Silicon nitride</td><td>Less crisp</td></tr><tr><td>Teflon / POM</td><td class="dn">Softest, muted</td></tr></tbody></table></div>
+            <div class="tbl"><table class="htable"><thead><tr><th scope="col">Spring</th><th scope="col">Push resistance (card ranking)</th></tr></thead><tbody>
+              <tr><td>Special middle spring (piano steel)</td><td class="up">Stiffest</td></tr><tr><td>SS 0.3</td><td>Firm</td></tr><tr><td>Short spring</td><td>Lighter</td></tr><tr><td>SS 0.25</td><td class="dn">Lightest</td></tr></tbody></table></div>
+            <p class="muted" style="font-size:.84rem">The card doesn't rank the plain middle spring; the simulator treats it as sitting between the short spring and SS 0.3.</p>
+          </div>
+        </div>
+        <div style="display:grid;gap:10px"><h2>In the bag</h2>
+          <div class="tbl"><table class="boxes"><tbody id="gvbag"></tbody></table></div>
+          <h2 style="margin-top:6px">Card notes</h2>
+          <ul class="tips">
+            <li><b>Right part, right hole</b>Seat each part in its own hole. Don't force anything, or you can damage the body.</li>
+            <li><b>Wear is normal</b>Beads rubbing the plate wear over time. Clean out bead residue now and then and reassemble to keep the feel at its best.</li>
+            <li class="warn"><b>Washer lock</b>The centre screw washer has a locking tab. Make sure it's fitted properly.</li>
+            <li><b>Make it yours</b>The card says its plans are a starting point. Use Build your own to try more.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="note">Unofficial, written from the MOT Groove instruction card. The four plans and both rankings are from the card; the click counts and sounds in the simulators are illustrative.</p>
   </section>
 
   <!-- ===== Aura Sand ===== -->
@@ -362,7 +412,7 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
     <p class="note">Unofficial. Strength ratings are relative, based on how the setups compare with each other.</p>
   </section>
 </main>
-<footer><div class="wrap">Unofficial guides. TITA Pro is made by PEL Studio and Aura Sand by Peacock.</div></footer>
+<footer><div class="wrap">Unofficial guides. TITA Pro is made by PEL Studio, Groove by MOT and Aura Sand by Peacock.</div></footer>
 
 <script>
 /* ---------- Data ---------- */
@@ -623,7 +673,7 @@ function mountTrack(el,S){
   function goHome(){if(S.home==null)return;const target=S.home?hi:lo;const step=()=>{const d=target-p;if(Math.abs(d)<.01){move(target,.6);raf=0;return;}move(p+Math.sign(d)*Math.min(Math.abs(d),.045),.6);raf=requestAnimationFrame(step);};cancelAnimationFrame(raf);setTimeout(()=>{raf=requestAnimationFrame(step);},120);}
   let lx=0,lt=0,sp=0;
   pusher.addEventListener('pointerdown',e=>{cancelAnimationFrame(raf);drag={x:e.clientX,p0:p};lx=e.clientX;lt=performance.now();pusher.classList.add('drag');pusher.setPointerCapture(e.pointerId);});
-  pusher.addEventListener('pointermove',e=>{if(!drag)return;const w=track.clientWidth*(1-PW/100),now=performance.now();sp=Math.min(1,Math.abs(e.clientX-lx)/Math.max(1,now-lt)/1.5);lx=e.clientX;lt=now;move(drag.p0+(e.clientX-drag.x)/w,sp);});
+  pusher.addEventListener('pointermove',e=>{if(!drag)return;const w=track.clientWidth*(1-PW/100),now=performance.now();sp=Math.min(1,Math.abs(e.clientX-lx)/Math.max(1,now-lt)/1.5);lx=e.clientX;lt=now;const t=drag.p0+(e.clientX-drag.x)/w;move(S.drag?p+(t-p)*(1-S.drag):t,sp);if(S.onMove)S.onMove(sp);});
   const end=()=>{if(!drag)return;drag=null;pusher.classList.remove('drag');goHome();};
   pusher.addEventListener('pointerup',end);pusher.addEventListener('pointercancel',end);
   pusher.addEventListener('keydown',e=>{if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;e.preventDefault();move(p+(e.key==='ArrowRight'?.05:-.05),.5);});
@@ -943,15 +993,213 @@ function renderASheet(){
   el.querySelectorAll('[data-astep]').forEach(b=>b.addEventListener('click',()=>{const i=ASET.findIndex(x=>x.id===acur);acur=ASET[(i+ +b.dataset.astep+ASET.length)%ASET.length].id;renderAList();renderASheet();}));
 }
 
+
+/* =========================================================
+   MOT Groove: from the instruction card
+   Push face (straight): A = paragraph, B = density increase, C = additional resistance
+   Rotating face: D = paragraph, E = density increase
+   ========================================================= */
+const GB={ // beads: cr = crispness rank from the card (zirconia > tungsten > silicon nitride > POM/Teflon)
+ zr:{n:'Zirconia',c:'#fbfbf8',cr:4,heavy:0,soft:0},
+ wc:{n:'Tungsten',c:'#2a2c30',cr:3,heavy:1,soft:0},
+ si:{n:'Silicon nitride',c:'#5a5f67',cr:2,heavy:0,soft:0},
+ tef:{n:'Teflon',c:'#e6dfcb',cr:1,heavy:0,soft:1}
+};
+const GS={ // springs: k = push resistance rank from the card (piano steel > SS 0.3 > short > SS 0.25)
+ piano:{n:'Special middle spring (piano steel)',sn:'Special middle',k:4,c:'#d6a935'},
+ ss30:{n:'SS 0.3 spring',sn:'SS 0.3',k:3,c:'#6b7177'},
+ mid:{n:'Middle spring',sn:'Middle',k:2.5,c:'#c47a3a'},
+ short:{n:'Short spring',sn:'Short',k:2,c:'#4a90c2'},
+ ss25:{n:'SS 0.25 spring',sn:'SS 0.25',k:1,c:'#a4a9b0'}
+};
+const GH=[ // id, face, group, role text
+ ['A1','push','A','Paragraph'],['A2','push','A','Paragraph'],['B1','push','B','Density increase'],['B2','push','B','Density increase'],
+ ['C1','push','C','Additional resistance'],['C2','push','C','Additional resistance'],['C3','push','C','Additional resistance'],['C4','push','C','Additional resistance'],
+ ['D1','rot','D','Paragraph'],['D2','rot','D','Paragraph'],['E1','rot','E','Density increase'],['E2','rot','E','Density increase']
+];
+const GEMPTY=()=>Object.fromEntries(GH.map(([id])=>[id,{b:null,s:null}]));
+const gset=(o)=>{const h=GEMPTY();Object.entries(o).forEach(([ids,[b,s]])=>ids.split(',').forEach(id=>h[id]={b,s}));return h;};
+const DE='D1,D2,E1,E2';
+const GPLANS=[
+ {id:'A',n:'Plan A',tag:'Light and bright',
+  en:{h:gset({'A1,A2':['si','ss25'],[DE]:['si','ss30'],'C1,C4':['tef','ss30']}),feel:'Silicon nitride on the lightest spring for an easy, bright push, firmer SS 0.3 springs on the rotating face, and two Teflon resistance beads to smooth the slide.'},
+  cn:{h:gset({'A1,A2':['zr','ss25'],[DE]:['zr','ss30'],'C1,C4':['tef','ss25']}),feel:'The Chinese text swaps in zirconia, the crispest bead, on both faces, and uses the lightest SS 0.25 springs in the resistance holes.'}},
+ {id:'B',n:'Plan B',tag:'Heavy and firm',
+  en:{h:gset({'A1,B2':['wc','piano'],[DE]:['wc','mid'],'C1,C4':['tef','short']}),feel:'Tungsten on the stiffest special middle spring for a firm, weighty push with the density hole adding extra clicks. Middle springs on the rotating face, and Teflon on short springs for resistance.'},
+  cn:{h:gset({'A1,A2':['wc','piano'],[DE]:['wc','piano'],'C1,C4':['tef','short']}),feel:'The Chinese text uses both paragraph holes (A1 and A2, no density hole) and the special middle spring on the rotating face too, so turning is firmer.'}},
+ {id:'C',n:'Plan C',tag:'Crisp, with the most resistance',
+  en:{h:gset({'A1,B2':['zr','piano'],[DE]:['si','mid'],'C1,C2,C3,C4':['tef','short']}),feel:'Zirconia on the special middle spring for the crispest push, with the density hole doubling the clicks. All four resistance holes are filled, so the slide is the most damped of the four plans.'},
+  cn:{h:gset({'A1,B2':['zr','piano'],[DE]:['si','piano'],'C1,C2,C3,C4':['tef','short']}),feel:'The Chinese text uses the special middle spring on the rotating face instead of the middle spring, so turning is firmer.'}},
+ {id:'D',n:'Plan D',tag:'Dense and easy',
+  en:{h:gset({'A1,A2,B1,B2':['wc','ss25'],[DE]:['wc','ss25'],'C1,C4':['tef','ss25']}),feel:'Tungsten everywhere on the lightest SS 0.25 springs. Both paragraph and both density holes are filled, so you get the most clicks per push with the least effort.'},
+  cn:{h:gset({'A1,B2':['wc','ss25'],[DE]:['wc','ss25'],'C1,C4':['tef','ss25']}),feel:'The Chinese text fills only A1 and B2 on the push face, so there are fewer beads but still a density boost.'}}
+];
+const GVER={en:'Card (English)',cn:'Card (Chinese)'};
+let gPlan='C',gVer='en';
+const gCur=()=>{const p=GPLANS.find(x=>x.id===gPlan);return {n:`${p.n} · ${GVER[gVer]}`,src:gVer==='en'?'off':'var',h:p[gVer].h,feel:p[gVer].feel,plan:p};};
+
+/* --- drawing, from the card's hole map --- */
+function gvDiagram(h){
+  const st=`stroke="${INK}" stroke-width="1.1"`;
+  const lab=(t,x)=>`<text x="${x}" y="13" text-anchor="middle" font-size="8" fill="#6b7077" font-family="var(--mono)" letter-spacing=".6">${t}</text>`;
+  let s=`<svg viewBox="0 0 320 214" role="img" aria-label="Drawing of the straight push face and the rotating face, with each hole">`+lab('STRAIGHT (PUSH)',82)+lab('ROTATING',240);
+  s+=`<path d="M22,24 H142 Q156,24 152,40 Q146,112 152,184 Q156,200 142,200 H22 Q8,200 12,184 Q18,112 12,40 Q8,24 22,24Z" fill="var(--body)" ${st}/><circle cx="82" cy="112" r="25" fill="#e9e7e1" ${st}/>`;
+  s+=`<path d="M182,24 H226 A14,14 0 0 0 254,24 H298 Q310,24 310,38 V186 Q310,200 298,200 H254 A14,14 0 0 0 226,200 H182 Q170,200 170,186 V38 Q170,24 182,24Z" fill="var(--sideA)" ${st}/><circle cx="240" cy="112" r="22" fill="#f7d3d6" ${st}/>`;
+  const hole=(id,x,y,pill)=>{const v=h[id],b=GB[v.b],sp=GS[v.s],w=pill?15:16,hh=pill?26:16;
+    let o=`<rect x="${x-w/2}" y="${y-hh/2}" width="${w}" height="${hh}" rx="${w/2}" fill="#f6f5f1" stroke="${INK}" stroke-width="1" ${!b&&!sp?'stroke-dasharray="3 2"':''}/>`;
+    if(sp)o+=`<rect x="${x-w/2+2.5}" y="${y-hh/2+2.5}" width="${w-5}" height="${hh-5}" rx="${(w-5)/2}" fill="none" stroke="${sp.c}" stroke-width="2.2" stroke-dasharray="2.2 1.3"/>`;
+    if(b)o+=`<circle cx="${x}" cy="${y}" r="4.6" fill="${b.c}" stroke="${b.heavy?'#9aa0a6':INK}" stroke-width="${b.heavy?1.6:.9}"/>`;
+    return o+`<text x="${x}" y="${y+hh/2+10}" text-anchor="middle" font-size="8" font-weight="600" fill="${INK}" font-family="var(--mono)">${id}</text>`;};
+  s+=hole('C2',38,46)+hole('B2',82,52,1)+hole('C4',126,46)+hole('A1',30,112,1)+hole('A2',134,112,1)+hole('C1',38,168)+hole('B1',82,164,1)+hole('C3',126,168);
+  s+=hole('D1',196,62)+hole('E2',284,62)+hole('E1',196,154)+hole('D2',284,154);
+  return s+'</svg>';
+}
+const GVLEG=()=>`<div class="legend">${Object.values(GB).map(b=>`<span><i style="background:${b.c}"></i>${b.n}</span>`).join('')}${Object.values(GS).map(x=>`<span><i style="background:none;border:2px dashed ${x.c}"></i>${x.sn}</span>`).join('')}</div>`;
+
+/* --- what each hole does in the simulator --- */
+const GN={push:6,rot:8}; // clicks per stroke / per turn on the paragraph holes (illustrative)
+function gvLoaded(h,g){return GH.filter(x=>x[2]===g&&h[x[0]].b&&h[x[0]].s).map(x=>h[x[0]]);}
+function gvEvents(h,face){
+  const E=[],N=GN[face],A=face==='push'?'A':'D',B=face==='push'?'B':'E';
+  const a=gvLoaded(h,A).length,b=gvLoaded(h,B).length;
+  const pos=(i,off)=>face==='push'?.05+(i+off)/N*.9:(i+off)/N;
+  for(let i=0;i<N;i++){if(a)E.push({p:pos(i,.5),k:A,cls:'hi'});if(b)E.push({p:pos(i,a?0:.5),k:B,cls:'lo'});}
+  return E.filter(e=>face!=='push'||(e.p>.02&&e.p<.98));
+}
+function gvResist(h){return gvLoaded(h,'C').reduce((t,v)=>t+GS[v.s].k*(GB[v.b].soft?1:1.3),0);}
+function gvPlay(h,g){
+  const L=gvLoaded(h,g);if(!L.length||!canPlay('gv'+g,24))return;const v=L[0],b=GB[v.b],sp=GS[v.s],mult=Math.sqrt(L.length);
+  const gain=Math.min(1,(.3+sp.k*.12)*mult*(b.soft?.4:1));
+  try{
+    if(b.soft){noise(.012,'lowpass',1500,.5*gain);tone('sine',420,240,.04,.18*gain);}
+    else{noise(.004+(4-b.cr)*.001,'highpass',2400+b.cr*1100,.55*gain);tone('triangle',b.heavy?900:1500+b.cr*250,b.heavy?420:700,.03,.17*gain);if(b.heavy)tone('sine',210,110,.06,.22*gain);}
+    tone('sine',1700+sp.k*160,1650+sp.k*160,.05,.03*gain);
+  }catch(e){}
+  buzz(Math.round(5+sp.k*2));
+}
+function gvFriction(h,speed){const r=gvResist(h);if(!r||!canPlay('gvfric',70))return;try{noise(.05,'lowpass',700,Math.min(.16,.02*r*(.4+speed)));}catch(e){}}
+const GLAB={A:'paragraph click (A)',B:'density click (B)',D:'paragraph click (D)',E:'density click (E)'};
+function gvPredict(h){
+  const act=GH.filter(([id,,g])=>g!=='C'&&h[id].b&&h[id].s),cr=act.length?act.reduce((t,[id])=>t+GB[h[id].b].cr,0)/act.length:0;
+  const pushK=GH.filter(([id,f])=>f==='push'&&h[id].b&&h[id].s).reduce((t,[id])=>t+GS[h[id].s].k,0),rotK=GH.filter(([id,f])=>f==='rot'&&h[id].b&&h[id].s).reduce((t,[id])=>t+GS[h[id].s].k,0);
+  const res=gvResist(h),P=gvEvents(h,'push').length,R=gvEvents(h,'rot').length,L=[],W=[];
+  GH.forEach(([id])=>{const v=h[id];if(v.b&&!v.s)W.push(`${id} has a bead but no spring, so it won't hold.`);if(!v.b&&v.s)W.push(`${id} has a spring but no bead.`);});
+  if(gvLoaded(h,'B').length&&!gvLoaded(h,'A').length)W.push('B holes add clicks between the A holes; with A empty, B just becomes the main click.');
+  if(gvLoaded(h,'E').length&&!gvLoaded(h,'D').length)W.push('E holes add clicks between the D holes; with D empty, E just becomes the main click.');
+  if(gvLoaded(h,'B').length&&gvLoaded(h,'A').length)L.push('Density holes (B) sit between the paragraph clicks, so the push clicks double.');
+  if(gvLoaded(h,'E').length&&gvLoaded(h,'D').length)L.push('Density holes (E) double the clicks as you turn.');
+  if(res)L.push(`${gvLoaded(h,'C').length} resistance hole${gvLoaded(h,'C').length>1?'s':''} filled: the slide drags more and feels damped, without adding clicks.`);
+  if(act.some(([id])=>h[id].b==='wc'))L.push('Tungsten is heavy, so its clicks land lower and weightier.');
+  if(act.some(([id])=>h[id].b==='tef'))L.push('Teflon in a click hole gives a soft, muted click.');
+  const bar=(v,max)=>v?Math.max(1,Math.min(5,Math.round(v/max*5))):0;
+  return {L:L.slice(0,3),W,crisp:Math.round(cr*1.25),push:bar(pushK+res*.6,14),turn:bar(rotK,14),res:bar(res,14),P,R};
+}
+function gvMeters(p){return `<div class="meter"><div><span class="label">Crisp</span>${bars(p.crisp)}</div><div><span class="label">Push effort</span>${bars(p.push)}</div><div><span class="label">Turn effort</span>${bars(p.turn)}</div></div>
+  <p class="muted" style="font-size:.84rem">${p.P} clicks per push · ${p.R} per turn · resistance ${p.res}/5. Rankings are from the card; counts are illustrative.</p>`;}
+
+/* --- simulators: push track and rotating dial --- */
+function gvSims(){return `<div class="sims">${simHTML('Straight face · drag the pusher',false,'Tall marks: paragraph (A). Short marks: density (B). Filled resistance holes make it drag. Use ◀ ▶ to feel each click on iPhone.')}
+  <div class="sim" data-gdial><div class="sim-head"><span class="label">Rotating face · drag round</span><span class="label" data-count>0 clicks</span></div>
+  <div class="dialwrap"><div class="dial" role="slider" tabindex="0" aria-label="Rotating face. Arrow keys turn it." aria-valuemin="0" aria-valuemax="360"><div class="ticks"></div><div class="knob"></div></div></div>
+  <div class="taprow">${tapBtn('-1','↺','Turn back one click')}<span class="label">Or tap to turn</span>${tapBtn('1','↻','Turn forward one click')}</div>
+  <div class="sim-meta"><span class="label">Per turn</span><span data-per></span><span class="label">Last</span><span class="last" data-last>–</span></div></div></div>`;}
+function gvMount(root,h){
+  const P=gvEvents(h,'push'),res=gvResist(h),pr=gvPredict(h);
+  mountTrack(root.querySelector('[data-sim]'),{E:P,travel:1,home:null,noise:Math.max(1,Math.round((pr.crisp+pr.push)/2)),top:'stop',bot:'stop',
+    drag:Math.min(.75,res/16),onMove:sp=>gvFriction(h,sp),play:k=>k==='stop'?sfx('stop',{balls:[],blockMag:'5x4',spr:'none'}):gvPlay(h,k),lab:k=>k==='stop'?'end stop':GLAB[k]});
+  const el=root.querySelector('[data-gdial]');if(!el)return;
+  const R=gvEvents(h,'rot'),dial=el.querySelector('.dial'),knob=el.querySelector('.knob'),cnt=el.querySelector('[data-count]'),last=el.querySelector('[data-last]');
+  el.querySelector('.ticks').innerHTML=R.map(e=>`<span class="tick ${e.cls==='hi'?'':'q'}" style="transform:rotate(${e.p*360+180}deg) translateY(66px)"></span>`).join('');
+  el.querySelector('[data-per]').textContent=R.length?`${R.length} clicks`:'No clicks';
+  let ang=0,drag=null,n=0;const set=()=>{knob.style.transform=`rotate(${ang*360}deg)`;dial.setAttribute('aria-valuenow',Math.round(((ang%1)+1)%1*360));};
+  function turn(to){const a=ang;if(to===a)return;const lo=Math.min(a,to),hi=Math.max(a,to),hits=[];
+    for(let k=Math.floor(lo);k<=Math.ceil(hi);k++)R.forEach(e=>{const p=k+e.p;if(p>lo&&p<=hi)hits.push({p,k:e.k});});
+    hits.sort((x,y)=>to>a?x.p-y.p:y.p-x.p).slice(0,6).forEach(x=>{n++;cnt.textContent=n+(n===1?' click':' clicks');last.textContent=GLAB[x.k];gvPlay(h,x.k);});
+    ang=to;set();}
+  const angAt=e=>{const r=dial.getBoundingClientRect();return Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2))/(2*Math.PI);};
+  dial.addEventListener('pointerdown',e=>{drag={a:angAt(e)};dial.setPointerCapture(e.pointerId);dial.style.cursor='grabbing';});
+  dial.addEventListener('pointermove',e=>{if(!drag)return;const a=angAt(e);let d=a-drag.a;if(d>.5)d-=1;if(d<-.5)d+=1;drag.a=a;turn(ang+d);});
+  const end=()=>{drag=null;dial.style.cursor='';};dial.addEventListener('pointerup',end);dial.addEventListener('pointercancel',end);
+  const step=dir=>{if(!R.length)return;const cur=ang,cand=[];for(let k=Math.floor(cur)-1;k<=Math.floor(cur)+2;k++)R.forEach(e=>cand.push(k+e.p));cand.sort((x,y)=>x-y);
+    const nx=dir>0?cand.find(v=>v>cur+1e-6):[...cand].reverse().find(v=>v<cur-1e-6);if(nx!==undefined)turn(nx);};
+  dial.addEventListener('keydown',e=>{if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;e.preventDefault();step(e.key==='ArrowRight'?1:-1);});
+  bindTaps(el,d=>step(+d));set();
+}
+
+/* --- sheet, table, parts, steps --- */
+function gvTable(h){return `<div class="tbl" style="border-radius:10px"><table class="htable"><thead><tr><th>Hole</th><th>Bead</th><th>Spring</th></tr></thead><tbody>${['push','rot'].map(f=>`<tr class="g"><th colspan="3">${f==='push'?'Straight (push) face':'Rotating face'}</th></tr>`+GH.filter(x=>x[1]===f).map(([id,,,role])=>{const v=h[id];
+  return `<tr><td class="h" title="${role}">${id}</td>${v.b||v.s?`<td>${v.b?GB[v.b].n:'–'}</td><td>${v.s?GS[v.s].sn:'–'}</td>`:'<td class="e" colspan="2">Empty</td>'}</tr>`;}).join('')).join('')}</tbody></table></div>`;}
+function gvParts(h){const c={};GH.forEach(([id])=>{const v=h[id];if(v.b){const k=GB[v.b].n+' bead';c[k]=(c[k]||0)+1;}if(v.s){const k=GS[v.s].n;c[k]=(c[k]||0)+1;}});return partList(c);}
+function gvSteps(h){
+  const s=['Work over a tray, with tweezers for the beads.','Open it with the supplied screwdriver and unlocking tool.'];
+  [['push','Straight (push) face'],['rot','Rotating face']].forEach(([f,n])=>{const L=GH.filter(x=>x[1]===f),fill=L.filter(([id])=>h[id].b&&h[id].s).map(([id])=>`${id}: ${GS[h[id].s].sn} spring, then a ${GB[h[id].b].n} bead`),empty=L.filter(([id])=>!h[id].b&&!h[id].s).map(([id])=>id);
+    s.push(`${n}: ${fill.length?fill.join('; '):'leave every hole empty'}.`);if(fill.length&&empty.length)s.push(`Leave ${empty.join(', ')} empty.`);});
+  s.push('Seat each part in its own hole. Don\'t force anything, or you can damage the body.');
+  s.push('The centre screw washer has a locking tab: make sure it sits in properly.');
+  s.push('Close it up, then push and turn slowly to check. Clean out bead residue now and then; some wear from beads rubbing the plate is normal.');
+  return stepsBox(s);
+}
+function gvCopy(name,h){return `MOT Groove · ${name}\n`+GH.map(([id])=>{const v=h[id];return `${id}: ${v.b||v.s?`${v.s?GS[v.s].sn+' spring':'no spring'} + ${v.b?GB[v.b].n:'no bead'}`:'empty'}`;}).join('\n');}
+function gvInfo(){const g=document.querySelector('#g-groove .ginfo');return g?`<details class="minfo"${minfoOpen?' open':''}><summary>How beads, springs and holes change the feel</summary><div class="minfo-b">${g.innerHTML}</div></details>`:'';}
+function gvSheet(m,opts={}){
+  const p=gvPredict(m.h);
+  return `<div class="head"><div class="row"><span class="src ${m.src}">${m.src==='off'?'From the card':m.src==='var'?'From the card':'Your build'}</span><span class="label">MOT Groove</span></div><h2>${esc(m.n)}</h2><p>${esc(m.feel)}</p></div>
+   ${gvMeters(p)}<ul class="feelbox">${p.L.map(x=>`<li>${esc(x)}</li>`).join('')}${p.W.map(x=>`<li class="w">${esc(x)}</li>`).join('')}</ul>
+   ${gvSims()}
+   <div class="split">${drawBox(gvDiagram(m.h),GVLEG(),'Hole map from the instruction card. Simplified drawing.')}
+     <div style="display:grid;gap:12px;align-content:start">${gvTable(m.h)}<div style="display:grid;gap:6px"><span class="label">Pull from the bag</span>${gvParts(m.h)}</div></div></div>
+   ${gvSteps(m.h)}
+   <div class="nav">${opts.nav?'<button class="btn ghost" data-gvstep="-1">← Previous</button><button class="btn" data-gvstep="1">Next →</button>':''}${opts.edit?'<button class="btn ghost" data-gvedit>Change the beads and springs</button>':''}<button class="btn ghost" data-gvcopy>Copy setup</button><span class="copied" data-copied></span></div>`;
+}
+function gvBindCopy(root,name,h){root.querySelectorAll('[data-gvcopy]').forEach(b=>b.addEventListener('click',async()=>{const o=root.querySelector('[data-copied]');try{await navigator.clipboard.writeText(gvCopy(name,h));o.textContent='Copied';}catch(e){o.textContent='Copy failed';}setTimeout(()=>o.textContent='',2200);}));}
+function renderGvList(){
+  $('#gvitems').innerHTML=`<span class="label">The card's four plans</span>
+   <div class="fams">${GPLANS.map(p=>`<button class="fam two" data-gvplan="${p.id}" aria-pressed="${gPlan===p.id}"><span>${esc(p.n)}</span><span class="tg2">${esc(p.tag)}</span></button>`).join('')}</div>
+   <span class="label">${esc(GPLANS.find(p=>p.id===gPlan).n)} · versions</span><div class="chips">${['en','cn'].map(v=>`<button class="chip ver" data-gvver="${v}" aria-pressed="${gVer===v}"><i class="dot ${v==='en'?'off':'var'}"></i>${GVER[v]}</button>`).join('')}</div>
+   <p class="muted" style="font-size:.82rem">The English and Chinese sides of the card list slightly different versions of each plan, so both are here.</p>
+   <div style="margin-top:4px">${gvInfo()}</div>`;
+  $('#gvitems').querySelectorAll('[data-gvplan]').forEach(b=>b.addEventListener('click',()=>{gPlan=b.dataset.gvplan;renderGvList();renderGvSheet();}));
+  $('#gvitems').querySelectorAll('[data-gvver]').forEach(b=>b.addEventListener('click',()=>{gVer=b.dataset.gvver;renderGvList();renderGvSheet();}));
+}
+function renderGvSheet(){
+  const m=gCur(),el=$('#gvsheet');el.innerHTML=gvSheet(m,{nav:true,edit:true});gvMount(el,m.h);gvBindCopy(el,m.n,m.h);
+  el.querySelectorAll('[data-gvstep]').forEach(b=>b.addEventListener('click',()=>{const order=GPLANS.flatMap(p=>['en','cn'].map(v=>[p.id,v])),i=order.findIndex(([p,v])=>p===gPlan&&v===gVer),nx=order[(i+ +b.dataset.gvstep+order.length)%order.length];gPlan=nx[0];gVer=nx[1];renderGvList();renderGvSheet();if(matchMedia('(max-width:880px)').matches)$('#gvitems').scrollIntoView({block:'start'});}));
+  el.querySelectorAll('[data-gvedit]').forEach(b=>b.addEventListener('click',()=>{gvb.h=JSON.parse(JSON.stringify(m.h));gvb.from=m.n;showTab('groove','build');renderGvBuild();window.scrollTo(0,0);}));
+}
+const gvb={h:JSON.parse(JSON.stringify(GPLANS[2].en.h)),from:'Plan C · Card (English)'};
+function renderGvBuild(){
+  const opt=(o,v)=>Object.entries(o).map(([k,x])=>`<option value="${k}" ${v===k?'selected':''}>${esc(x.sn||x.n)}</option>`).join('');
+  $('#gvctl').innerHTML=`<div class="head"><span class="src ours" style="justify-self:start">Your build</span><h2>Build your own</h2><p class="muted">Set a bead and spring for each hole on both faces. The feel, the simulators and the steps update as you go.</p></div>
+   ${gvInfo()}
+   <div class="row" style="display:grid;gap:5px"><span class="label">Start from</span><select id="gvstart"><option value="">Choose a plan…</option>${GPLANS.flatMap(p=>['en','cn'].map(v=>`<option value="${p.id}.${v}">${esc(p.n)} · ${GVER[v]}</option>`)).join('')}<option value="__empty">Empty, every hole clear</option></select></div>
+   ${[['push','Straight (push) face'],['rot','Rotating face']].map(([f,n])=>`<div class="row" style="display:grid;gap:6px"><span class="label">${n}</span><div class="holes">${GH.filter(x=>x[1]===f).map(([id,,,role])=>`<div class="hole" title="${role}"><b>${id}</b><select data-gvb="${id}" aria-label="${id} bead"><option value="">No bead</option>${opt(GB,gvb.h[id].b)}</select><select data-gvs="${id}" aria-label="${id} spring"><option value="">No spring</option>${opt(GS,gvb.h[id].s)}</select></div>`).join('')}</div></div>`).join('')}
+   <p class="muted" style="font-size:.8rem">A and D are the paragraph holes, B and E add density, C adds resistance.</p>`;
+  $('#gvstart').addEventListener('change',e=>{const v=e.target.value;if(!v)return;if(v==='__empty'){gvb.h=GEMPTY();gvb.from=null;}else{const [p,ver]=v.split('.'),pl=GPLANS.find(x=>x.id===p);gvb.h=JSON.parse(JSON.stringify(pl[ver].h));gvb.from=`${pl.n} · ${GVER[ver]}`;}renderGvBuild();});
+  $('#gvctl').querySelectorAll('[data-gvb]').forEach(x=>x.addEventListener('change',()=>{gvb.h[x.dataset.gvb].b=x.value||null;gvb.from=null;renderGvOut();}));
+  $('#gvctl').querySelectorAll('[data-gvs]').forEach(x=>x.addEventListener('change',()=>{gvb.h[x.dataset.gvs].s=x.value||null;gvb.from=null;renderGvOut();}));
+  renderGvOut();
+}
+function renderGvOut(){
+  const match=GPLANS.flatMap(p=>['en','cn'].map(v=>({n:`${p.n} · ${GVER[v]}`,h:p[v].h}))).find(x=>JSON.stringify(x.h)===JSON.stringify(gvb.h));
+  const m={n:match?`Matches ${match.n}`:gvb.from?`Based on ${gvb.from}, changed`:'Your build',src:'ours',h:gvb.h,feel:'Your combination, with the predicted feel below.'},el=$('#gvout');
+  el.innerHTML=gvSheet(m);gvMount(el,m.h);gvBindCopy(el,'Your build',m.h);
+}
+function initGroove(){
+  $('#gvbag').innerHTML=[['Beads','Zirconia, silicon nitride, Teflon, tungsten'],['Springs','SS 0.25, SS 0.3, short spring, middle spring, special middle spring (piano steel)'],['Tools','Screwdriver, unlocking tool, tweezers'],['Also','Screws and a designer sticker']].map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('');
+  renderGvList();renderGvSheet();renderGvBuild();
+}
+
 /* =========================================================
    Hub: menu, routing, tabs
    ========================================================= */
 const GUIDES=[
  {id:'tita',n:'TITA Pro',by:'PEL Studio',type:'Modular magnetic + mechanical',count:`${ALL.length} setups`,blurb:'Buckyballs, detent magnets, limit blocks and spring balls: eight official modes from the manual plus twelve more worked out from them, and a mixer.',tabs:'tita'},
+ {id:'groove',n:'MOT Groove',by:'MOT',type:'Bead and spring · push + rotate',count:'4 card plans + builder',blurb:'The four plans from the instruction card, every hole on the straight push face and the rotating face, and a builder to try your own.',tabs:'groove'},
  {id:'aura',n:'Aura Sand Slim Pro',by:'Peacock',type:'Floating · fancy play 8 × 6',count:`${ASET.length} magnet setups`,blurb:'The N52 and N45 "Old Pro" corner magnet setups, with spacer, halfmoon and foam pad options, and what to do if your box has no metal spacers.',tabs:'aura'}
 ];
 function thumb(id){
   if(id==='tita')return diagram(OFF[0]);
+  if(id==='groove')return gvDiagram(GPLANS[2].en.h);
   return aDiagram(ASET[1],{mid:'spacer',foam:'none'});
 }
 function renderMenu(){
@@ -967,10 +1215,10 @@ document.querySelectorAll('.tabs[data-g]').forEach(tl=>tl.querySelectorAll('.tab
 const inited={};
 function route(){
   const id=(location.hash||'').replace(/^#\/?/,'');const g=GUIDES.find(x=>x.id===id);
-  ['home','tita','aura'].forEach(s=>$('#g-'+s).hidden=(g?g.id:'home')!==s);
+  ['home','tita','groove','aura'].forEach(s=>$('#g-'+s).hidden=(g?g.id:'home')!==s);
   document.querySelectorAll('.tabs[data-g]').forEach(t=>t.classList.toggle('on',!!g&&t.dataset.g===g.id));
   $('#back').hidden=!g;$('#hlabel').textContent=g?`${g.by} · ${g.type}`:'Slider tuning';$('#htitle').textContent=g?`${g.n} tuning guide`:'Slider Tuning Guides';
-  if(g&&!inited[g.id]){inited[g.id]=1;if(g.id==='tita')initTita();if(g.id==='aura'){renderAList();renderASheet();renderABuild();}}
+  if(g&&!inited[g.id]){inited[g.id]=1;if(g.id==='tita')initTita();if(g.id==='groove')initGroove();if(g.id==='aura'){renderAList();renderASheet();renderABuild();}}
   window.scrollTo(0,0);
 }
 $('#back').addEventListener('click',()=>{try{history.pushState('',document.title,location.pathname+location.search);}catch(e){location.hash='';}route();});
