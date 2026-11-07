@@ -159,7 +159,6 @@ footer{padding-block:12px 36px;color:var(--muted);font-size:.8rem}
 .chip.ver{display:inline-flex;align-items:center;gap:6px}
 .dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--muted)}
 .dot.off{background:var(--ok)}.dot.var{background:var(--var)}.dot.ours{background:var(--accent)}
-.hapsw{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:.01;touch-action:none;cursor:inherit;z-index:5}
 /* ---------- Hub additions ---------- */
 .back{background:none;border:1px solid var(--line);color:var(--fg);border-radius:999px;padding:6px 12px;font:600 .82rem var(--bodyf);cursor:pointer;white-space:nowrap}
 .back:hover{border-color:var(--accent)}
@@ -520,9 +519,6 @@ function iosTick(){const now=performance.now();if(now-iosT<55)return;iosT=now;
   if(!IOSH){IOSH=document.createElement('label');IOSH.setAttribute('aria-hidden','true');IOSH.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
     const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;IOSH.appendChild(i);document.body.appendChild(IOSH);}
   const was=document.activeElement;IOSH.click();if(was&&was!==document.body&&was.focus)was.focus({preventScroll:true});}
-// iPhone: lay a real (invisible) switch over the draggable part, so a genuine tap toggles it and iOS plays its haptic.
-function hapSwitch(host){try{if(typeof navigator.vibrate==='function'||!host||host.querySelector('.hapsw'))return;
-  const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.className='hapsw';i.tabIndex=-1;i.setAttribute('aria-hidden','true');host.appendChild(i);}catch(e){}}
 function buzz(p){try{if(typeof navigator.vibrate==='function'){navigator.vibrate(p);return;}iosTick();}catch(e){}}
 // iOS only gives the switch haptic inside a real touch, so also tick directly on touch down and release.
 ['touchstart','touchend'].forEach(ev=>document.addEventListener(ev,e=>{try{if(typeof navigator.vibrate==='function')return;
@@ -593,7 +589,7 @@ function mountTrack(el,S){
   const end=()=>{if(!drag)return;drag=null;pusher.classList.remove('drag');goHome();};
   pusher.addEventListener('pointerup',end);pusher.addEventListener('pointercancel',end);
   pusher.addEventListener('keydown',e=>{if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;e.preventDefault();move(p+(e.key==='ArrowRight'?.05:-.05),.5);});
-  set(lo);hapSwitch(pusher);
+  set(lo);
 }
 
 /* ---------- TITA: Setups tab ---------- */
@@ -791,7 +787,7 @@ function aSimHTML(){return `<div class="sim" data-asim><div class="sim-head"><sp
   <div class="sim-meta"><span class="label">Held at</span><span class="last" data-last>centre</span></div>
   <p class="hint">Not hard clicks: the card is lightly held wherever the magnets line up (${AHOLDS.length} spots, from the magnet layout). It slides straight along the dotted lines, so from up or down you can go left or right, and from left or right you can go up or down. Bigger dots hold harder.</p></div>`;}
 function mountAura(el,m,mods){
-  if(!el)return;bindSnd(el);hapSwitch(el.querySelector('.ftop'));const top=el.querySelector('.ftop'),stage=el.querySelector('.fstage'),cnt=el.querySelector('[data-count]'),last=el.querySelector('[data-last]');
+  if(!el)return;bindSnd(el);const top=el.querySelector('.ftop'),stage=el.querySelector('.fstage'),cnt=el.querySelector('[data-count]'),last=el.querySelector('[data-last]');
   const hold=aHold(m,mods),crunch=aCrunch(m,mods),S=.42; // px per layout unit
   const XS=AXS.map(v=>v*S),YS=AYS.map(v=>v*S),P=h=>[h.x*S,h.y*S];
   const ord=(v,arr)=>{const same=arr.filter(o=>Math.sign(o)===Math.sign(v)&&o!==0).sort((p,q)=>Math.abs(p)-Math.abs(q));return same.length>1?' '+(same.indexOf(v)+1):'';};
