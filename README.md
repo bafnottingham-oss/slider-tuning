@@ -7,7 +7,7 @@ Unofficial tuning guides for premium fidget sliders, built as a single static we
 
 ## Run it
 
-It's one file with no build step. Open `index.html` in a browser, or serve it with GitHub Pages:
+The guide is `app.html`; `index.html` is a tiny loader that always fetches the latest `app.html`, so the shared link never shows an old cached copy. Serve it with GitHub Pages:
 Settings → Pages → Deploy from a branch → `main` / root.
 
 ## Credits
