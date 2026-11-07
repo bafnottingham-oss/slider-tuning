@@ -169,6 +169,10 @@ footer{padding-block:12px 36px;color:var(--muted);font-size:.8rem}
 .dpad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:44px 44px;gap:6px}
 .dpad .tapbtn[data-dir="y-1"]{grid-column:2;grid-row:1}.dpad .tapbtn[data-dir="x-1"]{grid-column:1;grid-row:2}.dpad .tapbtn[data-dir="y1"]{grid-column:2;grid-row:2}.dpad .tapbtn[data-dir="x1"]{grid-column:3;grid-row:2}
 .dpad .tapbtn{min-width:0;padding:0}
+.magnets{display:grid;gap:12px;margin-top:22px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.magnets .head{display:grid;gap:6px}
+.magnets td.up{color:var(--ok);font-weight:600}.magnets td.dn{color:var(--warn);font-weight:600}
+.magnets .htable td:first-child{font-weight:600}
 /* ---------- Hub additions ---------- */
 .back{background:none;border:1px solid var(--line);color:var(--fg);border-radius:999px;padding:6px 12px;font:600 .82rem var(--bodyf);cursor:pointer;white-space:nowrap}
 .back:hover{border-color:var(--accent)}
@@ -288,6 +292,7 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
             <li><b>Limit screw, in four moves</b>1. Start the screw, stopping just below the back surface. 2. Drop in spring, brass plunger, ceramic ball; push the strip in. 3. Two full turns. 4. Slide the strip back and forth to check it's held.</li>
             <li class="warn"><b>Better less than more</b>Overtightening a limit screw locks the strip solid and can damage the body.</li>
             <li><b>Keep the track clean</b>Grit scratches it. Blu Tack lifts debris; isopropyl alcohol for metal parts.</li>
+            <li><b>Magnet strength</b>Every magnet in the kit is N52, so strength changes come from size and how many you fit. A 5x6 pulls harder than the stock 5x4, so the slider hits the end harder and snaps home faster.</li>
             <li class="warn"><b>Magnet safety</b>Strong N52 magnets and balls. Keep away from young children.</li>
           </ul>
         </div>
@@ -328,6 +333,17 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
           <h2 style="margin-top:6px">You'll need</h2>
           <div class="parts"><span class="part">Small scissors</span><span class="part">A file</span><span class="part">Metal tool or magnet</span><span class="part">Metal tray to work over</span><span class="part">Dish for parts</span></div>
         </div>
+      </div>
+      <div class="magnets">
+        <div class="head"><span class="label">Quick guide</span><h2>Magnet strength, and what you'll feel</h2>
+          <p class="muted">The N number is the magnet's grade: how much magnetic energy it can hold. Higher is stronger for the same size. N52 is about 7% stronger at the surface than N45, and the pull between two magnets goes with the square of that, so roughly <b>15% more pull</b>.</p></div>
+        <div class="tbl"><table class="htable"><thead><tr><th scope="col">Change</th><th scope="col">Pull</th><th scope="col">When you slide the 6 side</th></tr></thead><tbody>
+          <tr><td>N52 instead of N45 (same size)</td><td class="up">About 15% stronger</td><td>Firmer holds and a sharper snap into each spot. Harder to slip off in fast tricks, but a little more effort to move.</td></tr>
+          <tr><td>N45 instead of N52</td><td class="dn">About 15% weaker</td><td>Softer, floatier glide that's easier to move. Slips off sooner when you add power or speed.</td></tr>
+          <tr><td>Thicker magnet (8 × 2.5 mm vs 8 × 2 mm)</td><td class="up">Stronger</td><td>Firmer, crunchier holds.</td></tr>
+          <tr><td>More gap between the magnets (pads, plastic spacers, foam)</td><td class="dn">Weaker, and drops off fast as the gap grows</td><td>Softer, quieter holds. Even a thin pad makes a difference you can feel.</td></tr>
+        </tbody></table></div>
+        <p class="muted" style="font-size:.84rem">Grade, size and gap all add up, so a weaker grade can be balanced by a thicker magnet or a smaller gap. Standard N magnets lose strength for good above about 80 °C, so keep the slider off hot dashboards and radiators.</p>
       </div>
     </div>
     <p class="note">Unofficial. Strength ratings are relative, based on how the setups compare with each other.</p>
