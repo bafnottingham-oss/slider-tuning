@@ -11,11 +11,20 @@
 <p>Loading the latest guide…</p>
 <noscript><p><a href="app.html">Open the guide</a></p></noscript>
 <script>
-/* GitHub Pages lets browsers keep pages for up to 10 minutes. This small page never changes, and it always
-   fetches the guide fresh, so anyone opening the link sees the latest version. */
-fetch('app.html?t='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.text();})
- .then(function(h){document.open();document.write(h);document.close();})
- .catch(function(){location.replace('app.html'+location.hash);});
+/* GitHub Pages lets browsers and its CDN keep pages for up to 10 minutes. This small page asks GitHub for the
+   latest commit, then loads app.html from exactly that commit, so the shared link shows updates within a minute.
+   If GitHub can't be reached, it falls back to the copy on this site. */
+(function(){
+  var R='bafnottingham-oss/slider-tuning';
+  function show(h){document.open();document.write(h);document.close();}
+  function local(){fetch('app.html?t='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.text();}).then(show).catch(function(){location.replace('app.html'+location.hash);});}
+  fetch('https://api.github.com/repos/'+R+'/commits/main',{cache:'no-store',headers:{Accept:'application/vnd.github+json'}})
+    .then(function(r){if(!r.ok)throw 0;return r.json();})
+    .then(function(c){return fetch('https://raw.githubusercontent.com/'+R+'/'+c.sha+'/app.html');})
+    .then(function(r){if(!r.ok)throw 0;return r.text();})
+    .then(function(h){if(h.indexOf('Slider Tuning Guides')<0)throw 0;show(h);})
+    .catch(local);
+})();
 </script>
 </body>
 </html>
