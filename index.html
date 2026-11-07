@@ -243,6 +243,13 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
 .gtop{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:16px;align-items:start}
 @media (max-width:700px){.gtop{grid-template-columns:1fr}}
 </style>
+<script>
+/* GitHub Pages lets browsers keep a copy for up to 10 minutes. On load, fetch a fresh copy and reload if it's newer. */
+window.SITE_BUILD='20261107075343';
+(function(){try{if(!/github\.io$/.test(location.hostname))return;
+  fetch(location.pathname+'?fresh='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/SITE_BUILD='(\d+)'/);
+    if(m&&m[1]!==window.SITE_BUILD){location.replace(location.pathname+'?v='+m[1]+location.hash);}}).catch(()=>{});}catch(e){}})();
+</script>
 </head>
 <body>
 <header class="top">
