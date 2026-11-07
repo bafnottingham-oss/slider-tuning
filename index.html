@@ -508,11 +508,18 @@ function sheetHTML(m,opts={}){
 
 /* ---------- Sound engine ---------- */
 let AC=null,soundOn=true;const lastT={};
-function ac(){try{if(!AC){const A=window.AudioContext||window.webkitAudioContext;if(A)AC=new A();}if(AC&&AC.state==='suspended')AC.resume();}catch(e){}return AC;}
+function ac(){try{if(navigator.audioSession&&navigator.audioSession.type!=='playback')navigator.audioSession.type='playback';}catch(e){}try{if(!AC){const A=window.AudioContext||window.webkitAudioContext;if(A)AC=new A();}if(AC&&AC.state==='suspended')AC.resume();}catch(e){}return AC;}
 ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,ac,{capture:true}));
 function tone(type,f0,f1,dur,gain,delay=0){const c=AC,t=c.currentTime+delay,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+dur*.7);g.gain.setValueAtTime(Math.max(.0011,gain),t);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(g).connect(c.destination);o.start(t);o.stop(t+dur+.02);}
 function noise(dur,ftype,freq,gain,delay=0){const c=AC,t=c.currentTime+delay,len=Math.max(1,Math.floor(c.sampleRate*dur)),b=c.createBuffer(1,len,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=b;f.type=ftype;f.frequency.value=freq;g.gain.value=gain;s.connect(f).connect(g).connect(c.destination);s.start(t);}
-function buzz(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
+// Haptics: Android uses the vibration API. iPhone Safari has none, so on iOS 18+ we tap a hidden
+// switch control, which gives a light system haptic (works on taps and releases; mid-drag may not).
+let IOSH=null,iosT=0;
+function iosTick(){const now=performance.now();if(now-iosT<55)return;iosT=now;
+  if(!IOSH){IOSH=document.createElement('label');IOSH.setAttribute('aria-hidden','true');IOSH.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
+    const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;IOSH.appendChild(i);document.body.appendChild(IOSH);}
+  const was=document.activeElement;IOSH.click();if(was&&was!==document.body&&was.focus)was.focus({preventScroll:true});}
+function buzz(p){try{if(typeof navigator.vibrate==='function'){navigator.vibrate(p);return;}iosTick();}catch(e){}}
 function canPlay(key,gap=28){if(!soundOn||!ac())return false;const now=performance.now();if(lastT[key]&&now-lastT[key]<gap)return false;lastT[key]=now;return true;}
 function strikerOf(m){const s=m.balls.find(b=>'BbM'.includes(b[0]));return s?s[0]:null;}
 function sfx(kind,m,v=1){
@@ -552,7 +559,7 @@ function simModel(m){
 /* ---------- Track simulator (generic) ---------- */
 const sndBtn=()=>`<button class="chip" data-snd aria-pressed="${soundOn}">${soundOn?'Sound on':'Sound off'}</button>`;
 function bindSnd(el){el.querySelectorAll('[data-snd]').forEach(snd=>snd.addEventListener('click',()=>{soundOn=!soundOn;document.querySelectorAll('[data-snd]').forEach(b=>{b.setAttribute('aria-pressed',String(soundOn));b.textContent=soundOn?'Sound on':'Sound off';});}));}
-function simHTML(title='Try it · drag the pusher end to end',endsLabel=true,hint='An illustration, not a recording. Phones that allow it also vibrate. Left end is the top of the slider.'){return `<div class="sim" data-sim><div class="sim-head"><span class="label">${title}</span><span class="label" data-count>0 events</span>${sndBtn()}</div>
+function simHTML(title='Try it · drag the pusher end to end',endsLabel=true,hint='An illustration, not a recording. Android phones vibrate; iPhones give a light haptic tick on taps and releases. Left end is the top of the slider.'){return `<div class="sim" data-sim><div class="sim-head"><span class="label">${title}</span><span class="label" data-count>0 events</span>${sndBtn()}</div>
   <div class="simtrack"><div class="marks"></div><div class="pusher" role="slider" tabindex="0" aria-label="Pusher. Arrow keys move it." aria-valuemin="0" aria-valuemax="100">PUSH</div></div>
   ${endsLabel?'<div class="sim-ends" data-ends></div>':''}
   <div class="sim-meta"><span class="label">Noise</span><span data-noise></span><span class="label">Last</span><span class="last" data-last>–</span></div>
