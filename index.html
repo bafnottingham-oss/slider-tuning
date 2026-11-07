@@ -805,11 +805,11 @@ function aSheet(m){
     `6 side middle: ${mods.mid==='spacer'?'long halfmoon (more crunch)':'long halfmoon pad'}`];
   return `<div class="head"><div class="row"><span class="src ${m.src==='box'?'off':m.src==='guide'?'var':'ours'}">${ASRC[m.src]}</span><span class="label">Aura Sand Slim Pro (Ti) · 8 × 6</span></div><h2>${esc(m.n)}</h2><p>${esc(m.feel)}</p>
      ${m.warn?`<p class="changed" style="border-color:var(--warn)"><b>Heads up:</b> ${esc(m.warn)}</p>`:''}</div>
+   ${magInfo()}
    ${m.id==='stock'?'':`<div class="toggles"><div class="row"><span class="label">6 side middle</span><div class="chips"><button class="chip" data-amid="pad" aria-pressed="${amods.mid==='pad'}">Long halfmoon pad</button><button class="chip" data-amid="spacer" aria-pressed="${amods.mid==='spacer'}">Long halfmoon · more crunch</button></div></div>
      <div class="row"><span class="label">Foam pads</span><div class="chips"><button class="chip" data-afoam="none" aria-pressed="${amods.foam==='none'}">Leave out</button><button class="chip" data-afoam="one" aria-pressed="${amods.foam==='one'}">One on the 8 side</button></div></div></div>`}
    <div class="meter"><div><span class="label">Hold · ${Math.round(aRel(m)*100)}%</span>${bars(hold)}</div><div><span class="label">Crunch</span>${bars(cr)}</div><div><span class="label">Flow</span>${bars(flow)}</div></div>
    <p class="muted" style="font-size:.8rem">Hold is relative to the N52 Old Pro setup (100%).</p>
-   ${magInfo()}
    ${aSimHTML()}
    <div class="split">${drawBox(aDiagram(m,mods),ALEG,'Numbers are magnet thickness in mm. Drawn from the guide photos; simplified.')}
      <div style="display:grid;gap:12px;align-content:start">${ioList(y,[])}<div style="display:grid;gap:6px"><span class="label">Pull from the box</span>${aParts(m,mods)}</div></div></div>
