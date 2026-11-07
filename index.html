@@ -159,6 +159,16 @@ footer{padding-block:12px 36px;color:var(--muted);font-size:.8rem}
 .chip.ver{display:inline-flex;align-items:center;gap:6px}
 .dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--muted)}
 .dot.off{background:var(--ok)}.dot.var{background:var(--var)}.dot.ours{background:var(--accent)}
+.taprow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.taprow .label{flex:1 1 140px;text-align:center}
+.tapbtn{position:relative;display:inline-grid;place-items:center;min-width:52px;height:44px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:600 1rem var(--bodyf);user-select:none;-webkit-user-select:none}
+.tapbtn:active,.tapbtn.hit{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,var(--surface))}
+.tapsw{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:.01;cursor:pointer;z-index:2}
+.dpadwrap{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:10px}
+.dpadwrap .label{flex:1 1 120px;text-align:center;max-width:220px}
+.dpad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:44px 44px;gap:6px}
+.dpad .tapbtn[data-dir="y-1"]{grid-column:2;grid-row:1}.dpad .tapbtn[data-dir="x-1"]{grid-column:1;grid-row:2}.dpad .tapbtn[data-dir="y1"]{grid-column:2;grid-row:2}.dpad .tapbtn[data-dir="x1"]{grid-column:3;grid-row:2}
+.dpad .tapbtn{min-width:0;padding:0}
 /* ---------- Hub additions ---------- */
 .back{background:none;border:1px solid var(--line);color:var(--fg);border-radius:999px;padding:6px 12px;font:600 .82rem var(--bodyf);cursor:pointer;white-space:nowrap}
 .back:hover{border-color:var(--accent)}
@@ -512,17 +522,11 @@ function ac(){try{if(navigator.audioSession&&navigator.audioSession.type!=='play
 ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,ac,{capture:true}));
 function tone(type,f0,f1,dur,gain,delay=0){const c=AC,t=c.currentTime+delay,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+dur*.7);g.gain.setValueAtTime(Math.max(.0011,gain),t);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(g).connect(c.destination);o.start(t);o.stop(t+dur+.02);}
 function noise(dur,ftype,freq,gain,delay=0){const c=AC,t=c.currentTime+delay,len=Math.max(1,Math.floor(c.sampleRate*dur)),b=c.createBuffer(1,len,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=b;f.type=ftype;f.frequency.value=freq;g.gain.value=gain;s.connect(f).connect(g).connect(c.destination);s.start(t);}
-// Haptics: Android uses the vibration API. iPhone Safari has none, so on iOS 18+ we tap a hidden
-// switch control, which gives a light system haptic (works on taps and releases; mid-drag may not).
-let IOSH=null,iosT=0;
-function iosTick(){const now=performance.now();if(now-iosT<55)return;iosT=now;
-  if(!IOSH){IOSH=document.createElement('label');IOSH.setAttribute('aria-hidden','true');IOSH.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
-    const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;IOSH.appendChild(i);document.body.appendChild(IOSH);}
-  const was=document.activeElement;IOSH.click();if(was&&was!==document.body&&was.focus)was.focus({preventScroll:true});}
-function buzz(p){try{if(typeof navigator.vibrate==='function'){navigator.vibrate(p);return;}iosTick();}catch(e){}}
-// iOS only gives the switch haptic inside a real touch, so also tick directly on touch down and release.
-['touchstart','touchend'].forEach(ev=>document.addEventListener(ev,e=>{try{if(typeof navigator.vibrate==='function')return;
-  if(e.target&&e.target.closest&&e.target.closest('.pusher,.ftop,.dial')){iosT=0;iosTick();}}catch(x){}},{passive:true,capture:true}));
+// Haptics: Android uses the vibration API. iPhone Safari has none, and since iOS 26.5 only a real tap on a
+// native switch gives a haptic, so the step buttons below are real switches: each tap = one tick on iPhone.
+function buzz(p){try{if(typeof navigator.vibrate==='function')navigator.vibrate(p);}catch(e){}}
+const tapBtn=(dir,label,aria)=>`<span class="tapbtn" data-dir="${dir}" aria-hidden="true">${label}<input type="checkbox" switch class="tapsw" aria-label="${aria}"></span>`;
+function bindTaps(el,fn){el.querySelectorAll('.tapbtn').forEach(b=>{const i=b.querySelector('.tapsw');i.addEventListener('click',()=>{ac();fn(b.dataset.dir);b.classList.add('hit');clearTimeout(b._t);b._t=setTimeout(()=>b.classList.remove('hit'),160);});});}
 function canPlay(key,gap=28){if(!soundOn||!ac())return false;const now=performance.now();if(lastT[key]&&now-lastT[key]<gap)return false;lastT[key]=now;return true;}
 function strikerOf(m){const s=m.balls.find(b=>'BbM'.includes(b[0]));return s?s[0]:null;}
 function sfx(kind,m,v=1){
@@ -562,9 +566,10 @@ function simModel(m){
 /* ---------- Track simulator (generic) ---------- */
 const sndBtn=()=>`<button class="chip" data-snd aria-pressed="${soundOn}">${soundOn?'Sound on':'Sound off'}</button>`;
 function bindSnd(el){el.querySelectorAll('[data-snd]').forEach(snd=>snd.addEventListener('click',()=>{soundOn=!soundOn;document.querySelectorAll('[data-snd]').forEach(b=>{b.setAttribute('aria-pressed',String(soundOn));b.textContent=soundOn?'Sound on':'Sound off';});}));}
-function simHTML(title='Try it · drag the pusher end to end',endsLabel=true,hint='An illustration, not a recording. Android phones vibrate; iPhones give a light haptic tick on taps and releases. Left end is the top of the slider.'){return `<div class="sim" data-sim><div class="sim-head"><span class="label">${title}</span><span class="label" data-count>0 events</span>${sndBtn()}</div>
+function simHTML(title='Try it · drag the pusher end to end',endsLabel=true,hint='An illustration, not a recording. Android vibrates as you drag. iPhone only allows a haptic on a real tap, so use the step buttons to feel each click. Left end is the top of the slider.'){return `<div class="sim" data-sim><div class="sim-head"><span class="label">${title}</span><span class="label" data-count>0 events</span>${sndBtn()}</div>
   <div class="simtrack"><div class="marks"></div><div class="pusher" role="slider" tabindex="0" aria-label="Pusher. Arrow keys move it." aria-valuemin="0" aria-valuemax="100">PUSH</div></div>
   ${endsLabel?'<div class="sim-ends" data-ends></div>':''}
+  <div class="taprow">${tapBtn('-1','◀','Step back one click')}<span class="label">Or tap to step · feel each click on iPhone</span>${tapBtn('1','▶','Step forward one click')}</div>
   <div class="sim-meta"><span class="label">Noise</span><span data-noise></span><span class="label">Last</span><span class="last" data-last>–</span></div>
   <p class="hint">${hint}</p></div>`;}
 function mountSim(el,m){if(el)mountTrack(el,simModel(m));}
@@ -589,6 +594,8 @@ function mountTrack(el,S){
   const end=()=>{if(!drag)return;drag=null;pusher.classList.remove('drag');goHome();};
   pusher.addEventListener('pointerup',end);pusher.addEventListener('pointercancel',end);
   pusher.addEventListener('keydown',e=>{if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;e.preventDefault();move(p+(e.key==='ArrowRight'?.05:-.05),.5);});
+  const stops=[...new Set([lo,...S.E.map(e=>e.p).filter(v=>v>lo&&v<hi),hi])].sort((a,b)=>a-b);
+  bindTaps(el,d=>{cancelAnimationFrame(raf);const dir=+d,nx=dir>0?stops.find(v=>v>p+1e-4):[...stops].reverse().find(v=>v<p-1e-4);if(nx!==undefined)move(nx,.5);});
   set(lo);
 }
 
@@ -784,8 +791,9 @@ const AXS=aMinima('x',AU.W*.62),AYS=aMinima('y',AU.H*.72);
 const AHOLDS=(()=>{const g=[];AYS.forEach(y=>AXS.forEach(x=>g.push({x,y,d:-aEnergy(x,y)})));const mx=Math.max(...g.map(h=>h.d));g.forEach(h=>h.d/=mx);return g;})();
 function aSimHTML(){return `<div class="sim" data-asim><div class="sim-head"><span class="label">Try it · slide the 6 side up, down, left or right</span><span class="label" data-count>0 holds</span>${sndBtn()}</div>
   <div class="fstage"><div class="fdots"></div><div class="fplate fbase"></div><div class="fplate ftop" tabindex="0" role="slider" aria-label="Top card. Arrow keys move it between held positions.">6 SIDE</div></div>
+  <div class="dpadwrap"><div class="dpad">${tapBtn('y-1','▲','Step up')}${tapBtn('x-1','◀','Step left')}${tapBtn('y1','▼','Step down')}${tapBtn('x1','▶','Step right')}</div><span class="label">Or tap to step · feel each hold on iPhone</span></div>
   <div class="sim-meta"><span class="label">Held at</span><span class="last" data-last>centre</span></div>
-  <p class="hint">Not hard clicks: the card is lightly held wherever the magnets line up (${AHOLDS.length} spots, from the magnet layout). It slides straight along the dotted lines, so from up or down you can go left or right, and from left or right you can go up or down. Bigger dots hold harder.</p></div>`;}
+  <p class="hint">Not hard clicks: the card is lightly held wherever the magnets line up (${AHOLDS.length} spots, from the magnet layout). It slides straight along the dotted lines, so from up or down you can go left or right, and from left or right you can go up or down. Bigger dots hold harder. On iPhone, use the arrows to feel each hold.</p></div>`;}
 function mountAura(el,m,mods){
   if(!el)return;bindSnd(el);const top=el.querySelector('.ftop'),stage=el.querySelector('.fstage'),cnt=el.querySelector('[data-count]'),last=el.querySelector('[data-last]');
   const hold=aHold(m,mods),crunch=aCrunch(m,mods),S=.42; // px per layout unit
@@ -823,9 +831,10 @@ function mountAura(el,m,mods){
     draw();});
   const end=()=>{if(!drag)return;drag=null;top.classList.remove('drag');settle(holdAt(near(x,XS),near(y,YS))||cur);};
   top.addEventListener('pointerup',end);top.addEventListener('pointercancel',end);
-  top.addEventListener('keydown',e=>{const mv={ArrowLeft:['x',-1],ArrowRight:['x',1],ArrowUp:['y',-1],ArrowDown:['y',1]}[e.key];if(!mv)return;e.preventDefault();
-    const [ax,dir]=mv,arr=ax==='x'?AXS:AYS,i=arr.indexOf(ax==='x'?cur.x:cur.y),nv=arr[i+dir];if(nv===undefined)return;
-    axis=ax;const h=AHOLDS.find(o=>ax==='x'?o.x===nv&&o.y===cur.y:o.y===nv&&o.x===cur.x);if(h){x=h.x*S;y=h.y*S;draw();settleOn(h);}});
+  function stepA(ax,dir){cancelAnimationFrame(raf);raf=0;const arr=ax==='x'?AXS:AYS,i=arr.indexOf(ax==='x'?cur.x:cur.y),nv=arr[i+dir];if(nv===undefined)return;
+    axis=ax;const h=AHOLDS.find(o=>ax==='x'?o.x===nv&&o.y===cur.y:o.y===nv&&o.x===cur.x);if(h){x=h.x*S;y=h.y*S;draw();settleOn(h);}}
+  top.addEventListener('keydown',e=>{const mv={ArrowLeft:['x',-1],ArrowRight:['x',1],ArrowUp:['y',-1],ArrowDown:['y',1]}[e.key];if(!mv)return;e.preventDefault();stepA(...mv);});
+  bindTaps(el,d=>stepA(d[0],+d.slice(1)));
   draw();
 }
 function renderAList(){
