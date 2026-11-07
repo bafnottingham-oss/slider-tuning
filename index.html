@@ -805,7 +805,6 @@ function aSheet(m){
     `6 side middle: ${mods.mid==='spacer'?'long halfmoon (more crunch)':'long halfmoon pad'}`];
   return `<div class="head"><div class="row"><span class="src ${m.src==='box'?'off':m.src==='guide'?'var':'ours'}">${ASRC[m.src]}</span><span class="label">Aura Sand Slim Pro (Ti) · 8 × 6</span></div><h2>${esc(m.n)}</h2><p>${esc(m.feel)}</p>
      ${m.warn?`<p class="changed" style="border-color:var(--warn)"><b>Heads up:</b> ${esc(m.warn)}</p>`:''}</div>
-   ${magInfo()}
    ${m.id==='stock'?'':`<div class="toggles"><div class="row"><span class="label">6 side middle</span><div class="chips"><button class="chip" data-amid="pad" aria-pressed="${amods.mid==='pad'}">Long halfmoon pad</button><button class="chip" data-amid="spacer" aria-pressed="${amods.mid==='spacer'}">Long halfmoon · more crunch</button></div></div>
      <div class="row"><span class="label">Foam pads</span><div class="chips"><button class="chip" data-afoam="none" aria-pressed="${amods.foam==='none'}">Leave out</button><button class="chip" data-afoam="one" aria-pressed="${amods.foam==='one'}">One on the 8 side</button></div></div></div>`}
    <div class="meter"><div><span class="label">Hold · ${Math.round(aRel(m)*100)}%</span>${bars(hold)}</div><div><span class="label">Crunch</span>${bars(cr)}</div><div><span class="label">Flow</span>${bars(flow)}</div></div>
@@ -927,7 +926,7 @@ function renderABuild(){
   mountAura($('#about [data-asim]'),m,mods);
 }
 function renderAList(){
-  $('#aitems').innerHTML=`<div class="grp" style="margin-top:8px"><span class="label">Magnet setups · ${ASET.length}</span>${ASET.map(m=>`<button class="item" data-aid="${m.id}" aria-pressed="${acur===m.id}"><span class="nm">${esc(m.n)}</span><span class="src ${m.src==='box'?'off':m.src==='guide'?'var':'ours'}">${ASRC[m.src]}</span><span class="tg">${esc(m.tag)}</span></button>`).join('')}</div>
+  $('#aitems').innerHTML=`${magInfo()}<div class="grp" style="margin-top:12px"><span class="label">Magnet setups · ${ASET.length}</span>${ASET.map(m=>`<button class="item" data-aid="${m.id}" aria-pressed="${acur===m.id}"><span class="nm">${esc(m.n)}</span><span class="src ${m.src==='box'?'off':m.src==='guide'?'var':'ours'}">${ASRC[m.src]}</span><span class="tg">${esc(m.tag)}</span></button>`).join('')}</div>
    <p class="muted" style="font-size:.82rem;margin-top:10px">No 0.2 mm metal spacers in your box? Go for the N45 setup or one of the plastic pad options. See Parts &amp; tips.</p>`;
   $('#aitems').querySelectorAll('[data-aid]').forEach(b=>b.addEventListener('click',()=>{acur=b.dataset.aid;renderAList();renderASheet();if(matchMedia('(max-width:880px)').matches)$('#asheet').scrollIntoView({block:'start'});}));
 }
