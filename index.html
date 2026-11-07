@@ -809,6 +809,7 @@ function aSheet(m){
      <div class="row"><span class="label">Foam pads</span><div class="chips"><button class="chip" data-afoam="none" aria-pressed="${amods.foam==='none'}">Leave out</button><button class="chip" data-afoam="one" aria-pressed="${amods.foam==='one'}">One on the 8 side</button></div></div></div>`}
    <div class="meter"><div><span class="label">Hold · ${Math.round(aRel(m)*100)}%</span>${bars(hold)}</div><div><span class="label">Crunch</span>${bars(cr)}</div><div><span class="label">Flow</span>${bars(flow)}</div></div>
    <p class="muted" style="font-size:.8rem">Hold is relative to the N52 Old Pro setup (100%).</p>
+   ${magInfo()}
    ${aSimHTML()}
    <div class="split">${drawBox(aDiagram(m,mods),ALEG,'Numbers are magnet thickness in mm. Drawn from the guide photos; simplified.')}
      <div style="display:grid;gap:12px;align-content:start">${ioList(y,[])}<div style="display:grid;gap:6px"><span class="label">Pull from the box</span>${aParts(m,mods)}</div></div></div>
@@ -876,6 +877,9 @@ function mountAura(el,m,mods){
   draw();
 }
 /* ---------- Aura: Build your own ---------- */
+let minfoOpen=false;
+function magInfo(){const mi=document.querySelector('#g-aura .magnets');if(!mi)return '';return `<details class="minfo"${minfoOpen?' open':''}><summary>How magnet choices change the feel</summary><div class="minfo-b">${mi.querySelector('.head p').outerHTML}${mi.querySelector('.tbl').outerHTML}${mi.querySelector(':scope > p').outerHTML}</div></details>`;}
+document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('minfo'))minfoOpen=e.target.open;},true);
 const ab={c8:{...AC8_PRO},c6:{g:'N52',t:2,metal:.2,hm:'spacer'},mid:'pad',foam:'none',from:'N52 Old Pro setup'};
 const AOPT=[['g','Grade',[['N52','N52 · stronger'],['N45','N45 · softer']]],['t','Thickness',[[2,'8 × 2 mm'],[2.5,'8 × 2.5 mm · stronger']]],
  ['metal','Metal spacer under it',[[0,'None'],[.2,'0.2 mm']]],['hm','Halfmoon piece',[['none','None'],['spacer','Plastic spacer'],['pad','Pad · softer']]]];
@@ -897,14 +901,13 @@ function abSteps(m){
 function abParts(m){const c={};const add=(k,q)=>c[k]=(c[k]||0)+q;[m.c8,m.c6].forEach(x=>{add(`${x.g} 8 × ${x.t} mm magnet`,4);if(x.metal)add(`${x.metal} mm metal spacer`,4);if(x.hm==='spacer')add('Halfmoon spacer',4);if(x.hm==='pad')add('Halfmoon pad',4);});
   if(ab.mid==='spacer')add('Long halfmoon',2);if(ab.foam==='one')add('Foam pad',1);return partList(c);}
 function renderABuild(){
-  const wasOpen=!!document.querySelector('#abctl details.minfo[open]');
   $('#abctl').innerHTML=`<div class="head"><span class="src ours" style="justify-self:start">Your build</span><h2>Build your own</h2><p class="muted">Pick the corner magnets for each side. Hold, the drawing and the simulator update as you go. Strength is an estimate, so test by hand.</p></div>
-   ${(()=>{const mi=document.querySelector('#g-aura .magnets');if(!mi)return '';return `<details class="minfo"><summary>How magnet choices change the feel</summary><div class="minfo-b">${mi.querySelector('.head p').outerHTML}${mi.querySelector('.tbl').outerHTML}${mi.querySelector(':scope > p').outerHTML}</div></details>`;})()}
+   ${magInfo()}
    <div class="row" style="display:grid;gap:5px"><span class="label">Start from</span><div class="chips">${ASET.map(x=>`<button class="chip" data-abfrom="${x.id}">${esc(x.n)}</button>`).join('')}</div></div>
    ${abSide('c8','8 side · steel card')}${abSide('c6','6 side · Teflon card')}
    <div class="row" style="display:grid;gap:5px"><span class="label">6 side middle</span><div class="chips"><button class="chip" data-abm="pad" aria-pressed="${ab.mid==='pad'}">Long halfmoon pad</button><button class="chip" data-abm="spacer" aria-pressed="${ab.mid==='spacer'}">Long halfmoon · more crunch</button></div></div>
    <div class="row" style="display:grid;gap:5px"><span class="label">Foam pads</span><div class="chips"><button class="chip" data-abf="none" aria-pressed="${ab.foam==='none'}">Leave out</button><button class="chip" data-abf="one" aria-pressed="${ab.foam==='one'}">One on the 8 side</button></div></div>`;
-  const C=$('#abctl');if(wasOpen){const d=C.querySelector('details.minfo');if(d)d.open=true;}
+  const C=$('#abctl');
   C.querySelectorAll('[data-ab]').forEach(b=>b.addEventListener('click',()=>{const [sd,k]=b.dataset.ab.split('.'),v=b.dataset.v;ab[sd][k]=k==='g'||k==='hm'?(v==='none'?null:v):+v;ab.from=null;renderABuild();}));
   C.querySelectorAll('[data-abfrom]').forEach(b=>b.addEventListener('click',()=>{const x=ASET.find(q=>q.id===b.dataset.abfrom);Object.assign(ab,JSON.parse(JSON.stringify({c8:x.c8,c6:x.c6})));ab.from=x.n;renderABuild();}));
   C.querySelectorAll('[data-abm]').forEach(b=>b.addEventListener('click',()=>{ab.mid=b.dataset.abm;renderABuild();}));
