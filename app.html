@@ -411,6 +411,10 @@ const MORE=[
   feel:'The factory feel with bigger attraction magnets in the limit blocks, for a firmer pull at the ends and a harder strike.',play:'End-to-end pushes to feel the stronger snap.'}),
  D('factory',{id:'factory-centre',src:'ours',n:'Factory with a centre stop',tag:'High-low clicks plus a sticky middle',change:'One 4x1 magnet added at the centre of the detent slot',det:1,f:['impact','clicks','jumps'],
   feel:'Borrows the sticky centre stage from pure buckyball end feedback and adds it to the factory setup, so you get impacts, clicks and a pause in the middle.',play:'Push through slowly to feel the middle catch.'}),
+ D('factory',{id:'factory-even',src:'ours',n:'Factory, even top to bottom',tag:'Same feel all the way along, no end snap',change:'Limit blocks and ceramic balls out, nine detent magnets in, and a second spring added',
+  det:9,blocks:0,ret:[],balls:[['B',.5]],spr:'two',screws:2,f:['clicks','jumps'],
+  feel:'Takes away what makes the factory ends jump: no limit-block magnets pulling the buckyball in and no ceramic balls for it to strike. Nine evenly spaced detent magnets give a light, regular step along the whole track, and two springs spread the high-low clicks across the full travel, not just the middle. The ends become a soft stop. For no magnetic feel at all, use Pure mechanical.',
+  play:'Slow, steady pushes end to end: every step should feel the same.'}),
  D('factory',{id:'factory-dense',src:'ours',n:'Factory, denser click',tag:'Firmer high-low click',change:'Ruida spring swapped for the shorter piano steel spring',spr:'piano',
   feel:'The kit marks the piano steel spring for dense high-low sound, so expect a firmer, denser click with the same end impact.',play:'Half pushes to compare the click with stock.'}),
  D('long',{id:'long-strong',src:'ours',n:'Long slide, firm landing',tag:'Harder snap at the top',change:'Top limit block uses a 5x6 magnet',blockMag:'5x6',
@@ -631,7 +635,7 @@ function mountTrack(el,S){
 /* ---------- TITA: Setups tab ---------- */
 let filter='all',cur='factory';
 const SN={factory:'Factory',long:'Long slide',mech:'Pure mechanical',bucky:'Buckyball',dense:'Dense stacked',jump:'Jumping ball',dual:'Dual-detent snap',short:'Short jumps',
- 'long-free':'No stop','short-crisp':'Crisp jumps','factory-strong':'Harder end hit','factory-centre':'Centre stop','factory-dense':'Denser click','long-strong':'Firm landing',
+ 'long-free':'No stop','short-crisp':'Crisp jumps','factory-strong':'Harder end hit','factory-centre':'Centre stop','factory-dense':'Denser click','factory-even':'Even top to bottom','long-strong':'Firm landing',
  'bucky-smooth':'Smooth','bucky-steps':'Stepped','short-light':'Lighter jumps','short-nine':'Rippling','dual-wide':'Wide steps','dense-firm':'Firmer'};
 const famOf=m=>m.base||m.id;
 const famList=id=>[OFF.find(o=>o.id===id),...MORE.filter(m=>m.base===id)];
