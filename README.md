@@ -12,4 +12,4 @@ Settings → Pages → Deploy from a branch → `main` / root.
 
 ## Credits
 
-Written from PEL Studio's TITA Pro manual and Magnus P. O's Aura Sand Slim Pro setup guides (Fancy Play Facebook group). Not affiliated with any maker.
+TITA Pro content is written from PEL Studio's TITA Pro manual. Not affiliated with any maker.
