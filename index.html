@@ -171,8 +171,14 @@ footer{padding-block:12px 36px;color:var(--muted);font-size:.8rem}
 .dpad .tapbtn{min-width:0;padding:0}
 .magnets{display:grid;gap:12px;margin-top:22px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
 .magnets .head{display:grid;gap:6px}
-.magnets td.up{color:var(--ok);font-weight:600}.magnets td.dn{color:var(--warn);font-weight:600}
+.magnets td.up,.minfo td.up{color:var(--ok);font-weight:600}.magnets td.dn,.minfo td.dn{color:var(--warn);font-weight:600}.minfo .htable td:first-child{font-weight:600}
 .magnets .htable td:first-child{font-weight:600}
+.minfo{border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.minfo summary{cursor:pointer;padding:10px 12px;font:600 .9rem var(--bodyf);color:var(--accent);list-style:none}
+.minfo summary::-webkit-details-marker{display:none}
+.minfo summary::after{content:" +";font-family:var(--mono)}
+.minfo[open] summary::after{content:" −"}
+.minfo-b{display:grid;gap:10px;padding:0 12px 12px;font-size:.88rem}
 /* ---------- Hub additions ---------- */
 .back{background:none;border:1px solid var(--line);color:var(--fg);border-radius:999px;padding:6px 12px;font:600 .82rem var(--bodyf);cursor:pointer;white-space:nowrap}
 .back:hover{border-color:var(--accent)}
@@ -891,12 +897,14 @@ function abSteps(m){
 function abParts(m){const c={};const add=(k,q)=>c[k]=(c[k]||0)+q;[m.c8,m.c6].forEach(x=>{add(`${x.g} 8 × ${x.t} mm magnet`,4);if(x.metal)add(`${x.metal} mm metal spacer`,4);if(x.hm==='spacer')add('Halfmoon spacer',4);if(x.hm==='pad')add('Halfmoon pad',4);});
   if(ab.mid==='spacer')add('Long halfmoon',2);if(ab.foam==='one')add('Foam pad',1);return partList(c);}
 function renderABuild(){
+  const wasOpen=!!document.querySelector('#abctl details.minfo[open]');
   $('#abctl').innerHTML=`<div class="head"><span class="src ours" style="justify-self:start">Your build</span><h2>Build your own</h2><p class="muted">Pick the corner magnets for each side. Hold, the drawing and the simulator update as you go. Strength is an estimate, so test by hand.</p></div>
+   ${(()=>{const mi=document.querySelector('#g-aura .magnets');if(!mi)return '';return `<details class="minfo"><summary>How magnet choices change the feel</summary><div class="minfo-b">${mi.querySelector('.head p').outerHTML}${mi.querySelector('.tbl').outerHTML}${mi.querySelector(':scope > p').outerHTML}</div></details>`;})()}
    <div class="row" style="display:grid;gap:5px"><span class="label">Start from</span><div class="chips">${ASET.map(x=>`<button class="chip" data-abfrom="${x.id}">${esc(x.n)}</button>`).join('')}</div></div>
    ${abSide('c8','8 side · steel card')}${abSide('c6','6 side · Teflon card')}
    <div class="row" style="display:grid;gap:5px"><span class="label">6 side middle</span><div class="chips"><button class="chip" data-abm="pad" aria-pressed="${ab.mid==='pad'}">Long halfmoon pad</button><button class="chip" data-abm="spacer" aria-pressed="${ab.mid==='spacer'}">Long halfmoon · more crunch</button></div></div>
    <div class="row" style="display:grid;gap:5px"><span class="label">Foam pads</span><div class="chips"><button class="chip" data-abf="none" aria-pressed="${ab.foam==='none'}">Leave out</button><button class="chip" data-abf="one" aria-pressed="${ab.foam==='one'}">One on the 8 side</button></div></div>`;
-  const C=$('#abctl');
+  const C=$('#abctl');if(wasOpen){const d=C.querySelector('details.minfo');if(d)d.open=true;}
   C.querySelectorAll('[data-ab]').forEach(b=>b.addEventListener('click',()=>{const [sd,k]=b.dataset.ab.split('.'),v=b.dataset.v;ab[sd][k]=k==='g'||k==='hm'?(v==='none'?null:v):+v;ab.from=null;renderABuild();}));
   C.querySelectorAll('[data-abfrom]').forEach(b=>b.addEventListener('click',()=>{const x=ASET.find(q=>q.id===b.dataset.abfrom);Object.assign(ab,JSON.parse(JSON.stringify({c8:x.c8,c6:x.c6})));ab.from=x.n;renderABuild();}));
   C.querySelectorAll('[data-abm]').forEach(b=>b.addEventListener('click',()=>{ab.mid=b.dataset.abm;renderABuild();}));
