@@ -926,7 +926,8 @@ function renderABuild(){
   mountAura($('#about [data-asim]'),m,mods);
 }
 function renderAList(){
-  $('#aitems').innerHTML=`${magInfo()}<div class="grp" style="margin-top:12px"><span class="label">Magnet setups · ${ASET.length}</span>${ASET.map(m=>`<button class="item" data-aid="${m.id}" aria-pressed="${acur===m.id}"><span class="nm">${esc(m.n)}</span><span class="src ${m.src==='box'?'off':m.src==='guide'?'var':'ours'}">${ASRC[m.src]}</span><span class="tg">${esc(m.tag)}</span></button>`).join('')}</div>
+  $('#aitems').innerHTML=`<div class="grp" style="margin-top:8px"><span class="label">Magnet setups · ${ASET.length}</span>${ASET.map(m=>`<button class="item" data-aid="${m.id}" aria-pressed="${acur===m.id}"><span class="nm">${esc(m.n)}</span><span class="src ${m.src==='box'?'off':m.src==='guide'?'var':'ours'}">${ASRC[m.src]}</span><span class="tg">${esc(m.tag)}</span></button>`).join('')}</div>
+   <div style="margin-top:12px">${magInfo()}</div>
    <p class="muted" style="font-size:.82rem;margin-top:10px">No 0.2 mm metal spacers in your box? Go for the N45 setup or one of the plastic pad options. See Parts &amp; tips.</p>`;
   $('#aitems').querySelectorAll('[data-aid]').forEach(b=>b.addEventListener('click',()=>{acur=b.dataset.aid;renderAList();renderASheet();if(matchMedia('(max-width:880px)').matches)$('#asheet').scrollIntoView({block:'start'});}));
 }
