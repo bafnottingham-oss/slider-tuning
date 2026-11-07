@@ -251,6 +251,7 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
       </div>
       <div class="tabs" role="tablist" aria-label="Aura Sand sections" data-g="aura">
         <button class="tab" role="tab" data-tab="setups" aria-selected="true">Setups</button>
+        <button class="tab" role="tab" data-tab="build" aria-selected="false">Build your own</button>
         <button class="tab" role="tab" data-tab="parts" aria-selected="false">Parts &amp; tips</button>
       </div>
     </div>
@@ -307,6 +308,12 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
       <div class="bench">
         <div class="list"><div id="aitems"></div></div>
         <div class="card" id="asheet" aria-live="polite"></div>
+      </div>
+    </div>
+    <div data-panel="build" hidden>
+      <div class="bench">
+        <div class="card ctl" id="abctl"></div>
+        <div class="card" id="about" aria-live="polite"></div>
       </div>
     </div>
     <div data-panel="parts" hidden>
@@ -757,7 +764,15 @@ function aDiagram(m,mods){
 }
 const ALEG=`<div class="legend"><span><i style="background:#fff"></i>N52 magnet</span><span><i style="background:#dfe7ee"></i>N45 magnet</span><span><i style="background:none;border:2px solid #7d828a"></i>0.2 mm metal spacer</span><span><i style="background:var(--sideB)"></i>Halfmoon spacer</span><span><i style="background:#2a2c30"></i>Halfmoon pad</span></div>`;
 const cdesc=c=>`${c.g} 8 × ${c.t} mm${c.metal?` on a ${c.metal} mm metal spacer`:''}${c.hm==='spacer'?', halfmoon spacer':c.hm==='pad'?', halfmoon pad':''}`;
-function aHold(m,mods){return m.hold-(m.id!=='stock'&&mods.mid==='pad'?0:0);}
+// Strength model. Grade: pull goes with remanence squared, so N45 is about 0.86 of N52. Thickness, halfmoon
+// pieces and the 0.2 mm metal spacer are scaled so the guide's setups land in the order its comparisons give
+// (stock > N52 Old Pro > N45 ≈ untested pad > tested pad). Relative, not measured.
+const AF={g:{N52:1,N45:.86},t:{2.5:1,2:.85},hm:{none:1,spacer:.92,pad:.66},metal:{0:1,.2:1.1}};
+const cStr=c=>AF.g[c.g]*AF.t[c.t]*AF.hm[c.hm||'none']*AF.metal[c.metal||0];
+const aStr=m=>Math.pow(cStr(m.c6),.75)*Math.pow(cStr(m.c8)/.92,.25);
+const AREF=Math.pow(1*.85*.92*1.1,.75); // N52 Old Pro setup = 100%
+const aRel=m=>aStr(m)/AREF;
+function aHold(m,mods){return Math.max(1,Math.min(5,Math.round(1+(aRel(m)-.6)/.1)));}
 function aCrunch(m,mods){if(m.id==='stock')return 2;return 2+(mods.mid==='spacer'?1:0)+(mods.foam==='none'?2:1)-(m.c6.hm==='pad'?0:0);}
 function aSteps(m,mods){
   if(m.id==='stock')return stepsBox(['This is how the slider arrives, so there is nothing to change. Pick another setup for the steps.']);
@@ -786,12 +801,13 @@ function aSheet(m){
      ${m.warn?`<p class="changed" style="border-color:var(--warn)"><b>Heads up:</b> ${esc(m.warn)}</p>`:''}</div>
    ${m.id==='stock'?'':`<div class="toggles"><div class="row"><span class="label">6 side middle</span><div class="chips"><button class="chip" data-amid="pad" aria-pressed="${amods.mid==='pad'}">Long halfmoon pad</button><button class="chip" data-amid="spacer" aria-pressed="${amods.mid==='spacer'}">Long halfmoon · more crunch</button></div></div>
      <div class="row"><span class="label">Foam pads</span><div class="chips"><button class="chip" data-afoam="none" aria-pressed="${amods.foam==='none'}">Leave out</button><button class="chip" data-afoam="one" aria-pressed="${amods.foam==='one'}">One on the 8 side</button></div></div></div>`}
-   <div class="meter"><div><span class="label">Hold</span>${bars(hold)}</div><div><span class="label">Crunch</span>${bars(cr)}</div><div><span class="label">Flow</span>${bars(flow)}</div></div>
+   <div class="meter"><div><span class="label">Hold · ${Math.round(aRel(m)*100)}%</span>${bars(hold)}</div><div><span class="label">Crunch</span>${bars(cr)}</div><div><span class="label">Flow</span>${bars(flow)}</div></div>
+   <p class="muted" style="font-size:.8rem">Hold is relative to the N52 Old Pro setup (100%).</p>
    ${aSimHTML()}
    <div class="split">${drawBox(aDiagram(m,mods),ALEG,'Numbers are magnet thickness in mm. Drawn from the guide photos; simplified.')}
      <div style="display:grid;gap:12px;align-content:start">${ioList(y,[])}<div style="display:grid;gap:6px"><span class="label">Pull from the box</span>${aParts(m,mods)}</div></div></div>
    ${aSteps(m,mods)}
-   <div class="nav"><button class="btn ghost" data-astep="-1">← Previous</button><button class="btn" data-astep="1">Next →</button></div>`;
+   <div class="nav"><button class="btn ghost" data-astep="-1">← Previous</button><button class="btn" data-astep="1">Next →</button><button class="btn ghost" data-abuild>Change the magnets</button></div>`;
 }
 /* Aura feel simulator. Hold positions are worked out from the magnet layout in the drawing:
    the 6 side is lightly held wherever its magnets line up with the 8 side's. It slides straight,
@@ -853,6 +869,52 @@ function mountAura(el,m,mods){
   bindTaps(el,d=>stepA(d[0],+d.slice(1)));
   draw();
 }
+/* ---------- Aura: Build your own ---------- */
+const ab={c8:{...AC8_PRO},c6:{g:'N52',t:2,metal:.2,hm:'spacer'},mid:'pad',foam:'none',from:'N52 Old Pro setup'};
+const AOPT=[['g','Grade',[['N52','N52 · stronger'],['N45','N45 · softer']]],['t','Thickness',[[2,'8 × 2 mm'],[2.5,'8 × 2.5 mm · stronger']]],
+ ['metal','Metal spacer under it',[[0,'None'],[.2,'0.2 mm']]],['hm','Halfmoon piece',[['none','None'],['spacer','Plastic spacer'],['pad','Pad · softer']]]];
+const AEFF={g:{N52:'N52 grade: about 15% more pull than N45. Firmer holds and a sharper snap.',N45:'N45 grade: about 15% less pull than N52. A softer, floatier glide.'},
+ t:{2.5:'8 × 2.5 mm: thicker, so a stronger pull and firmer, crunchier holds.',2:'8 × 2 mm: thinner, so a little less pull.'},
+ metal:{.2:'0.2 mm metal spacer: sits under the magnet and adds strength.',0:''},
+ hm:{pad:'Halfmoon pad: adds gap between the magnets, so softer, quieter holds.',spacer:'Plastic halfmoon spacer: thin, so it softens the pull only slightly.',none:''}};
+function abSide(side,label){const c=ab[side];return `<div class="row" style="display:grid;gap:8px"><span class="label">${label} · corner magnets ×4</span>${AOPT.map(([k,l,o])=>`<div style="display:grid;gap:4px"><span class="muted" style="font-size:.78rem">${l}</span><div class="chips">${o.map(([v,t])=>`<button class="chip" data-ab="${side}.${k}" data-v="${v}" aria-pressed="${String(c[k]??'none')===String(v)}">${t}</button>`).join('')}</div></div>`).join('')}</div>`;}
+function abSteps(m){
+  const sp=[m.c8,m.c6].some(c=>c.hm==='spacer'),s=['Work over a metal tray, with a dish for small parts.'];
+  if(sp)s.push('Cut the plastic halfmoon spacers off the sprue (not the separate pads), then file away any excess so they sit flat.');
+  s.push('Lift the corner magnets out of each cassette with a metal tool, such as an Allen key, or a magnet.');
+  const side=(n,c)=>`${n}: fit ${c.g} 8 × ${c.t} mm magnets in all four corners${c.metal?`, each on a ${c.metal} mm metal spacer at the bottom of the pocket`:''}${c.hm==='spacer'?', with a plastic halfmoon spacer':c.hm==='pad'?', with a halfmoon pad':''}.`;
+  s.push(side('8 side (steel card)',m.c8));s.push(side('6 side (Teflon card)',m.c6));
+  s.push('Leave the middle magnets on both sides as they are.');
+  s.push(ab.mid==='spacer'?'6 side only: swap the long halfmoon pad by the middle magnets for the long halfmoon, for more crunch.':'Keep the long halfmoon pad by the 6 side middle magnets.');
+  s.push(ab.foam==='none'?'Leave the foam pads out.':'Fit one foam pad, on the 8 side only.');
+  s.push('Reassemble and try a few slow tricks before speeding up.');return stepsBox(s);}
+function abParts(m){const c={};const add=(k,q)=>c[k]=(c[k]||0)+q;[m.c8,m.c6].forEach(x=>{add(`${x.g} 8 × ${x.t} mm magnet`,4);if(x.metal)add(`${x.metal} mm metal spacer`,4);if(x.hm==='spacer')add('Halfmoon spacer',4);if(x.hm==='pad')add('Halfmoon pad',4);});
+  if(ab.mid==='spacer')add('Long halfmoon',2);if(ab.foam==='one')add('Foam pad',1);return partList(c);}
+function renderABuild(){
+  $('#abctl').innerHTML=`<div class="head"><span class="src ours" style="justify-self:start">Your build</span><h2>Build your own</h2><p class="muted">Pick the corner magnets for each side. Hold, the drawing and the simulator update as you go. Strength is an estimate, so test by hand.</p></div>
+   <div class="row" style="display:grid;gap:5px"><span class="label">Start from</span><div class="chips">${ASET.map(x=>`<button class="chip" data-abfrom="${x.id}">${esc(x.n)}</button>`).join('')}</div></div>
+   ${abSide('c8','8 side · steel card')}${abSide('c6','6 side · Teflon card')}
+   <div class="row" style="display:grid;gap:5px"><span class="label">6 side middle</span><div class="chips"><button class="chip" data-abm="pad" aria-pressed="${ab.mid==='pad'}">Long halfmoon pad</button><button class="chip" data-abm="spacer" aria-pressed="${ab.mid==='spacer'}">Long halfmoon · more crunch</button></div></div>
+   <div class="row" style="display:grid;gap:5px"><span class="label">Foam pads</span><div class="chips"><button class="chip" data-abf="none" aria-pressed="${ab.foam==='none'}">Leave out</button><button class="chip" data-abf="one" aria-pressed="${ab.foam==='one'}">One on the 8 side</button></div></div>`;
+  const C=$('#abctl');
+  C.querySelectorAll('[data-ab]').forEach(b=>b.addEventListener('click',()=>{const [sd,k]=b.dataset.ab.split('.'),v=b.dataset.v;ab[sd][k]=k==='g'||k==='hm'?(v==='none'?null:v):+v;ab.from=null;renderABuild();}));
+  C.querySelectorAll('[data-abfrom]').forEach(b=>b.addEventListener('click',()=>{const x=ASET.find(q=>q.id===b.dataset.abfrom);Object.assign(ab,JSON.parse(JSON.stringify({c8:x.c8,c6:x.c6})));ab.from=x.n;renderABuild();}));
+  C.querySelectorAll('[data-abm]').forEach(b=>b.addEventListener('click',()=>{ab.mid=b.dataset.abm;renderABuild();}));
+  C.querySelectorAll('[data-abf]').forEach(b=>b.addEventListener('click',()=>{ab.foam=b.dataset.abf;renderABuild();}));
+  const m={id:'build',src:'mix',n:'Your build',c8:ab.c8,c6:ab.c6},mods={mid:ab.mid,foam:ab.foam},rel=aRel(m),hold=aHold(m,mods),cr=Math.min(5,aCrunch(m,mods)),flow=ab.foam==='none'?4:3;
+  const REF={c8:AC8_PRO,c6:{g:'N52',t:2,metal:.2,hm:'spacer'}},eff=[];['c6','c8'].forEach(sd=>{const c=ab[sd],r=REF[sd],n=sd==='c6'?'6 side':'8 side';['g','t','metal','hm'].forEach(k=>{const cv=c[k]??'none',rv=r[k]??'none';if(String(cv)===String(rv))return;const t=AEFF[k][cv]||(k==='metal'?'No metal spacer: a little less pull.':k==='hm'?'No halfmoon piece: nothing softening the pull.':'');if(t)eff.push(`${n}: ${t}`);});});if(!eff.length)eff.push('Same corner magnets as the N52 Old Pro setup.');
+  const W=[];if(rel<.76)W.push('Weaker than the N45 setup: expect it to come apart with power or speed.');if(rel>1.08)W.push('Stronger than the N52 Old Pro setup: firmer, but more effort to slide.');
+  const ref=ASET.find(x=>x.id!=='build'&&JSON.stringify([x.c8,x.c6].map(c=>[c.g,c.t,c.metal||0,c.hm||null]))===JSON.stringify([ab.c8,ab.c6].map(c=>[c.g,c.t,c.metal||0,c.hm||null])));
+  $('#about').innerHTML=`<div class="head"><span class="label">${ref?'Matches: '+esc(ref.n):ab.from?'Based on '+esc(ab.from)+', changed':'Your build'}</span>
+     <div class="meter"><div><span class="label">Hold · ${Math.round(rel*100)}%</span>${bars(hold)}</div><div><span class="label">Crunch</span>${bars(cr)}</div><div><span class="label">Flow</span>${bars(flow)}</div></div>
+     <p class="muted" style="font-size:.8rem">Hold is relative to the N52 Old Pro setup (100%).</p>
+     <span class="label">Compared with the N52 Old Pro setup</span><ul class="feelbox">${eff.map(x=>`<li>${esc(x)}</li>`).join('')}${W.map(x=>`<li class="w">${esc(x)}</li>`).join('')}</ul></div>
+   ${aSimHTML()}
+   <div class="split">${drawBox(aDiagram(m,mods),ALEG,'Numbers are magnet thickness in mm. Simplified drawing.')}
+     <div style="display:grid;gap:12px;align-content:start">${ioList([`8 side corners: ${cdesc(ab.c8)}`,`6 side corners: ${cdesc(ab.c6)}`,'Middle magnets: unchanged on both sides',`6 side middle: ${ab.mid==='spacer'?'long halfmoon (more crunch)':'long halfmoon pad'}`,ab.foam==='none'?'Foam pads: none':'Foam pads: one, on the 8 side'],[])}<div style="display:grid;gap:6px"><span class="label">You'll need</span>${abParts(m)}</div></div></div>
+   ${abSteps(m)}`;
+  mountAura($('#about [data-asim]'),m,mods);
+}
 function renderAList(){
   $('#aitems').innerHTML=`<div class="grp" style="margin-top:8px"><span class="label">Magnet setups · ${ASET.length}</span>${ASET.map(m=>`<button class="item" data-aid="${m.id}" aria-pressed="${acur===m.id}"><span class="nm">${esc(m.n)}</span><span class="src ${m.src==='box'?'off':m.src==='guide'?'var':'ours'}">${ASRC[m.src]}</span><span class="tg">${esc(m.tag)}</span></button>`).join('')}</div>
    <p class="muted" style="font-size:.82rem;margin-top:10px">No 0.2 mm metal spacers in your box? Go for the N45 setup or one of the plastic pad options. See Parts &amp; tips.</p>`;
@@ -862,6 +924,7 @@ function renderASheet(){
   const m=ASET.find(x=>x.id===acur),el=$('#asheet');el.innerHTML=aSheet(m);mountAura(el.querySelector('[data-asim]'),m,m.id==='stock'?{mid:'pad',foam:'stock'}:amods);
   el.querySelectorAll('[data-amid]').forEach(b=>b.addEventListener('click',()=>{amods.mid=b.dataset.amid;renderASheet();}));
   el.querySelectorAll('[data-afoam]').forEach(b=>b.addEventListener('click',()=>{amods.foam=b.dataset.afoam;renderASheet();}));
+  el.querySelectorAll('[data-abuild]').forEach(b=>b.addEventListener('click',()=>{const c=JSON.parse(JSON.stringify(m));Object.assign(ab,{c8:c.c8,c6:c.c6,mid:m.id==='stock'?'pad':amods.mid,foam:m.id==='stock'?'one':amods.foam,from:m.n});showTab('aura','build');renderABuild();window.scrollTo(0,0);}));
   el.querySelectorAll('[data-astep]').forEach(b=>b.addEventListener('click',()=>{const i=ASET.findIndex(x=>x.id===acur);acur=ASET[(i+ +b.dataset.astep+ASET.length)%ASET.length].id;renderAList();renderASheet();}));
 }
 
@@ -892,7 +955,7 @@ function route(){
   ['home','tita','aura'].forEach(s=>$('#g-'+s).hidden=(g?g.id:'home')!==s);
   document.querySelectorAll('.tabs[data-g]').forEach(t=>t.classList.toggle('on',!!g&&t.dataset.g===g.id));
   $('#back').hidden=!g;$('#hlabel').textContent=g?`${g.by} · ${g.type}`:'Slider tuning';$('#htitle').textContent=g?`${g.n} tuning guide`:'Slider Tuning Guides';
-  if(g&&!inited[g.id]){inited[g.id]=1;if(g.id==='tita')initTita();if(g.id==='aura'){renderAList();renderASheet();}}
+  if(g&&!inited[g.id]){inited[g.id]=1;if(g.id==='tita')initTita();if(g.id==='aura'){renderAList();renderASheet();renderABuild();}}
   window.scrollTo(0,0);
 }
 $('#back').addEventListener('click',()=>{try{history.pushState('',document.title,location.pathname+location.search);}catch(e){location.hash='';}route();});
