@@ -461,9 +461,9 @@ const MORE=[
   feel:'The factory feel with bigger attraction magnets in the limit blocks, for a firmer pull at the ends and a harder strike.',play:'End-to-end pushes to feel the stronger snap.'}),
  D('factory',{id:'factory-centre',src:'ours',n:'Factory with a centre stop',tag:'High-low clicks plus a sticky middle',change:'One 4x1 magnet added at the centre of the detent slot',det:1,f:['impact','clicks','jumps'],
   feel:'Borrows the sticky centre stage from pure buckyball end feedback and adds it to the factory setup, so you get impacts, clicks and a pause in the middle.',play:'Push through slowly to feel the middle catch.'}),
- D('factory',{id:'factory-even',src:'ours',n:'Factory, even top to bottom',tag:'Same feel all the way along, no end snap',change:'Limit blocks and ceramic balls out, nine detent magnets in, and a second spring added',
-  det:9,blocks:0,ret:[],balls:[['B',.5]],spr:'two',screws:2,f:['clicks','jumps'],
-  feel:'Takes away what makes the factory ends jump: no limit-block magnets pulling the buckyball in and no ceramic balls for it to strike. Nine evenly spaced detent magnets give a light, regular step along the whole track, and two springs spread the high-low clicks across the full travel, not just the middle. The ends become a soft stop. For no magnetic feel at all, use Pure mechanical.',
+ D('factory',{id:'factory-even',src:'ours',n:'Factory, even top to bottom',tag:'Same feel all the way along, no end snap',change:'Limit blocks and ceramic balls out, five detent magnets in (every other hole), and a second spring added',
+  det:5,blocks:0,ret:[],balls:[['B',.5]],spr:'two',screws:2,f:['clicks','jumps'],
+  feel:'Takes away what makes the factory ends jump: no limit-block magnets pulling the buckyball in and no ceramic balls for it to strike. Five detent magnets, one in every other hole, give a light, regular step along the whole track, and two springs spread the high-low clicks across the full travel, not just the middle. The ends become a soft stop. For no magnetic feel at all, use Pure mechanical.',
   play:'Slow, steady pushes end to end: every step should feel the same.'}),
  D('factory',{id:'factory-dense',src:'ours',n:'Factory, denser click',tag:'Firmer high-low click',change:'Ruida spring swapped for the shorter piano steel spring',spr:'piano',
   feel:'The kit marks the piano steel spring for dense high-low sound, so expect a firmer, denser click with the same end impact.',play:'Half pushes to compare the click with stock.'}),
@@ -475,8 +475,6 @@ const MORE=[
   feel:'More detent magnets should add more sticky stages on the way to each strike.',play:'Slow pushes to count the stages.'}),
  D('short',{id:'short-light',src:'ours',n:'Light short jumps',tag:'Quicker, softer jumps',change:'5 mm buckyball swapped for a 4 mm one',balls:[['b',.5]],
   feel:'A smaller, lighter ball should hop between magnets more quickly and softly.',play:'Slow and quick pushes to compare.'}),
- D('short',{id:'short-nine',src:'ours',n:'Rippling jumps',tag:'Dense run of tiny pulls',change:'All nine detent holes filled',det:9,
-  feel:'With every hole filled the pulls come close together, for a rippling, almost continuous feel.',play:'Slow, steady pushes.'}),
  D('dual',{id:'dual-wide',src:'ours',n:'Wide-step snap',tag:'Fewer, bigger stages',change:'Three detent magnets instead of five',det:3,
   feel:'Fewer, more spaced magnets should give fewer stages with more travel between them.',play:'Push up, release, and count the stages.'}),
  D('dense',{id:'dense-firm',src:'ours',n:'Dense stacked, firmer',tag:'Stiffer clicks, same short travel',change:'Both springs are the shorter piano steel',spr:'twopiano',
@@ -576,7 +574,7 @@ function parts(m){
 const stepsBox=s=>`<details class="steps"><summary>Steps to set it up</summary><ol>${s.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></details>`;
 function steps(m){
   const s=['Rest it on a metal surface, open it, and keep small parts in a dish.'];
-  s.push(m.det?`Fit ${words[m.det]} 4x1 magnet${m.det>1?'s':''} in the detent slot${m.det===1?' at the centre':m.det===9?', one in every hole':', spaced out'}, narrow edge facing outward.`:'Empty the detent magnet slot.');
+  s.push(m.det?`Fit ${words[m.det]} 4x1 magnet${m.det>1?'s':''} in the detent slot${m.det===1?' at the centre':m.det===5?', one in every other hole':', spaced out'}, narrow edge facing outward.`:'Empty the detent magnet slot.');
   s.push(m.blocks?`Fit ${m.blocks===2?'a limit block at each end':'a limit block at the top'}, with ${m.blockMag} magnet${m.blocks>1?'s':''}.`:'Take out the limit blocks and their magnets.');
   if(m.ret.length)s.push(m.ret.length===2?'Fit a 4x3 return magnet at each end.':'Fit a 4x3 return magnet at the bottom.');
   s.push(m.balls.length?`Load the track${m.balls.length>1?', top to bottom':''}: ${m.balls.slice().sort((a,b)=>a[1]-b[1]).map(b=>BALLNAME[b[0]]+('BbM'.includes(b[0])?(m.balls.length>1?' (left, in the wavy track)':' (in the channel)'):b[0]==='C'?' (right, beside the track)':' (right, in the channel)')).join(', ')}.`:'Leave the track empty.');
@@ -686,7 +684,7 @@ function mountTrack(el,S){
 let filter='all',cur='factory';
 const SN={factory:'Factory',long:'Long slide',mech:'Pure mechanical',bucky:'Buckyball',dense:'Dense stacked',jump:'Jumping ball',dual:'Dual-detent snap',short:'Short jumps',
  'long-free':'No stop','short-crisp':'Crisp jumps','factory-strong':'Harder end hit','factory-centre':'Centre stop','factory-dense':'Denser click','factory-even':'Even top to bottom','long-strong':'Firm landing',
- 'bucky-smooth':'Smooth','bucky-steps':'Stepped','short-light':'Lighter jumps','short-nine':'Rippling','dual-wide':'Wide steps','dense-firm':'Firmer'};
+ 'bucky-smooth':'Smooth','bucky-steps':'Stepped','short-light':'Lighter jumps','dual-wide':'Wide steps','dense-firm':'Firmer'};
 const famOf=m=>m.base||m.id;
 const famList=id=>[OFF.find(o=>o.id===id),...MORE.filter(m=>m.base===id)];
 function vis(){return OFF.flatMap(o=>famList(o.id));}
@@ -708,7 +706,7 @@ function renderSheet(){
 /* ---------- TITA: Mix tab ---------- */
 const mix={det:0,ends:'5x4',ret:0,striker:'B',cer:2,spr:'factory'};
 const OPTS=[
- ['det','Detent magnets (4x1)',[[0,'None'],[1,'1'],[3,'3'],[5,'5'],[9,'9']]],
+ ['det','Detent magnets (4x1)',[[0,'None'],[1,'1'],[3,'3'],[5,'5']]],
  ['ends','Limit blocks at the ends',[['none','None'],['5x4','5x4 (stock)'],['5x6','5x6 (stronger)']]],
  ['ret','Return magnets (4x3)',[[0,'None'],[1,'1'],[2,'2']]],
  ['striker','Striking ball',[['B','5 mm buckyball'],['b','4 mm buckyball'],['M','3 mm magnet'],['none','None']]],
@@ -734,7 +732,6 @@ function predict(m){
   if(m.det===1)L.push('One centre detent adds a single sticky stage mid-travel.');
   if(m.det===3)L.push('Three detents give a few spaced stages.');
   if(m.det===5)L.push('Five detents give several short jumps.');
-  if(m.det===9)L.push('Nine detents give a dense, rippling run of pulls.');
   if(ns===1)L.push(m.spr==='piano'?'The short piano steel spring gives a firmer, denser click.':'The factory spring adds the mechanical high-low click.');
   if(ns===2)L.push(m.spr==='twopiano'?'Two piano steel springs give firm, dense high-low clicks.':'Two springs give crisp high-low clicks; the 5.5 mm spacer is used if no balls are loaded.');
   if(m.ret.length)L.push(m.ret.length===2?'Return magnets at both ends add pull at each end of travel.':'A return magnet at the bottom pulls the slider home.');
