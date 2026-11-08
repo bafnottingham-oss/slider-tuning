@@ -186,6 +186,11 @@ footer{padding-block:12px 36px;color:var(--muted);font-size:.8rem}
 .bdot{width:10px;height:10px;border-radius:50%;display:inline-block;border:1px solid var(--line)}
 .bdot.B,.bdot.b{background:var(--bucky);border:2px solid var(--bucky-rim)}.bdot.b{width:8px;height:8px}.bdot.C,.bdot.L{background:var(--ceramic)}.bdot.L{width:12px;height:12px}.bdot.M{background:#fff;border-radius:2px}
 .chip:disabled{opacity:.4;cursor:default}
+.checks{display:grid;gap:8px}
+.chk{justify-self:start;font:600 .72rem var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:7px}
+.chk.ok{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}.chk.bad{background:color-mix(in srgb,var(--no) 18%,transparent);color:var(--no)}
+.feelbox li.tip{border-left:3px solid var(--var)}
+.fixes{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.chip.fix{font-size:.8rem;padding:4px 10px;border-color:var(--accent);color:var(--accent)}
 /* ---------- Hub additions ---------- */
 .back{background:none;border:1px solid var(--line);color:var(--fg);border-radius:999px;padding:6px 12px;font:600 .82rem var(--bodyf);cursor:pointer;white-space:nowrap}
 .back:hover{border-color:var(--accent)}
@@ -769,6 +774,41 @@ function closest(m){
   const f=x=>[x.det,x.blocks,x.ret.length,x.balls.some(b=>'BbM'.includes(b[0]))?1:0,x.balls.some(b=>b[0]==='C')?1:0,SPR[x.spr].length*2];
   const a=f(m);let best=null,bd=1e9;OFF.forEach(o=>{const b=f(o),d=a.reduce((s,v,i)=>s+Math.abs(v-b[i])*(i===0?.5:1),0);if(d<bd){bd=d;best=o;}});return best;
 }
+/* Mixer rules, taken from how the manual's eight modes are built. Each issue says why, and offers a one-tap fix. */
+const isMag=k=>'BbM'.includes(k);
+function checkMix(m){
+  const I=[],ns=SPR[m.spr].length,seq=mix.seq,cnt=k=>seq.filter(x=>x===k).length,left=k=>KITMAX[k]-cnt(k),hasMag=seq.some(isMag);
+  const add=(lvl,msg,...fix)=>I.push({lvl,msg,fix:fix.filter(Boolean)});
+  const insertMid=k=>()=>{const i=Math.floor(seq.length/2);seq.splice(i,0,k);};
+  // the buckyball needs something magnetic to work against
+  if(hasMag&&!m.blocks&&!m.ret.length&&!m.det)add('err','Nothing pulls the buckyball: with no limit blocks, return magnets or detent magnets it just rolls loose.',['Add both limit blocks',()=>{mix.blocks=2;}],['Add 5 detent magnets',()=>{mix.det=5;}]);
+  // magnetic balls side by side clump together
+  for(let i=1;i<seq.length;i++)if(isMag(seq[i])&&isMag(seq[i-1])){add('err',`The ${BALLNAME[seq[i-1]]} and ${BALLNAME[seq[i]]} sit next to each other, so they snap together and move as one. The manual always separates them with ceramics (see Dual snap).`,left('C')>0?['Put a ceramic between them',()=>{seq.splice(i,0,'C');}]:null,['Remove one',()=>{seq.splice(i,1);}]);break;}
+  // ceramics need a striker or springs
+  if(cnt('C')&&!hasMag&&!ns)add('err','Ceramic balls aren\'t magnetic, so on their own nothing moves them; they just roll.',left('B')>0?['Add a 5 mm buckyball',insertMid('B')]:null);
+  // detents need something to pull on
+  if(m.det&&!hasMag)add('err','Detent magnets pull on a buckyball or magnet in the track; with neither, they do nothing.',left('B')>0?['Add a 5 mm buckyball',insertMid('B')]:null,['Remove the detent magnets',()=>{mix.det=0;}]);
+  // two springs need a spacer
+  if(ns===2&&!seq.length)add('err','With two springs and an empty track the two bodies aren\'t spaced. The manual puts a 5.5 mm ceramic ball in the track (Pure mechanical).',['Add a 5.5 mm ceramic',()=>{seq.push('L');}]);
+  // screws follow springs
+  if(m.screws<ns)add('err',`Each spring needs its own limit screw to hold the spring, plunger and ball in the strip. ${ns-m.screws} missing.`,['Set screws to Auto',()=>{mix.screws='auto';}]);
+  if(m.screws>ns)add('tip',ns?'More limit screws than springs: the extra one has nothing to hold.':'Limit screws only hold the spring balls. With no springs the manual fits none.',['Set screws to Auto',()=>{mix.screws='auto';}]);
+  // too full
+  if(seq.length>7)add('err','That many balls leaves almost no travel; the dense stacked mode uses seven.',['Remove the last ball',()=>{seq.pop();}]);
+  // softer notes
+  if(m.ret.length&&!hasMag)add('tip','Return magnets pull the buckyball home; with no buckyball they do nothing.',['Remove return magnets',()=>{mix.ret='none';}]);
+  if(m.blocks&&!hasMag)add('tip','With no buckyball the limit-block magnets have nothing to pull, so the blocks only act as end stops.',['Take the blocks out',()=>{mix.blocks=0;}]);
+  if(m.blocks===1&&!m.ret.includes('bottom')&&hasMag)add('tip','With one limit block at the top, the manual (Long slide) adds a return magnet at the bottom to pull the slider home.',['Add a bottom return magnet',()=>{mix.ret=mix.ret==='top'?'both':'bottom';}]);
+  if(m.strip==='long'&&m.spr==='factory')add('tip','The factory Ruida spring normally sits in the End feedback strip.',['Use the End feedback strip',()=>{mix.strip='end';}]);
+  if(m.strip==='end'&&!ns&&m.blocks===1)add('tip','Long slide setups use the Long slide plate strip.',['Use the Long slide plate strip',()=>{mix.strip='long';}]);
+  if(cnt('M'))add('tip','The 3 mm cylinder magnet is the manual\'s suggestion; it isn\'t listed in the kit.');
+  return I;
+}
+function checkHTML(I){
+  const e=I.filter(x=>x.lvl==='err').length,t=I.length-e;
+  const head=e?`<span class="chk bad">Won't work as set · ${e} issue${e>1?'s':''}</span>`:t?`<span class="chk ok">Works · ${t} tip${t>1?'s':''}</span>`:'<span class="chk ok">Works: follows the manual\'s rules</span>';
+  return `<div class="checks">${head}${I.length?`<ul class="feelbox">${I.map((x,i)=>`<li class="${x.lvl==='err'?'w':'tip'}">${esc(x.msg)}${x.fix.length?`<span class="fixes">${x.fix.map((f,j)=>`<button class="chip fix" data-fix="${i}.${j}">${esc(f[0])}</button>`).join('')}</span>`:''}</li>`).join('')}</ul>`:''}</div>`;
+}
 function renderMix(){
   const left=k=>KITMAX[k]-mix.seq.filter(x=>x===k).length;
   $('#mixctl').innerHTML=`<div class="head"><span class="src ours" style="justify-self:start">Your mix</span><h2>Mix your own</h2><p class="muted">Pick each part; the drawing, feel and simulator update as you go. It's a prediction from how the official setups behave, so test it by hand.</p></div>`+
@@ -786,14 +826,16 @@ function renderMix(){
   C.querySelectorAll('[data-where]').forEach(b=>b.addEventListener('click',()=>{mix.where=b.dataset.where;renderMix();}));
   $('#mixreset').addEventListener('click',()=>{Object.assign(mix,JSON.parse(JSON.stringify(MIXDEF)));renderMix();});
   $('#mixclear').addEventListener('click',()=>{mix.seq=[];renderMix();});
-  const m=mixMode(),p=predict(m),c=closest(m),W=[...p.W,...mixWarn(m)];
+  const m=mixMode(),p=predict(m),c=closest(m),I=checkMix(m);
   $('#mixsheet').innerHTML=`<div class="head"><span class="label">Predicted feel</span>
      <div class="meter"><div><span class="label">End impact</span>${bars(p.imp)}</div><div><span class="label">Clicks</span>${bars(p.clk)}</div><div><span class="label">Magnetic jumps</span>${bars(p.jmp)}</div></div>
-     <ul class="feelbox">${p.L.map(x=>`<li>${esc(x)}</li>`).join('')}${W.map(x=>`<li class="w">${esc(x)}</li>`).join('')}</ul>
+     ${checkHTML(I)}
+     <ul class="feelbox">${p.L.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
      <p class="changed">Closest official setup: <a href="#" data-open="${c.id}">${esc(c.n)}</a></p></div>
    ${simHTML()}
    <div class="split">${drawBox(diagram(m),LEG)}<div style="display:grid;gap:12px;align-content:start">${inout(m)}<div style="display:grid;gap:6px"><span class="label">Pull from the kit</span>${parts(m)}</div></div></div>${steps(m)}`;
   mountSim($('#mixsheet [data-sim]'),m);
+  $('#mixsheet').querySelectorAll('[data-fix]').forEach(b=>b.addEventListener('click',()=>{const [i,j]=b.dataset.fix.split('.').map(Number);I[i].fix[j][1]();renderMix();}));
   $('#mixsheet').querySelectorAll('[data-open]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();cur=a.dataset.open;filter='all';showTab('tita','setups');renderList();renderSheet();}));
 }
 function initTita(){
