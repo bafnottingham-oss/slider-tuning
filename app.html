@@ -180,6 +180,12 @@ footer{padding-block:12px 36px;color:var(--muted);font-size:.8rem}
 .minfo summary::after{content:" +";font-family:var(--mono)}
 .minfo[open] summary::after{content:" −"}
 .minfo-b{display:grid;gap:10px;padding:0 12px 12px;font-size:.88rem}
+.seqc{display:inline-flex;align-items:center;gap:6px;cursor:default}
+.seqc .mv{background:none;border:0;color:var(--muted);cursor:pointer;padding:0 2px;font:600 .8rem var(--mono)}
+.seqc .mv:disabled{opacity:.3;cursor:default}
+.bdot{width:10px;height:10px;border-radius:50%;display:inline-block;border:1px solid var(--line)}
+.bdot.B,.bdot.b{background:var(--bucky);border:2px solid var(--bucky-rim)}.bdot.b{width:8px;height:8px}.bdot.C,.bdot.L{background:var(--ceramic)}.bdot.L{width:12px;height:12px}.bdot.M{background:#fff;border-radius:2px}
+.chip:disabled{opacity:.4;cursor:default}
 /* ---------- Hub additions ---------- */
 .back{background:none;border:1px solid var(--line);color:var(--fg);border-radius:999px;padding:6px 12px;font:600 .82rem var(--bodyf);cursor:pointer;white-space:nowrap}
 .back:hover{border-color:var(--accent)}
@@ -481,6 +487,7 @@ const MORE=[
   feel:'Two of the shorter springs should give firmer, denser clicks on the same ultra-short travel.',play:'Slow pushes for clicks; quick for stacks.'})
 ];
 const ALL=[...OFF,...MORE];
+ALL.forEach(m=>{if(!m.strip)m.strip=['long','mech'].includes(m.base||m.id)?'long':'end';});
 const FILTERS=[['all','All'],['impact','End impact'],['clicks','Clicks'],['jumps','Magnetic jumps'],['slide','Long slide']];
 
 /* ---------- Shared ---------- */
@@ -537,7 +544,7 @@ function diagram(m){
   // limit strip, as in the manual: two rails, an end hole at each end, and ONE pair of spring holes,
   // each with a small screw hole beside it. End feedback strip has the pair in the middle;
   // the long slide plate (POM) strip has it lower down.
-  const longStrip=['long','mech'].includes(m.base||m.id);
+  const longStrip=m.strip?m.strip==='long':['long','mech'].includes(m.base||m.id);
   s+=`<rect x="${px-14}" y="${T}" width="28" height="${Bt-T}" rx="7" fill="#f2a585" ${st}/>`;
   s+=`<line x1="${px-10}" y1="${T+3}" x2="${px-10}" y2="${Bt-3}" stroke="${INK}" stroke-width=".7" stroke-opacity=".6"/><line x1="${px+10}" y1="${T+3}" x2="${px+10}" y2="${Bt-3}" stroke="${INK}" stroke-width=".7" stroke-opacity=".6"/>`;
   [T+11,Bt-11].forEach(y=>s+=`<circle cx="${px}" cy="${y}" r="5" fill="#f7c4ad" ${st}/><circle cx="${px}" cy="${y}" r="2.8" fill="none" stroke="${INK}" stroke-width=".7"/>`);
@@ -554,10 +561,10 @@ function inout(m){
   const y=[],n=[],B=m.balls.filter(b=>'Bb'.includes(b[0])).length,C=m.balls.filter(b=>b[0]==='C').length;
   if(m.det)y.push(`${cap(words[m.det])} 4x1 magnet${m.det>1?'s':''} in the detent slot`);else n.push('No detent magnets');
   if(m.blocks)y.push(`${m.blocks===2?'Two limit blocks':'One limit block (top)'} with ${m.blockMag} magnets`);else n.push('No limit blocks or main magnets');
-  if(m.ret.length)y.push(`${m.ret.length===2?'Two return magnets':'One return magnet (bottom)'}`);else n.push('No return magnets');
-  const st=m.balls.find(b=>'BbM'.includes(b[0]));
-  if(st)y.push(`${B>1?cap(words[B])+' '+BALLNAME[st[0]]+'s':cap(BALLNAME[st[0]])}${C?` with ${words[C]} ceramic ball${C>1?'s':''}`:''}`);
-  else if(m.balls.some(b=>b[0]==='L'))y.push('A 5.5 mm ceramic ball as the spacer');else n.push('No buckyball');
+  if(m.ret.length)y.push(`${m.ret.length===2?'Two return magnets':`One return magnet (${m.ret[0]})`}`);else n.push('No return magnets');
+  const bc={};m.balls.forEach(b=>bc[b[0]]=(bc[b[0]]||0)+1);
+  if(m.balls.length)y.push('Track: '+Object.entries(bc).map(([k,v])=>`${v}× ${BALLNAME[k]}`).join(', '));else n.push('Track empty');
+  y.push(m.strip==='long'?'Long slide plate (POM) strip':'End feedback strip');
   if(SPR[m.spr].length)y.push(`${SPR[m.spr].length===2?'Two springs: '+SPR[m.spr].join(' + '):'Spring: '+SPR[m.spr][0]}, with ${SPR[m.spr].length===2?'3 mm balls':'a 3 mm ball'}`);else n.push('No spring ball');
   if(m.screws)y.push(`${m.screws===2?'Two limit screws':'One limit screw (centre)'}`);else n.push('No limit screw');
   return ioList(y,n);
@@ -578,6 +585,7 @@ function steps(m){
   s.push(m.blocks?`Fit ${m.blocks===2?'a limit block at each end':'a limit block at the top'}, with ${m.blockMag} magnet${m.blocks>1?'s':''}.`:'Take out the limit blocks and their magnets.');
   if(m.ret.length)s.push(m.ret.length===2?'Fit a 4x3 return magnet at each end.':'Fit a 4x3 return magnet at the bottom.');
   s.push(m.balls.length?`Load the track${m.balls.length>1?', top to bottom':''}: ${m.balls.slice().sort((a,b)=>a[1]-b[1]).map(b=>BALLNAME[b[0]]+('BbM'.includes(b[0])?(m.balls.length>1?' (left, in the wavy track)':' (in the channel)'):b[0]==='C'?' (right, beside the track)':' (right, in the channel)')).join(', ')}.`:'Leave the track empty.');
+  s.push(`Use the ${m.strip==='long'?'Long slide plate (POM) limit strip':'End feedback limit strip'}.`);
   if(SPR[m.spr].length)s.push(SPR[m.spr].length===2?`Fit both springs (${SPR[m.spr].join(' and ')}), each with a 3 mm zirconia ball.`:`Fit the ${SPR[m.spr][0]} spring, centred, with the brass plunger and a 3 mm ball.`);
   else s.push('Leave out the springs.');
   s.push(m.screws?`Fit ${m.screws===2?'both limit screws':'the limit screw in the centre hole'}: start it, load the strip, two full turns, then check it's held. Don't overtighten.`:'No limit screw.');
@@ -638,7 +646,7 @@ function simModel(m){
     if(hits&&(ns||(side==='top'?m.blocks>=1:m.blocks===2)))return 'strike';
     if(m.ret.includes(side))return 'snap';
     return 'stop';};
-  const home=m.ret.length===1?1:(id==='dual'?0:null);
+  const home=m.ret.length===1?(m.ret[0]==='top'?0:1):(id==='dual'?0:null);
   let nz=0;E.forEach(e=>nz+=e.k==='mag'?.35:.45);nz=nz/6+([endK('top'),endK('bottom')].filter(k=>k==='strike'||k==='stack').length)*1.1+(m.blockMag==='5x6'&&m.blocks?.5:0);
   return {E,top:endK('top'),bot:endK('bottom'),travel,home,noise:Math.max(1,Math.min(5,Math.round(nz))),
     play:(k,v)=>sfx(k,m,v),lab:k=>EVN[k]};
@@ -704,22 +712,31 @@ function renderSheet(){
 }
 
 /* ---------- TITA: Mix tab ---------- */
-const mix={det:0,ends:'5x4',ret:0,striker:'B',cer:2,spr:'factory'};
+const KITMAX={B:5,b:4,C:5,L:2,M:1};
+const MIXDEF={det:0,blocks:2,blockMag:'5x4',ret:'none',seq:['C','B','C'],where:'bottom',strip:'end',spr:'factory'};
+const mix=JSON.parse(JSON.stringify(MIXDEF));
 const OPTS=[
- ['det','Detent magnets (4x1)',[[0,'None'],[1,'1'],[3,'3'],[5,'5']]],
- ['ends','Limit blocks at the ends',[['none','None'],['5x4','5x4 (stock)'],['5x6','5x6 (stronger)']]],
- ['ret','Return magnets (4x3)',[[0,'None'],[1,'1'],[2,'2']]],
- ['striker','Striking ball',[['B','5 mm buckyball'],['b','4 mm buckyball'],['M','3 mm magnet'],['none','None']]],
- ['cer','Ceramic partner balls',[[0,'None'],[2,'Two']]],
- ['spr','Springs',[['none','None'],['factory','Factory Ruida'],['piano','One piano steel'],['two','Ruida + piano'],['twopiano','Two piano']]]
+ ['det','Detent magnets (4x1)',[[0,'None'],[1,'1 · centre'],[3,'3'],[4,'4'],[5,'5 · every other hole']]],
+ ['blocks','Magnet limit blocks',[[0,'None'],[1,'Top only'],[2,'Both ends']]],
+ ['blockMag','Limit block magnets',[['5x4','5x4 · stock'],['5x6','5x6 · stronger']],m=>m.blocks>0],
+ ['ret','Return magnets (4x3)',[['none','None'],['bottom','Bottom'],['top','Top'],['both','Both']]],
+ ['strip','Limit strip',[['end','End feedback strip'],['long','Long slide plate strip']]],
+ ['spr','Springs in the strip',[['none','None'],['factory','Ruida'],['piano','Piano steel'],['two','Ruida + piano'],['twopiano','Two piano']]]
 ];
+const ADD=[['B','5 mm buckyball'],['b','4 mm buckyball'],['C','4.76 mm ceramic'],['L','5.5 mm ceramic'],['M','3 mm cylinder magnet']];
+function seqPos(n,where){const g=.085,c=where==='top'?.12+(n-1)*g/2:where==='middle'?.5:.88-(n-1)*g/2;return Array.from({length:n},(_,i)=>Math.max(.02,Math.min(.98,c+(i-(n-1)/2)*g)));}
 function mixMode(){
-  const balls=[];const S=mix.striker!=='none';
-  if(S&&mix.cer)balls.push(['C',.72],[mix.striker,.8],['C',.88]);else if(S)balls.push([mix.striker,.5]);else if(mix.cer)balls.push(['C',.45],['C',.55]);
-  const ns=SPR[mix.spr].length;if(ns===2&&!balls.length)balls.push(['L',.5]);
-  const ret=mix.ret===2?['top','bottom']:mix.ret===1?['bottom']:[];
-  return {n:'Your mix',src:'mix',det:mix.det,blocks:mix.ends==='none'?0:2,blockMag:mix.ends==='none'?'5x4':mix.ends,ret,balls,spr:mix.spr,screws:ns,feel:'',play:''};
+  const ys=seqPos(mix.seq.length,mix.where),ns=SPR[mix.spr].length;
+  return {n:'Your mix',src:'mix',det:mix.det,blocks:mix.blocks,blockMag:mix.blockMag,ret:mix.ret==='both'?['top','bottom']:mix.ret==='none'?[]:[mix.ret],
+    balls:mix.seq.map((t,i)=>[t,ys[i]]),spr:mix.spr,screws:ns,strip:mix.strip,feel:'',play:''};
 }
+function mixWarn(m){const W=[],ns=SPR[m.spr].length,cnt=k=>m.balls.filter(b=>b[0]===k).length;
+  if(m.balls.length>7)W.push('That many balls leaves almost no travel; the dense stacked mode uses seven.');
+  if(ns===2&&!m.balls.length)W.push('With two springs the manual puts a 5.5 mm ceramic ball in the track as a spacer.');
+  if(cnt('M'))W.push('The 3 mm cylinder magnet is the manual\'s suggestion; it isn\'t listed in the kit.');
+  if(m.det&&!m.balls.some(b=>'BbM'.includes(b[0])))W.push('Detent magnets need a buckyball or magnet in the track to pull on.');
+  if(m.strip==='long'&&m.spr==='factory')W.push('The factory Ruida spring normally sits in the End feedback strip.');
+  return W;}
 function predict(m){
   const L=[],W=[];const st=m.balls.find(b=>'BbM'.includes(b[0])),cer=m.balls.some(b=>b[0]==='C'),ns=SPR[m.spr].length;
   const hits=st&&cer&&(m.blocks||ns);
@@ -737,7 +754,7 @@ function predict(m){
   if(m.ret.length)L.push(m.ret.length===2?'Return magnets at both ends add pull at each end of travel.':'A return magnet at the bottom pulls the slider home.');
   if(!L.length)L.push('Very little fitted: expect a plain, quiet slide.');
   if(!st&&cer)W.push('Ceramic balls need a buckyball to strike them; on their own they just roll.');
-  if(ns===2&&m.balls.length>3)W.push('Two springs plus a full track leaves very little travel; the dense stacked setup does this on purpose.');
+  if(ns===2&&m.balls.length>5)W.push('Two springs plus a full track leaves very little travel; the dense stacked setup does this on purpose.');
   if(ns&&!m.det&&!m.blocks&&!st)W.push('Clicks only: this is close to pure mechanical mode.');
   const imp=(hits?2:0)+(m.blocks?(m.blockMag==='5x6'?2:1):0)+(m.ret.length?1:0);
   const clk=ns?(ns===2?3:2)+(m.spr.includes('piano')?1:0):0;
@@ -749,15 +766,26 @@ function closest(m){
   const a=f(m);let best=null,bd=1e9;OFF.forEach(o=>{const b=f(o),d=a.reduce((s,v,i)=>s+Math.abs(v-b[i])*(i===0?.5:1),0);if(d<bd){bd=d;best=o;}});return best;
 }
 function renderMix(){
-  $('#mixctl').innerHTML=`<div class="head"><span class="src ours" style="justify-self:start">Your mix</span><h2>Mix your own</h2><p class="muted">Pick each part; the feel updates as you go. It's a prediction from how the official setups behave, so test it by hand.</p></div>`+
-   OPTS.map(([k,l,o])=>`<div class="row"><span class="label">${l}</span><div class="chips">${o.map(([v,t])=>`<button class="chip" data-k="${k}" data-v="${v}" aria-pressed="${String(mix[k])===String(v)}">${t}</button>`).join('')}</div></div>`).join('')+
-   `<div class="nav"><button class="btn ghost" id="mixreset">Reset to factory</button></div>`;
-  $('#mixctl').querySelectorAll('[data-k]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.k,v=b.dataset.v;mix[k]=isNaN(+v)?v:+v;renderMix();}));
-  $('#mixreset').addEventListener('click',()=>{Object.assign(mix,{det:0,ends:'5x4',ret:0,striker:'B',cer:2,spr:'factory'});renderMix();});
-  const m=mixMode(),p=predict(m),c=closest(m);
+  const left=k=>KITMAX[k]-mix.seq.filter(x=>x===k).length;
+  $('#mixctl').innerHTML=`<div class="head"><span class="src ours" style="justify-self:start">Your mix</span><h2>Mix your own</h2><p class="muted">Pick each part; the drawing, feel and simulator update as you go. It's a prediction from how the official setups behave, so test it by hand.</p></div>`+
+   OPTS.filter(o=>!o[3]||o[3](mix)).map(([k,l,o])=>`<div class="row"><span class="label">${l}</span><div class="chips">${o.map(([v,t])=>`<button class="chip" data-k="${k}" data-v="${v}" aria-pressed="${String(mix[k])===String(v)}">${t}</button>`).join('')}</div></div>`).join('')+
+   `<div class="row"><span class="label">Track, top to bottom</span>
+     <div class="chips">${mix.seq.length?mix.seq.map((t,i)=>`<span class="chip seqc"><i class="bdot ${t}"></i>${BALLNAME[t].replace(' ball','')}<button class="mv" data-up="${i}" aria-label="Move up" ${i?'':'disabled'}>↑</button><button class="mv" data-rm="${i}" aria-label="Remove">✕</button></span>`).join(''):'<span class="muted" style="font-size:.86rem">Empty</span>'}</div>
+     <div class="chips">${ADD.map(([k,t])=>`<button class="chip" data-add="${k}" ${left(k)>0?'':'disabled'}>+ ${t} <small class="muted">${left(k)} left</small></button>`).join('')}</div>
+     <span class="label" style="margin-top:4px">Sit them at</span><div class="chips">${[['top','Top end'],['middle','Middle'],['bottom','Bottom end']].map(([v,t])=>`<button class="chip" data-where="${v}" aria-pressed="${mix.where===v}">${t}</button>`).join('')}</div></div>`+
+   `<div class="nav"><button class="btn ghost" id="mixreset">Reset to factory</button><button class="btn ghost" id="mixclear">Empty the track</button></div>`;
+  const C=$('#mixctl');
+  C.querySelectorAll('[data-k]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.k,v=b.dataset.v;mix[k]=isNaN(+v)?v:+v;renderMix();}));
+  C.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{mix.seq.push(b.dataset.add);renderMix();}));
+  C.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{mix.seq.splice(+b.dataset.rm,1);renderMix();}));
+  C.querySelectorAll('[data-up]').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.up;if(i>0){[mix.seq[i-1],mix.seq[i]]=[mix.seq[i],mix.seq[i-1]];renderMix();}}));
+  C.querySelectorAll('[data-where]').forEach(b=>b.addEventListener('click',()=>{mix.where=b.dataset.where;renderMix();}));
+  $('#mixreset').addEventListener('click',()=>{Object.assign(mix,JSON.parse(JSON.stringify(MIXDEF)));renderMix();});
+  $('#mixclear').addEventListener('click',()=>{mix.seq=[];renderMix();});
+  const m=mixMode(),p=predict(m),c=closest(m),W=[...p.W,...mixWarn(m)];
   $('#mixsheet').innerHTML=`<div class="head"><span class="label">Predicted feel</span>
      <div class="meter"><div><span class="label">End impact</span>${bars(p.imp)}</div><div><span class="label">Clicks</span>${bars(p.clk)}</div><div><span class="label">Magnetic jumps</span>${bars(p.jmp)}</div></div>
-     <ul class="feelbox">${p.L.map(x=>`<li>${esc(x)}</li>`).join('')}${p.W.map(x=>`<li class="w">${esc(x)}</li>`).join('')}</ul>
+     <ul class="feelbox">${p.L.map(x=>`<li>${esc(x)}</li>`).join('')}${W.map(x=>`<li class="w">${esc(x)}</li>`).join('')}</ul>
      <p class="changed">Closest official setup: <a href="#" data-open="${c.id}">${esc(c.n)}</a></p></div>
    ${simHTML()}
    <div class="split">${drawBox(diagram(m),LEG)}<div style="display:grid;gap:12px;align-content:start">${inout(m)}<div style="display:grid;gap:6px"><span class="label">Pull from the kit</span>${parts(m)}</div></div></div>${steps(m)}`;
@@ -1220,6 +1248,7 @@ function route(){
 }
 $('#back').addEventListener('click',()=>{try{history.pushState('',document.title,location.pathname+location.search);}catch(e){location.hash='';}route();});
 window.addEventListener('hashchange',route);
+try{if(location.hash)history.replaceState(null,'',location.pathname+location.search);}catch(e){}
 renderMenu();route();
 </script>
 </body>
