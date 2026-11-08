@@ -315,11 +315,13 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
             <li><b>Work over metal</b>Rest it on a metal tray before lifting a body half; the magnets cling to the metal instead of jumping out.</li>
             <li><b>Detent slot faces one way</b>Fit it with the narrow edge facing outward.</li>
             <li><b>Lift magnets cleanly</b>A magnet puller or holder makes re-tuning far easier. Keep small parts in a dish.</li>
+            <li><b>Paragraph magnet slot</b>PEL Studio's name for the detent slot. Use it to shorten the trigger travel in long slide mode, or for other magnetic stages. Swapping the buckyball for an ordinary magnet gives a different feedback.</li>
+            <li><b>5x6 magnets need an EVA pad</b>The limit blocks only take 5x4 magnets and stop them flying off while you work. For the stronger 5x6, take the block out and seat the magnet on a black EVA pad instead.</li>
             <li><b>Screws go with springs</b>Every official mode fits one limit screw per spring ball: Factory 1, Pure mechanical, Dense and Jumping ball 2. Setups with only limit blocks or magnets (Long slide, Pure buckyball, Dual snap, Short jumps) fit none.</li>
             <li><b>Limit screw, in four moves</b>1. Start the screw, stopping just below the back surface. 2. Drop in spring, brass plunger, ceramic ball; push the strip in. 3. Two full turns. 4. Slide the strip back and forth to check it's held.</li>
             <li class="warn"><b>Better less than more</b>Overtightening a limit screw locks the strip solid and can damage the body.</li>
             <li><b>Keep the track clean</b>Grit scratches it. Blu Tack lifts debris; isopropyl alcohol for metal parts.</li>
-            <li><b>Magnet strength</b>Every magnet in the kit is N52, so strength changes come from size and how many you fit. A 5x6 pulls harder than the stock 5x4, so the slider hits the end harder and snaps home faster.</li>
+            <li><b>Magnet strength</b>Every magnet in the kit is N52, so strength changes come from size and how many you fit. A 5x6 pulls harder than the stock 5x4, so the slider hits the end harder and snaps home faster. The limit blocks only take 5x4, so a 5x6 sits on one of the black EVA pads instead.</li>
             <li class="warn"><b>Magnet safety</b>Strong N52 magnets and balls. Keep away from young children.</li>
           </ul>
         </div>
@@ -428,10 +430,10 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
 
 <script>
 /* ---------- Data ---------- */
-const KIT=[['Magnets'],['5x6 mm N52',4,'Attraction magnet (bigger than stock)'],['5x4 mm N52',4,'Stock attraction magnet, in the limit blocks'],['4x3 mm N52',4,'Return magnet'],['4x1 mm N52',10,'Detent slot magnets'],
+const KIT=[['Magnets'],['5x6 mm N52',4,'Stronger end magnet. Too tall for the limit blocks, so it sits on an EVA pad'],['5x4 mm N52',4,'Stock end magnet; the only size the limit blocks take'],['4x3 mm N52',4,'Return magnet'],['4x1 mm N52',10,'Detent slot magnets'],
  ['Balls'],['5 mm N52 buckyball',5,'Main striking ball'],['4 mm N52 buckyball',4,'Smaller striking ball'],['4.76 mm zirconia ball',5,'Partner for the buckyball to strike'],['5.5 mm zirconia ball',2,'Spacer for pure mechanical mode'],
  ['Screws, springs, plungers'],['M2x5 screw',5,'Limit screws, locking the body'],['M2x4 screw',5,'Track and detent slot'],['0.25x3x4.5 Ruida spring',1,'Factory spring'],['0.25x3x4 piano steel spring',2,'Shorter spring, dense high-low sound'],['3 mm zirconia ball',5,'Spring ball'],['Brass plunger',3,'Between spring and ball'],
- ['Other'],['Magnet limit block',2,'Holds a magnet at the end of travel'],['EVA soft pad (adhesive)',3,'Fills gaps'],['EVA soft pad (no adhesive)',3,'Fills gaps'],['POM limit strip',1,'Long slide and mechanical modes']];
+ ['Other'],['Magnet limit block',2,'Holds a 5x4 magnet at the end of travel; keeps it from flying off while you work'],['EVA soft pad (adhesive)',3,'Seats and positions a 5x6 magnet in place of a limit block'],['EVA soft pad (no adhesive)',3,'Seats and positions a 5x6 magnet in place of a limit block'],['POM limit strip',1,'Long slide and mechanical modes']];
 const DET={0:[],1:[4],3:[2,4,6],4:[0,2,6,8],5:[0,2,4,6,8],9:[0,1,2,3,4,5,6,7,8]};
 const BALLNAME={B:'5 mm buckyball',b:'4 mm buckyball',M:'3 mm cylinder magnet',C:'4.76 mm ceramic ball',L:'5.5 mm ceramic spacer'};
 const SPR={none:[],factory:['Ruida 0.25x3x4.5'],two:['Ruida 0.25x3x4.5','piano steel 0.25x3x4'],twopiano:['piano steel 0.25x3x4','piano steel 0.25x3x4'],piano:['piano steel 0.25x3x4']};
@@ -469,8 +471,8 @@ const MORE=[
   feel:'The classic long slide with nothing in the way: one clean run, then the buckyball strikes the ceramic ball.',play:'Long, unbroken slides end to end.'}),
  D('short',{id:'short-crisp',src:'var',n:'Crisp magnetic jumps',tag:'Sharper jumps',change:'Buckyball swapped for a 3 mm cylinder magnet',balls:[['M',.5]],
   feel:'The manual suggests a 3 mm cylindrical magnet in place of the buckyball for crisper feedback at each jump.',play:'Slow pushes; each step should feel sharper.'}),
- D('factory',{id:'factory-strong',src:'ours',n:'Factory, harder end hit',tag:'Stronger pull at the ends',change:'5x4 limit-block magnets swapped for 5x6',blockMag:'5x6',
-  feel:'The factory feel with bigger attraction magnets in the limit blocks, for a firmer pull at the ends and a harder strike.',play:'End-to-end pushes to feel the stronger snap.'}),
+ D('factory',{id:'factory-strong',src:'ours',n:'Factory, harder end hit',tag:'Stronger pull at the ends',change:'Limit blocks and 5x4 magnets swapped for 5x6 magnets on EVA pads',blockMag:'5x6',
+  feel:'PEL Studio says the EVA pads are there to use 5x6 magnets for stronger magnetic feedback. The limit blocks only take 5x4, so the 5x6 magnets sit on EVA pads at each end instead, for a firmer pull and a harder strike.',play:'End-to-end pushes to feel the stronger snap.'}),
  D('factory',{id:'factory-centre',src:'ours',n:'Factory with a centre stop',tag:'High-low clicks plus a sticky middle',change:'One 4x1 magnet added at the centre of the detent slot',det:1,f:['impact','clicks','jumps'],
   feel:'Borrows the sticky centre stage from pure buckyball end feedback and adds it to the factory setup, so you get impacts, clicks and a pause in the middle.',play:'Push through slowly to feel the middle catch.'}),
  D('factory',{id:'factory-even',src:'ours',n:'Factory, even top to bottom',tag:'Same feel all the way along, no end snap',change:'Limit blocks and ceramic balls out, five detent magnets in (every other hole), and a second spring added',
@@ -479,8 +481,8 @@ const MORE=[
   play:'Slow, steady pushes end to end: every step should feel the same.'}),
  D('factory',{id:'factory-dense',src:'ours',n:'Factory, denser click',tag:'Firmer high-low click',change:'Ruida spring swapped for the shorter piano steel spring',spr:'piano',
   feel:'The kit marks the piano steel spring for dense high-low sound, so expect a firmer, denser click with the same end impact.',play:'Half pushes to compare the click with stock.'}),
- D('long',{id:'long-strong',src:'ours',n:'Long slide, firm landing',tag:'Harder snap at the top',change:'Top limit block uses a 5x6 magnet',blockMag:'5x6',
-  feel:'The long slide with a stronger magnet in the limit block, so the slide lands with a firmer snap and stronger strike.',play:'Full-length slides up into the block.'}),
+ D('long',{id:'long-strong',src:'ours',n:'Long slide, firm landing',tag:'Harder snap at the top',change:'Top limit block swapped for a 5x6 magnet on an EVA pad',blockMag:'5x6',
+  feel:'The long slide with a stronger 5x6 magnet at the top, seated on an EVA pad because the limit block only takes 5x4. The slide lands with a firmer snap and stronger strike.',play:'Full-length slides up to the top.'}),
  D('bucky',{id:'bucky-smooth',src:'ours',n:'Buckyball end feedback, smooth',tag:'Strikes with no middle stage',change:'Centre detent magnet removed',det:0,
   feel:'The same two-way strikes, but with nothing in the middle, so the travel is smooth until it hits.',play:'Fast end-to-end pushes.'}),
  D('bucky',{id:'bucky-steps',src:'ours',n:'Buckyball end feedback, stepped',tag:'Several sticky stages',change:'Three detent magnets instead of one',det:3,f:['impact','jumps'],
@@ -528,7 +530,7 @@ function diagram(m){
   // return-magnet eyelets
   [['top',T+15],['bottom',Bt-15]].forEach(([p,y])=>{const on=m.ret.includes(p);s+=`<circle cx="${bx-22}" cy="${y}" r="7" fill="${on?'#fff':'#f7d3d6'}" ${st}/><circle cx="${bx-22}" cy="${y}" r="2.4" fill="${on?'#9aa0a6':'none'}" stroke="${INK}" stroke-width=".7"/>`;});
   // grey limit blocks with U notch
-  const block=(y,fill)=>`<path d="M${bx-36},${y} h32 v9 h-9 v12 h9 v9 h-32z" fill="${fill?'#c6c9ce':'none'}" stroke="${INK}" stroke-width="1.1" ${fill?'':'stroke-dasharray="3 2"'}/>`+(fill?`<rect x="${bx-27}" y="${y+(m.blockMag==='5x6'?6:8)}" width="10" height="${m.blockMag==='5x6'?18:14}" rx="2" fill="#fff" stroke="${INK}" stroke-width=".8"/>`:'');
+  const block=(y,fill)=>fill&&m.blockMag==='5x6'?`<rect x="${bx-36}" y="${y}" width="32" height="30" rx="4" fill="#2a2c30" stroke="${INK}" stroke-width="1.1"/><text x="${bx-20}" y="${y+27}" text-anchor="middle" font-size="5.5" fill="#c9ccd1" font-family="var(--mono)">EVA</text><rect x="${bx-26}" y="${y+4}" width="12" height="17" rx="2" fill="#fff" stroke="${INK}" stroke-width=".8"/>`:`<path d="M${bx-36},${y} h32 v9 h-9 v12 h9 v9 h-32z" fill="${fill?'#c6c9ce':'none'}" stroke="${INK}" stroke-width="1.1" ${fill?'':'stroke-dasharray="3 2"'}/>`+(fill?`<rect x="${bx-27}" y="${y+8}" width="10" height="14" rx="2" fill="#fff" stroke="${INK}" stroke-width=".8"/>`:'');
   s+=block(T+32,m.blocks>=1)+block(Bt-62,m.blocks===2);
   // centre panel with torx screws
   s+=`<rect x="${bx-36}" y="${mid-26}" width="32" height="52" rx="5" fill="#f7d3d6" ${st}/>`;
@@ -561,12 +563,12 @@ function diagram(m){
     s+=`<circle cx="${px+7}" cy="${y}" r="2.6" fill="${screwAt.includes(i)?INK:'#f7e3d6'}" stroke="${INK}" stroke-width=".7"/>`;});
   return s+'</svg>';
 }
-const LEG=`<div class="legend"><span><i style="background:var(--bucky)"></i>Buckyball</span><span><i style="background:var(--ceramic)"></i>Ceramic</span><span><i style="background:#fff"></i>Magnet or spring</span><span><i style="background:#c6c9ce;border-radius:2px"></i>Limit block</span><span><i style="background:${INK}"></i>Limit screw</span><span><i style="background:none;border-style:dashed"></i>Empty</span></div>`;
+const LEG=`<div class="legend"><span><i style="background:var(--bucky)"></i>Buckyball</span><span><i style="background:var(--ceramic)"></i>Ceramic</span><span><i style="background:#fff"></i>Magnet or spring</span><span><i style="background:#c6c9ce;border-radius:2px"></i>Limit block</span><span><i style="background:#2a2c30;border-radius:2px"></i>EVA pad</span><span><i style="background:${INK}"></i>Limit screw</span><span><i style="background:none;border-style:dashed"></i>Empty</span></div>`;
 const drawBox=(svg,leg,capt)=>`<div class="drawing">${svg}${leg||''}${capt?`<p class="cap">${capt}</p>`:''}</div>`;
 function inout(m){
   const y=[],n=[],B=m.balls.filter(b=>'Bb'.includes(b[0])).length,C=m.balls.filter(b=>b[0]==='C').length;
   if(m.det)y.push(`${cap(words[m.det])} 4x1 magnet${m.det>1?'s':''} in the detent slot`);else n.push('No detent magnets');
-  if(m.blocks)y.push(`${m.blocks===2?'Two limit blocks':'One limit block (top)'} with ${m.blockMag} magnets`);else n.push('No limit blocks or main magnets');
+  if(m.blocks)y.push(m.blockMag==='5x6'?`${m.blocks===2?'5x6 magnets at both ends':'A 5x6 magnet at the top'}, on EVA pads (no limit block)`:`${m.blocks===2?'Two limit blocks':'One limit block (top)'} with 5x4 magnets`);else n.push('No end magnets or limit blocks');
   if(m.ret.length)y.push(`${m.ret.length===2?'Two return magnets':`One return magnet (${m.ret[0]})`}`);else n.push('No return magnets');
   const bc={};m.balls.forEach(b=>bc[b[0]]=(bc[b[0]]||0)+1);
   if(m.balls.length)y.push('Track: '+Object.entries(bc).map(([k,v])=>`${v}× ${BALLNAME[k]}`).join(', '));else n.push('Track empty');
@@ -579,7 +581,7 @@ const ioList=(y,n)=>`<ul class="inout">${y.map(x=>`<li><span class="y">✓</span
 const partList=c=>`<div class="parts">${Object.entries(c).map(([k,q])=>`<span class="part"><b>${q}×</b>${esc(k)}</span>`).join('')}</div>`;
 function parts(m){
   const c={};const add=(k,q=1)=>c[k]=(c[k]||0)+q;
-  if(m.det)add('4x1 magnet',m.det);if(m.blocks){add('limit block',m.blocks);add(m.blockMag+' magnet',m.blocks);}if(m.ret.length)add('4x3 return magnet',m.ret.length);
+  if(m.det)add('4x1 magnet',m.det);if(m.blocks){if(m.blockMag==='5x6'){add('EVA pad',m.blocks);add('5x6 magnet',m.blocks);}else{add('limit block',m.blocks);add('5x4 magnet',m.blocks);}}if(m.ret.length)add('4x3 return magnet',m.ret.length);
   m.balls.forEach(b=>add(BALLNAME[b[0]]));SPR[m.spr].forEach(x=>add(x.split(' 0.')[0]+' spring'));if(SPR[m.spr].length){add('3 mm zirconia ball',SPR[m.spr].length);}
   if(m.spr==='factory'||m.spr==='piano')add('brass plunger');if(m.screws)add('M2x5 screw',m.screws);
   return partList(c);
@@ -588,7 +590,7 @@ const stepsBox=s=>`<details class="steps"><summary>Steps to set it up</summary><
 function steps(m){
   const s=['Rest it on a metal surface, open it, and keep small parts in a dish.'];
   s.push(m.det?`Fit ${words[m.det]} 4x1 magnet${m.det>1?'s':''} in the detent slot${m.det===1?' at the centre':m.det===5?', one in every other hole':', spaced out'}, narrow edge facing outward.`:'Empty the detent magnet slot.');
-  s.push(m.blocks?`Fit ${m.blocks===2?'a limit block at each end':'a limit block at the top'}, with ${m.blockMag} magnet${m.blocks>1?'s':''}.`:'Take out the limit blocks and their magnets.');
+  s.push(m.blocks?(m.blockMag==='5x6'?`Take out the limit block${m.blocks>1?'s':''}. Seat a 5x6 magnet on a black EVA pad ${m.blocks===2?'at each end':'at the top'} (the blocks only take 5x4, and the pad holds the 5x6 in position).`:`Fit ${m.blocks===2?'a limit block at each end':'a limit block at the top'}, each with a 5x4 magnet. The block stops the magnet flying off while you work.`):'Take out the limit blocks and their magnets.');
   if(m.ret.length)s.push(m.ret.length===2?'Fit a 4x3 return magnet at each end.':'Fit a 4x3 return magnet at the bottom.');
   s.push(m.balls.length?`Load the track${m.balls.length>1?', top to bottom':''}: ${m.balls.slice().sort((a,b)=>a[1]-b[1]).map(b=>BALLNAME[b[0]]+('BbM'.includes(b[0])?(m.balls.length>1?' (left, in the wavy track)':' (in the channel)'):b[0]==='C'?' (right, beside the track)':' (right, in the channel)')).join(', ')}.`:'Leave the track empty.');
   s.push(`Use the ${m.strip==='long'?'Long slide plate (POM) limit strip':'End feedback limit strip'}.`);
@@ -722,9 +724,9 @@ const KITMAX={B:5,b:4,C:5,L:2,M:1};
 const MIXDEF={det:0,blocks:2,blockMag:'5x4',ret:'none',seq:['C','B','C'],where:'bottom',strip:'end',spr:'factory',screws:'auto'};
 const mix=JSON.parse(JSON.stringify(MIXDEF));
 const OPTS=[
- ['det','Detent magnets (4x1)',[[0,'None'],[1,'1 · centre'],[3,'3'],[4,'4'],[5,'5 · every other hole']]],
- ['blocks','Magnet limit blocks',[[0,'None'],[1,'Top only'],[2,'Both ends']]],
- ['blockMag','Limit block magnets',[['5x4','5x4 · stock'],['5x6','5x6 · stronger']],m=>m.blocks>0],
+ ['det','Paragraph (detent) magnets, 4x1',[[0,'None'],[1,'1 · centre'],[3,'3'],[4,'4'],[5,'5 · every other hole']]],
+ ['blocks','End magnets',[[0,'None'],[1,'Top only'],[2,'Both ends']]],
+ ['blockMag','End magnet',[['5x4','5x4 in a limit block · stock'],['5x6','5x6 on an EVA pad · stronger']],m=>m.blocks>0],
  ['ret','Return magnets (4x3)',[['none','None'],['bottom','Bottom'],['top','Top'],['both','Both']]],
  ['strip','Limit strip',[['end','End feedback strip'],['long','Long slide plate strip']]],
  ['spr','Springs in the strip',[['none','None'],['factory','Ruida'],['piano','Piano steel'],['two','Ruida + piano'],['twopiano','Two piano']]],
