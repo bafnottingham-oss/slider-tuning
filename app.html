@@ -310,6 +310,7 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
             <li><b>Work over metal</b>Rest it on a metal tray before lifting a body half; the magnets cling to the metal instead of jumping out.</li>
             <li><b>Detent slot faces one way</b>Fit it with the narrow edge facing outward.</li>
             <li><b>Lift magnets cleanly</b>A magnet puller or holder makes re-tuning far easier. Keep small parts in a dish.</li>
+            <li><b>Screws go with springs</b>Every official mode fits one limit screw per spring ball: Factory 1, Pure mechanical, Dense and Jumping ball 2. Setups with only limit blocks or magnets (Long slide, Pure buckyball, Dual snap, Short jumps) fit none.</li>
             <li><b>Limit screw, in four moves</b>1. Start the screw, stopping just below the back surface. 2. Drop in spring, brass plunger, ceramic ball; push the strip in. 3. Two full turns. 4. Slide the strip back and forth to check it's held.</li>
             <li class="warn"><b>Better less than more</b>Overtightening a limit screw locks the strip solid and can damage the body.</li>
             <li><b>Keep the track clean</b>Grit scratches it. Blu Tack lifts debris; isopropyl alcohol for metal parts.</li>
@@ -713,7 +714,7 @@ function renderSheet(){
 
 /* ---------- TITA: Mix tab ---------- */
 const KITMAX={B:5,b:4,C:5,L:2,M:1};
-const MIXDEF={det:0,blocks:2,blockMag:'5x4',ret:'none',seq:['C','B','C'],where:'bottom',strip:'end',spr:'factory'};
+const MIXDEF={det:0,blocks:2,blockMag:'5x4',ret:'none',seq:['C','B','C'],where:'bottom',strip:'end',spr:'factory',screws:'auto'};
 const mix=JSON.parse(JSON.stringify(MIXDEF));
 const OPTS=[
  ['det','Detent magnets (4x1)',[[0,'None'],[1,'1 · centre'],[3,'3'],[4,'4'],[5,'5 · every other hole']]],
@@ -721,20 +722,23 @@ const OPTS=[
  ['blockMag','Limit block magnets',[['5x4','5x4 · stock'],['5x6','5x6 · stronger']],m=>m.blocks>0],
  ['ret','Return magnets (4x3)',[['none','None'],['bottom','Bottom'],['top','Top'],['both','Both']]],
  ['strip','Limit strip',[['end','End feedback strip'],['long','Long slide plate strip']]],
- ['spr','Springs in the strip',[['none','None'],['factory','Ruida'],['piano','Piano steel'],['two','Ruida + piano'],['twopiano','Two piano']]]
+ ['spr','Springs in the strip',[['none','None'],['factory','Ruida'],['piano','Piano steel'],['two','Ruida + piano'],['twopiano','Two piano']]],
+ ['screws','Limit screws',[['auto','Auto · one per spring'],[0,'None'],[1,'1'],[2,'2']]]
 ];
 const ADD=[['B','5 mm buckyball'],['b','4 mm buckyball'],['C','4.76 mm ceramic'],['L','5.5 mm ceramic'],['M','3 mm cylinder magnet']];
 function seqPos(n,where){const g=.085,c=where==='top'?.12+(n-1)*g/2:where==='middle'?.5:.88-(n-1)*g/2;return Array.from({length:n},(_,i)=>Math.max(.02,Math.min(.98,c+(i-(n-1)/2)*g)));}
 function mixMode(){
   const ys=seqPos(mix.seq.length,mix.where),ns=SPR[mix.spr].length;
   return {n:'Your mix',src:'mix',det:mix.det,blocks:mix.blocks,blockMag:mix.blockMag,ret:mix.ret==='both'?['top','bottom']:mix.ret==='none'?[]:[mix.ret],
-    balls:mix.seq.map((t,i)=>[t,ys[i]]),spr:mix.spr,screws:ns,strip:mix.strip,feel:'',play:''};
+    balls:mix.seq.map((t,i)=>[t,ys[i]]),spr:mix.spr,screws:mix.screws==='auto'?ns:mix.screws,strip:mix.strip,feel:'',play:''};
 }
 function mixWarn(m){const W=[],ns=SPR[m.spr].length,cnt=k=>m.balls.filter(b=>b[0]===k).length;
   if(m.balls.length>7)W.push('That many balls leaves almost no travel; the dense stacked mode uses seven.');
   if(ns===2&&!m.balls.length)W.push('With two springs the manual puts a 5.5 mm ceramic ball in the track as a spacer.');
   if(cnt('M'))W.push('The 3 mm cylinder magnet is the manual\'s suggestion; it isn\'t listed in the kit.');
   if(m.det&&!m.balls.some(b=>'BbM'.includes(b[0])))W.push('Detent magnets need a buckyball or magnet in the track to pull on.');
+  if(m.screws<ns)W.push(`Each spring needs its own limit screw to hold the spring, plunger and ball in the strip. Add ${ns-m.screws} more, or pick Auto.`);
+  if(m.screws>ns)W.push(ns?'There are more limit screws than springs. The extra screw has nothing to hold: every official mode uses one screw per spring.':'Limit screws only hold the spring balls. With no springs, the manual fits none, and the limit blocks or magnets do the stopping.');
   if(m.strip==='long'&&m.spr==='factory')W.push('The factory Ruida spring normally sits in the End feedback strip.');
   return W;}
 function predict(m){
