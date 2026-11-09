@@ -475,6 +475,14 @@ const MORE=[
   feel:'PEL Studio says the EVA pads are there to use 5x6 magnets for stronger magnetic feedback. The limit blocks only take 5x4, so the 5x6 magnets sit on EVA pads at each end instead, for a firmer pull and a harder strike.',play:'End-to-end pushes to feel the stronger snap.'}),
  D('factory',{id:'factory-centre',src:'ours',n:'Factory with a centre stop',tag:'High-low clicks plus a sticky middle',change:'One 4x1 magnet added at the centre of the detent slot',det:1,f:['impact','clicks','jumps'],
   feel:'Borrows the sticky centre stage from pure buckyball end feedback and adds it to the factory setup, so you get impacts, clicks and a pause in the middle.',play:'Push through slowly to feel the middle catch.'}),
+ D('mech',{id:'mech-return',src:'ours',n:'Mechanical, magnetic return',tag:'Even clicks, gentle pull home at one end',change:'One of each bead in the track with a 4 mm buckyball, two piano steel springs, and a return magnet at the bottom',
+  det:0,blocks:0,ret:['bottom'],balls:[['L',.66],['C',.76],['b',.85]],spr:'twopiano',screws:2,strip:'long',f:['clicks','slide'],
+  feel:'Two matching piano steel springs give the same firm click all the way along. The only magnet is one return magnet at the bottom: it draws the 4 mm buckyball, and the slider with it, gently back home. With no limit blocks or paragraph magnets there is no hard snap and no magnetic ticks along the way, and the light 4 mm ball keeps the tap at the end quiet.',
+  play:'Push up through the clicks, let go near the bottom and feel it drawn back in.'}),
+ D('mech',{id:'mech-return5',src:'ours',n:'Mechanical, stronger return',tag:'Same, with a firmer pull back',change:'The 4 mm buckyball swapped for a 5 mm',
+  det:0,blocks:0,ret:['bottom'],balls:[['L',.66],['C',.76],['B',.85]],spr:'twopiano',screws:2,strip:'long',f:['clicks','slide'],
+  feel:'The same even mechanical clicks, but the heavier 5 mm buckyball is pulled harder by the return magnet, so the draw back home is stronger and more noticeable, with a louder tap at the end.',
+  play:'Push up through the clicks, let go near the bottom and feel it drawn back in.'}),
  D('factory',{id:'factory-even',src:'ours',n:'Factory, even top to bottom',tag:'Same feel all the way along, no end snap',change:'Limit blocks and ceramic balls out, five detent magnets in (every other hole), and a second spring added',
   det:5,blocks:0,ret:[],balls:[['B',.5]],spr:'two',screws:2,f:['clicks','jumps'],
   feel:'Takes away what makes the factory ends jump: no limit-block magnets pulling the buckyball in and no ceramic balls for it to strike. Five detent magnets, one in every other hole, give a light, regular step along the whole track, and two springs spread the high-low clicks across the full travel, not just the middle. The ends become a soft stop. For no magnetic feel at all, use Pure mechanical.',
@@ -642,7 +650,7 @@ function sfx(kind,m,v=1){
 const VIB={mag:12,hi:6,lo:6,strike:[18,20,10],stack:[10,15,10,15,10],snap:16,jump:[10,25,12],stop:5,click:6};
 const EVN={mag:'magnet pull',hi:'high click',lo:'low click',strike:'end strike',stack:'stacked impact',snap:'magnetic end',jump:'jump stage',stop:'end stop'};
 function simModel(m){
-  const st=strikerOf(m),cer=m.balls.some(b=>b[0]==='C'),ns=SPR[m.spr].length,hits=!!(st&&cer&&(m.blocks||ns));
+  const st=strikerOf(m),cer=m.balls.some(b=>b[0]==='C'),ns=SPR[m.spr].length,hits=!!(st&&cer&&(m.blocks||(ns&&m.det)));
   const id=m.base||m.id,dense=id==='dense',E=[];
   const travel=dense?.42:1;
   if(st||m.balls.length)(DET[m.det]||[]).forEach(i=>E.push({p:.06+i/8*.88,k:'mag'}));
@@ -699,7 +707,7 @@ function mountTrack(el,S){
 /* ---------- TITA: Setups tab ---------- */
 let filter='all',cur='factory';
 const SN={factory:'Factory',long:'Long slide',mech:'Pure mechanical',bucky:'Buckyball',dense:'Dense stacked',jump:'Jumping ball',dual:'Dual-detent snap',short:'Short jumps',
- 'long-free':'No stop','short-crisp':'Crisp jumps','factory-strong':'Harder end hit','factory-centre':'Centre stop','factory-dense':'Denser click','factory-even':'Even top to bottom','long-strong':'Firm landing',
+ 'long-free':'No stop','short-crisp':'Crisp jumps','factory-strong':'Harder end hit','factory-centre':'Centre stop','factory-dense':'Denser click','factory-even':'Even top to bottom','mech-return':'Magnetic return','mech-return5':'Stronger return','long-strong':'Firm landing',
  'bucky-smooth':'Smooth','bucky-steps':'Stepped','short-light':'Lighter jumps','dual-wide':'Wide steps','dense-firm':'Firmer'};
 const famOf=m=>m.base||m.id;
 const famList=id=>[OFF.find(o=>o.id===id),...MORE.filter(m=>m.base===id)];
@@ -750,11 +758,12 @@ function mixWarn(m){const W=[],ns=SPR[m.spr].length,cnt=k=>m.balls.filter(b=>b[0
   return W;}
 function predict(m){
   const L=[],W=[];const st=m.balls.find(b=>'BbM'.includes(b[0])),cer=m.balls.some(b=>b[0]==='C'),ns=SPR[m.spr].length;
-  const hits=st&&cer&&(m.blocks||ns);
-  if(st&&cer&&!hits)L.push('Buckyballs and ceramic balls share the track, so the magnets pull them through in stages rather than striking an end.');
+  const hits=st&&cer&&(m.blocks||(ns&&m.det));
+  if(st&&cer&&!hits&&m.det)L.push('Buckyballs and ceramic balls share the track, so the magnets pull them through in stages rather than striking an end.');
+  if(st&&cer&&!hits&&!m.det&&!m.blocks&&m.ret.length)L.push('The ceramics only space the bodies; the buckyball is there for the return magnet to pull, so the ends are soft rather than a strike.');
   if(hits)L.push(`The ${BALLNAME[st[0]]} strikes the ceramic balls for an end impact${m.blocks?(m.blockMag==='5x6'?', made harder by the stronger end magnets':', pulled home by the end magnets'):': with no end magnets, it hits only as hard as you push'}.`);
-  else if(st&&m.det)L.push('With no ceramic partner, the ball jumps from magnet to magnet rather than striking.');
-  else if(st)L.push('The ball has little to react to; expect a loose, quiet slide.');
+  else if(st&&m.det&&!cer)L.push('With no ceramic partner, the ball jumps from magnet to magnet rather than striking.');
+  else if(st&&!m.ret.length&&!m.blocks)L.push('The ball has little to react to; expect a loose, quiet slide.');
   if(st&&st[0]==='b')L.push('The 4 mm ball is lighter: softer hits and quicker jumps.');
   if(st&&st[0]==='M')L.push('A cylinder magnet in place of the ball gives crisper feedback at each magnet.');
   if(m.det===1)L.push('One centre detent adds a single sticky stage mid-travel.');
@@ -762,7 +771,7 @@ function predict(m){
   if(m.det===4)L.push('Four paragraph magnets, two near each end, give magnetic steps towards the ends and a clear run through the middle.');
   if(m.det===5)L.push('Five detents give several short jumps.');
   if(ns===1)L.push(m.spr==='piano'?'The short piano steel spring gives a firmer, denser click.':'The factory spring adds the mechanical high-low click.');
-  if(ns===2)L.push(m.spr==='twopiano'?'Two piano steel springs give firm, dense high-low clicks.':'Two springs give crisp high-low clicks all the way along.');
+  if(ns===2)L.push(m.spr==='twopiano'?'Two matching piano steel springs give firm, even clicks all the way along.':'Two springs give crisp high-low clicks all the way along.');
   if(m.ret.length)L.push(m.ret.length===2?'Return magnets at both ends add pull at each end of travel.':'A return magnet at the bottom pulls the slider home.');
   if(!L.length)L.push('Very little fitted: expect a plain, quiet slide.');
   if(!st&&cer)W.push('Ceramic balls need a buckyball to strike them; on their own they just roll.');
