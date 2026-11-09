@@ -191,6 +191,14 @@ footer{padding-block:12px 36px;color:var(--muted);font-size:.8rem}
 .chk.ok{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}.chk.bad{background:color-mix(in srgb,var(--no) 18%,transparent);color:var(--no)}
 .feelbox li.tip{border-left:3px solid var(--var)}
 .fixes{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.chip.fix{font-size:.8rem;padding:4px 10px;border-color:var(--accent);color:var(--accent)}
+.beads{display:grid;gap:12px}
+.bead{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.bead:last-child{border-bottom:0;padding-bottom:0}
+.bsw{width:40px;height:40px;border-radius:50%;border:1px solid #3a3d42;display:block;box-shadow:inset 0 -3px 6px rgba(0,0,0,.18)}
+.bead dl{display:grid;grid-template-columns:88px 1fr;gap:3px 10px;margin:6px 0 0;font-size:.86rem}
+.bead dt{font:600 .62rem/1.9 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.bead dd{margin:0}
+@media (max-width:420px){.bead dl{grid-template-columns:1fr}.bead dt{line-height:1.2;margin-top:4px}}
 /* ---------- Hub additions ---------- */
 .back{background:none;border:1px solid var(--line);color:var(--fg);border-radius:999px;padding:6px 12px;font:600 .82rem var(--bodyf);cursor:pointer;white-space:nowrap}
 .back:hover{border-color:var(--accent)}
@@ -356,6 +364,13 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
               <tr><td>Special middle spring (piano steel)</td><td class="up">Stiffest</td></tr><tr><td>SS 0.3</td><td>Firm</td></tr><tr><td>Short spring</td><td>Lighter</td></tr><tr><td>SS 0.25</td><td class="dn">Lightest</td></tr></tbody></table></div>
             <p class="muted" style="font-size:.84rem">The card doesn't rank the plain middle spring; the simulator treats it as sitting between the short spring and SS 0.3.</p>
           </div>
+          <h2 style="margin-top:6px">Tell the beads apart</h2>
+          <div class="magnets ginfo-beads"><div class="beads"><div class="bead"><span class="bsw" aria-hidden="true" style="background:radial-gradient(circle at 35% 30%,#ffffff 0%,#f3f2ee 55%,#c9c7bf 100%)"></span><div><b>Zirconia</b>
+  <dl><dt>Looks</dt><dd>Bright, solid white with a glassy shine, like a tiny porcelain pearl. Fully opaque.</dd><dt>Feels</dt><dd>Heavy for its size, cold and very smooth.</dd><dt>Drop test</dt><dd>A sharp, high "tick" if you drop it on a hard desk.</dd><dt>In the Groove</dt><dd>The crispest bead on the card.</dd></dl></div></div><div class="bead"><span class="bsw" aria-hidden="true" style="background:radial-gradient(circle at 35% 30%,#e8eaec 0%,#9a9fa6 35%,#3f4348 100%)"></span><div><b>Tungsten</b>
+  <dl><dt>Looks</dt><dd>Shiny, metallic gunmetal grey, darker than steel, with a mirror finish.</dd><dt>Feels</dt><dd>Noticeably the heaviest: it feels like lead for its size. Not magnetic, so it won't stick to a buckyball.</dd><dt>Drop test</dt><dd>A dull, heavy "tock" when dropped.</dd><dt>In the Groove</dt><dd>Crisp, and its weight makes the click lower and weightier.</dd></dl></div></div><div class="bead"><span class="bsw" aria-hidden="true" style="background:radial-gradient(circle at 35% 30%,#8a8f96 0%,#3d4147 40%,#141619 100%)"></span><div><b>Silicon nitride</b>
+  <dl><dt>Looks</dt><dd>Black or very dark grey, glossy to satin. The only dark ceramic in the bag.</dd><dt>Feels</dt><dd>Hard and smooth, but light for a ceramic, about half the weight of zirconia.</dd><dt>Drop test</dt><dd>A light, bright "tick", softer than zirconia.</dd><dt>In the Groove</dt><dd>Less crisp than zirconia or tungsten; clean and quick.</dd></dl></div></div><div class="bead"><span class="bsw" aria-hidden="true" style="background:radial-gradient(circle at 35% 30%,rgba(255,255,255,0.95) 0%,rgba(238,240,242,0.7) 60%,rgba(207,213,218,0.55) 100%)"></span><div><b>Teflon</b>
+  <dl><dt>Looks</dt><dd>Milky white and slightly see-through at the edges, with a soft, waxy sheen rather than a shine.</dd><dt>Feels</dt><dd>Very light, almost nothing in your fingers, and slightly slippery. A fingernail can leave a mark.</dd><dt>Drop test</dt><dd>A soft, dull thud with no ring.</dd><dt>In the Groove</dt><dd>The softest and most muted; used in the resistance (C) holes.</dd></dl></div></div></div>
+            <p class="muted" style="font-size:.84rem">Two white beads? Zirconia is shiny, heavy and fully opaque; Teflon is waxy, light and slightly see-through. Drop each on a hard desk: zirconia ticks, Teflon thuds.</p></div>
         </div>
         <div style="display:grid;gap:10px"><h2>In the bag</h2>
           <div class="tbl"><table class="boxes"><tbody id="gvbag"></tbody></table></div>
@@ -1223,7 +1238,7 @@ function gvSteps(h){
   return stepsBox(s);
 }
 function gvCopy(name,h){return `MOT Groove · ${name}\n`+GH.map(([id])=>{const v=h[id];return `${id}: ${v.b||v.s?`${v.s?GS[v.s].sn+' spring':'no spring'} + ${v.b?GB[v.b].n:'no bead'}`:'empty'}`;}).join('\n');}
-function gvInfo(){const g=document.querySelector('#g-groove .ginfo');return g?`<details class="minfo"${minfoOpen?' open':''}><summary>How beads, springs and holes change the feel</summary><div class="minfo-b">${g.innerHTML}</div></details>`:'';}
+function gvInfo(){const g=document.querySelector('#g-groove .ginfo'),bd=document.querySelector('#g-groove .ginfo-beads');return g?`<details class="minfo"${minfoOpen?' open':''}><summary>How beads, springs and holes change the feel</summary><div class="minfo-b">${g.innerHTML}${bd?'<b style="font-family:var(--display)">Tell the beads apart</b>'+bd.innerHTML:''}</div></details>`:'';}
 function gvSheet(m,opts={}){
   const p=gvPredict(m.h);
   return `<div class="head"><div class="row"><span class="src ${m.src}">${m.src==='off'?'From the card':m.src==='var'?'From the card':'Your build'}</span><span class="label">MOT Groove</span></div><h2>${esc(m.n)}</h2><p>${esc(m.feel)}</p></div>
