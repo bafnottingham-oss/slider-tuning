@@ -814,6 +814,10 @@ function checkMix(m){
   if(m.screws>ns)add('tip',ns?'More limit screws than springs: the extra one has nothing to hold.':'Limit screws only hold the spring balls. With no springs the manual fits none.',['Set screws to Auto',()=>{mix.screws='auto';}]);
   // return magnets can't beat spring clicks
   if(m.ret.length&&ns)add('err','Return magnets won\'t pull the slider home with springs in: the spring balls hold it in each click, and a small 4x3 magnet only pulls over the last few millimetres. The manual only uses return magnets with no springs (Long slide, Pure buckyball).',['Remove the springs',()=>{mix.spr='none';mix.screws='auto';}],['Remove return magnets',()=>{mix.ret='none';}]);
+  // end magnets against two springs: no official mode does it
+  if(m.blocks&&ns===2&&hasMag)add('tip','Two springs with end magnets isn\'t in any official mode. The factory setup pairs end magnets with one spring. Two spring balls hold the slider back harder, so expect a duller end hit.',['Use one spring',()=>{mix.spr='factory';mix.screws='auto';}]);
+  // the 5.5 spacer is only needed when nothing else is in the track
+  if(cnt('L')&&seq.length>1&&ns)add('tip','The 5.5 mm ceramic is only the spacer when it\'s the only ball in the track. With buckyballs in, the factory setup uses 4.76 mm ceramics, which are smaller and quieter.',['Swap it for a 4.76 mm ceramic',()=>{const i=seq.indexOf('L');seq[i]='C';}]);
   // too full
   if(seq.length>7)add('err','That many balls leaves almost no travel; the dense stacked mode uses seven.',['Remove the last ball',()=>{seq.pop();}]);
   // softer notes
