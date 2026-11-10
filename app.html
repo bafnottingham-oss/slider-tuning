@@ -605,7 +605,7 @@ const stepsBox=s=>`<details class="steps"><summary>Steps to set it up</summary><
 function steps(m){
   const s=['Rest it on a metal surface, open it, and keep small parts in a dish.'];
   s.push(m.det?`Fit ${words[m.det]} 4x1 magnet${m.det>1?'s':''} in the detent slot${m.det===1?' at the centre':m.det===5?', one in every other hole':', spaced out'}, narrow edge facing outward.`:'Empty the detent magnet slot.');
-  s.push(m.blocks?(m.blockMag==='5x6'?`Take out the limit block${m.blocks>1?'s':''}. Seat a 5x6 magnet on a black EVA pad ${m.blocks===2?'at each end':'at the top'} (the blocks only take 5x4, and the pad holds the 5x6 in position).`:`Fit ${m.blocks===2?'a limit block at each end':'a limit block at the top'}, each with a 5x4 magnet. The block stops the magnet flying off while you work.`):'Take out the limit blocks and their magnets.');
+  s.push(m.blocks?(m.blockMag==='5x6'?`Take out the limit block${m.blocks>1?'s':''}. Put a black EVA pad where each block was (${m.blocks===2?'at each end':'at the top'}) and sit a 5x6 magnet in its hole, bare face towards the track. The pad holds the magnet in position; nothing goes between the magnet and the buckyball.`:`Fit ${m.blocks===2?'a limit block at each end':'a limit block at the top'}, each with a 5x4 magnet. The block stops the magnet flying off while you work.`):'Take out the limit blocks and their magnets.');
   if(m.ret.length)s.push(m.ret.length===2?'Fit a 4x3 return magnet at each end.':'Fit a 4x3 return magnet at the bottom.');
   s.push(m.balls.length?`Load the track${m.balls.length>1?', top to bottom':''}: ${m.balls.slice().sort((a,b)=>a[1]-b[1]).map(b=>BALLNAME[b[0]]+('BbM'.includes(b[0])?(m.balls.length>1?' (left, in the wavy track)':' (in the channel)'):b[0]==='C'?' (right, beside the track)':' (right, in the channel)')).join(', ')}.`:'Leave the track empty.');
   s.push(`Use the ${m.strip==='long'?'Long slide plate (POM) limit strip':'End feedback limit strip'}.`);
@@ -817,7 +817,7 @@ function checkMix(m){
   // end magnets against two springs: no official mode does it
   if(m.blocks&&ns===2&&hasMag)add('tip','Two springs with end magnets isn\'t in any official mode. The factory setup pairs end magnets with one spring. Two spring balls hold the slider back harder, so expect a duller end hit.',['Use one spring',()=>{mix.spr='factory';mix.screws='auto';}]);
   // the 5.5 spacer is only needed when nothing else is in the track
-  if(cnt('L')&&seq.length>1&&ns)add('tip','The 5.5 mm ceramic is only the spacer when it\'s the only ball in the track. With buckyballs in, the factory setup uses 4.76 mm ceramics, which are smaller and quieter.',['Swap it for a 4.76 mm ceramic',()=>{const i=seq.indexOf('L');seq[i]='C';}]);
+  if(cnt('L')&&seq.length>1&&ns)add('tip','The 5.5 mm ceramic is only the spacer when it\'s the only ball in the track. With buckyballs in, the factory setup uses 4.76 mm ceramics. Sat between two buckyballs, a ceramic is held in place by their pull, so it won\'t rattle the way a loose spacer does.',['Swap it for a 4.76 mm ceramic',()=>{const i=seq.indexOf('L');seq[i]='C';}]);
   // too full
   if(seq.length>7)add('err','That many balls leaves almost no travel; the dense stacked mode uses seven.',['Remove the last ball',()=>{seq.pop();}]);
   // softer notes
