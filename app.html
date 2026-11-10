@@ -490,18 +490,10 @@ const MORE=[
   feel:'PEL Studio says the EVA pads are there to use 5x6 magnets for stronger magnetic feedback. The limit blocks only take 5x4, so the 5x6 magnets sit on EVA pads at each end instead, for a firmer pull and a harder strike.',play:'End-to-end pushes to feel the stronger snap.'}),
  D('factory',{id:'factory-centre',src:'ours',n:'Factory with a centre stop',tag:'High-low clicks plus a sticky middle',change:'One 4x1 magnet added at the centre of the detent slot',det:1,f:['impact','clicks','jumps'],
   feel:'Borrows the sticky centre stage from pure buckyball end feedback and adds it to the factory setup, so you get impacts, clicks and a pause in the middle.',play:'Push through slowly to feel the middle catch.'}),
- D('mech',{id:'mech-return',src:'ours',n:'Mechanical, magnetic return',tag:'Even clicks, gentle pull home at one end',change:'One of each bead in the track with a 4 mm buckyball, two piano steel springs, and a return magnet at the bottom',
-  det:0,blocks:0,ret:['bottom'],balls:[['L',.66],['C',.76],['b',.85]],spr:'twopiano',screws:2,strip:'long',f:['clicks','slide'],
-  feel:'Two matching piano steel springs give the same firm click all the way along. The only magnet is one return magnet at the bottom: it draws the 4 mm buckyball, and the slider with it, gently back home. With no limit blocks or paragraph magnets there is no hard snap and no magnetic ticks along the way, and the light 4 mm ball keeps the tap at the end quiet.',
-  play:'Push up through the clicks, let go near the bottom and feel it drawn back in.'}),
- D('mech',{id:'mech-return5',src:'ours',n:'Mechanical, stronger return',tag:'Same, with a firmer pull back',change:'The 4 mm buckyball swapped for a 5 mm',
-  det:0,blocks:0,ret:['bottom'],balls:[['L',.66],['C',.76],['B',.85]],spr:'twopiano',screws:2,strip:'long',f:['clicks','slide'],
-  feel:'The same even mechanical clicks, but the heavier 5 mm buckyball is pulled harder by the return magnet, so the draw back home is stronger and more noticeable, with a louder tap at the end.',
-  play:'Push up through the clicks, let go near the bottom and feel it drawn back in.'}),
  D('factory',{id:'factory-even',src:'ours',n:'Factory, even top to bottom',tag:'Same feel all the way along, no end snap',change:'Limit blocks and ceramic balls out, five detent magnets in (every other hole), and a second spring added',
   det:5,blocks:0,ret:[],balls:[['B',.5]],spr:'two',screws:2,f:['clicks','jumps'],
-  feel:'Takes away what makes the factory ends jump: no limit-block magnets pulling the buckyball in and no ceramic balls for it to strike. Five detent magnets, one in every other hole, give a light, regular step along the whole track, and two springs spread the high-low clicks across the full travel, not just the middle. The ends become a soft stop. For no magnetic feel at all, use Pure mechanical.',
-  play:'Slow, steady pushes end to end: every step should feel the same.'}),
+  feel:'Takes away what makes the factory ends jump: no limit-block magnets pulling the buckyball in and no ceramic balls for it to strike, so the ends become a soft stop. Five detent magnets, one in every other hole, give light magnetic steps along the track, and two springs give the high-low clicks. It follows the same pairing as the official upward-push jumping ball mode: detent magnets and two springs, with no limit blocks or return magnets. For no magnetic feel at all, use Pure mechanical.',
+  play:'Slow, steady pushes end to end.'}),
  D('factory',{id:'factory-dense',src:'ours',n:'Factory, denser click',tag:'Firmer high-low click',change:'Ruida spring swapped for the shorter piano steel spring',spr:'piano',
   feel:'The kit marks the piano steel spring for dense high-low sound, so expect a firmer, denser click with the same end impact.',play:'Half pushes to compare the click with stock.'}),
  D('long',{id:'long-strong',src:'ours',n:'Long slide, firm landing',tag:'Harder snap at the top',change:'Top limit block swapped for a 5x6 magnet on an EVA pad',blockMag:'5x6',
@@ -722,7 +714,7 @@ function mountTrack(el,S){
 /* ---------- TITA: Setups tab ---------- */
 let filter='all',cur='factory';
 const SN={factory:'Factory',long:'Long slide',mech:'Pure mechanical',bucky:'Buckyball',dense:'Dense stacked',jump:'Jumping ball',dual:'Dual-detent snap',short:'Short jumps',
- 'long-free':'No stop','short-crisp':'Crisp jumps','factory-strong':'Harder end hit','factory-centre':'Centre stop','factory-dense':'Denser click','factory-even':'Even top to bottom','mech-return':'Magnetic return','mech-return5':'Stronger return','long-strong':'Firm landing',
+ 'long-free':'No stop','short-crisp':'Crisp jumps','factory-strong':'Harder end hit','factory-centre':'Centre stop','factory-dense':'Denser click','factory-even':'Even top to bottom','long-strong':'Firm landing',
  'bucky-smooth':'Smooth','bucky-steps':'Stepped','short-light':'Lighter jumps','dual-wide':'Wide steps','dense-firm':'Firmer'};
 const famOf=m=>m.base||m.id;
 const famList=id=>[OFF.find(o=>o.id===id),...MORE.filter(m=>m.base===id)];
@@ -786,8 +778,8 @@ function predict(m){
   if(m.det===4)L.push('Four paragraph magnets, two near each end, give magnetic steps towards the ends and a clear run through the middle.');
   if(m.det===5)L.push('Five detents give several short jumps.');
   if(ns===1)L.push(m.spr==='piano'?'The short piano steel spring gives a firmer, denser click.':'The factory spring adds the mechanical high-low click.');
-  if(ns===2)L.push(m.spr==='twopiano'?'Two matching piano steel springs give firm, even clicks all the way along.':'Two springs give crisp high-low clicks all the way along.');
-  if(m.ret.length)L.push(m.ret.length===2?'Return magnets at both ends add pull at each end of travel.':'A return magnet at the bottom pulls the slider home.');
+  if(ns===2)L.push(m.spr==='twopiano'?'Two matching piano steel springs give firmer, denser clicks.':'Two springs give crisp high-low clicks.');
+  if(m.ret.length)L.push(ns?'The return magnet won\'t pull it home: the spring clicks hold the slider in place.':m.ret.length===2?'Return magnets at both ends add pull at each end of travel.':'A return magnet at the bottom pulls the slider home.');
   if(!L.length)L.push('Very little fitted: expect a plain, quiet slide.');
   if(!st&&cer)W.push('Ceramic balls need a buckyball to strike them; on their own they just roll.');
   if(ns===2&&m.balls.length>5)W.push('Two springs plus a full track leaves very little travel; the dense stacked setup does this on purpose.');
@@ -820,6 +812,8 @@ function checkMix(m){
   // screws follow springs
   if(m.screws<ns)add('err',`Each spring needs its own limit screw to hold the spring, plunger and ball in the strip. ${ns-m.screws} missing.`,['Set screws to Auto',()=>{mix.screws='auto';}]);
   if(m.screws>ns)add('tip',ns?'More limit screws than springs: the extra one has nothing to hold.':'Limit screws only hold the spring balls. With no springs the manual fits none.',['Set screws to Auto',()=>{mix.screws='auto';}]);
+  // return magnets can't beat spring clicks
+  if(m.ret.length&&ns)add('err','Return magnets won\'t pull the slider home with springs in: the spring balls hold it in each click, and a small 4x3 magnet only pulls over the last few millimetres. The manual only uses return magnets with no springs (Long slide, Pure buckyball).',['Remove the springs',()=>{mix.spr='none';mix.screws='auto';}],['Remove return magnets',()=>{mix.ret='none';}]);
   // too full
   if(seq.length>7)add('err','That many balls leaves almost no travel; the dense stacked mode uses seven.',['Remove the last ball',()=>{seq.pop();}]);
   // softer notes
