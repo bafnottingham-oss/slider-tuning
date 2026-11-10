@@ -473,14 +473,24 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
             <tr><td>Shuriken Mini</td><td>41.5 × 25 × 14.5 mm</td><td>Titanium; central finger groove</td></tr>
           </tbody></table></div>
         </div>
-        <div style="display:grid;gap:10px"><h2>Tips</h2>
+        <div style="display:grid;gap:10px"><h2>In the box</h2>
+          <div class="tbl"><table class="htable boxes"><tbody>
+            <tr><td>Three-hole inserts</td><td>Turn it into a three-click slider.</td></tr>
+            <tr><td>Hand tool</td><td>The tip is magnetic, for picking magnets up. Pull the knurled end at the bottom: there are more tools stored inside.</td></tr>
+            <tr><td>Magnets in the pots</td><td>Spares in different strengths, for tuning.</td></tr>
+            <tr><td>Washers</td><td>Fit with a magnet to make it weaker, for fine tuning.</td></tr>
+            <tr><td>Spare screw</td><td>For the panels.</td></tr>
+            <tr><td>Metal plate</td><td>Stick it down somewhere. When you take the slider apart, lay the parts on it and it holds the magnets in the body.</td></tr>
+          </tbody></table></div>
+          <h2 style="margin-top:6px">Tips</h2>
           <ul class="tips">
+            <li><b>Work on the metal plate</b>Lay each panel on the plate from the box before lifting magnets, so the rest stay put.</li>
             <li><b>Mark before you lift</b>Put a marker dot on each magnet's top face before taking it out. Back in upside down, it pushes instead of pulls.</li>
             <li><b>Moving a magnet to the other panel</b>The panels face each other, so a magnet moved from A to B goes in dot side down.</li>
             <li><b>Check before closing</b>Hold the panels face to face: they should pull together at every corner. If a spot pushes, flip that magnet.</li>
             <li><b>Swapping sides changes little</b>The pull between two magnets depends on both together, so N45 on A with N52 on B feels about the same as the other way round.</li>
             <li><b>Grade, in short</b>N52 is about 7% stronger at the surface than N45, so roughly 15% more pull between two magnets. N25 is much weaker, which is why it's only used for the light middle stops.</li>
-            <li><b>Getting magnets out</b>Use a metal tool, such as an Allen key, or another magnet. Work over a metal tray.</li>
+            <li><b>Getting magnets out</b>Use the magnetic tip of the tool from the box, or another magnet.</li>
             <li class="warn"><b>Keep the faces clean</b>Grit caught between the panels scratches them. Blu Tack lifts debris.</li>
             <li class="warn"><b>Magnet safety</b>Strong magnets. Keep away from young children.</li>
           </ul>
@@ -1413,7 +1423,7 @@ function jNotes(c){
 }
 function jSteps(c){
   if(JSON.stringify(c)===JSON.stringify(JSTOCK))return stepsBox(['This is how both sliders arrive, so there is nothing to change. Use Build your own to try a change.']);
-  const s=['Work over a metal tray, with a dish for small parts.','Before you lift a magnet, put a marker dot on its top face. A magnet that goes back upside down pushes instead of pulls.','Lift magnets out with a metal tool, such as an Allen key, or another magnet.'];
+  const s=['Lay the panels on the metal plate from the box, with a dish for small parts.','Before you lift a magnet, put a marker dot on its top face. A magnet that goes back upside down pushes instead of pulls.','Lift magnets out with the magnetic tip of the tool from the box.'];
   const sw=c.aC!==JSTOCK.aC||c.bC!==JSTOCK.bC;
   if(sw)s.push(`Fit ${c.aC} 7 × 2 mm magnets in Panel A's four corners and ${c.bC} 7 × 2 mm magnets in Panel B's. A magnet moved to the other panel goes in dot side down, because the panels face each other.`);
   if(!c.aM)s.push("Take the two N25 5 × 2.5 mm magnets out of Panel A's middle and keep them safe.");
@@ -1432,7 +1442,7 @@ function jSheet(m){const c=m.c,L=jLayout(c),h=jHold(c);
    <div class="nav"><button class="btn ghost" data-jbuild>Change the magnets</button></div>`;}
 function renderJList(){
   $('#jitems').innerHTML=`<div class="grp" style="margin-top:8px"><span class="label">Magnet setups · ${JSET.length}</span>${JSET.map(m=>`<button class="item" data-jid="${m.id}" aria-pressed="${jcur===m.id}"><span class="nm">${esc(m.n)}</span><span class="src off">Stock</span><span class="tg">${esc(m.tag)}</span></button>`).join('')}</div>
-   <p class="muted" style="font-size:.82rem;margin-top:10px">JJ EDC only publishes the stock layout. Use Build your own to try grade swaps or empty middles with the magnets in the box.</p>`;
+   <p class="muted" style="font-size:.82rem;margin-top:10px">The Creation Mountain box also has three-hole inserts that make it a three-click slider; see Parts &amp; tips. Use Build your own to try grade swaps or empty middles.</p>`;
 }
 function renderJSheet(){const m=JSET.find(x=>x.id===jcur),el=$('#jsheet');el.innerHTML=jSheet(m);jMount(el.querySelector('[data-asim]'),m.c);
   el.querySelectorAll('[data-jbuild]').forEach(b=>b.addEventListener('click',()=>{Object.assign(jb,m.c);showTab('jj','build');renderJBuild();window.scrollTo(0,0);}));}
