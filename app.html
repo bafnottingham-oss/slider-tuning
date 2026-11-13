@@ -415,6 +415,7 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
             <li><b>8 side and 6 side</b>Fancy play sliders have one card with 8 magnets and one with 6. On the Aura Sand the 8 side is always the steel card; the 6 side is always the black Teflon card.</li>
             <li><b>Halfmoon spacer vs halfmoon pad</b>The spacers are the thin plastic crescents on the sprue; cut them out and file off any excess so they sit flat in the cassette. The pads are the separate black discs. Most setups here use the spacer, not the pad.</li>
             <li><b>Long halfmoon vs long halfmoon pad</b>The long pieces sit with the middle magnets. Swapping the pad for the plain long halfmoon on the 6 side gives more crunch. The pad is very slightly weaker.</li>
+            <li><b>Washers</b>Thin steel discs in the latest Slim Pro box. One under a corner magnet lifts it closer to the other card, so it holds a little firmer. Check the magnet still sits flush.</li>
             <li><b>Foam pads</b>Leaving them out gives more crunch and, for some, more stability and flow, because the magnets can move a little. One on the 8 side is the middle ground.</li>
             <li><b>Getting magnets out</b>Use a metal tool, such as an Allen key, or a magnet to lift them out of the cassette.</li>
             <li class="warn"><b>Keep the plates clean</b>Debris caught between the plates damages them, especially the Teflon side. Blu Tack lifts grit.</li>
@@ -931,9 +932,14 @@ function initTita(){
 // corner: g grade, t thickness (mm), metal (mm spacer under magnet), hm: 'spacer' | 'pad' | null
 const AC8_STOCK={g:'N52',t:2,metal:0,hm:'pad'},AC8_PRO={g:'N52',t:2.5,metal:0,hm:'spacer'};
 const ASET=[
- {id:'stock',src:'box',n:'Out of the box',tag:'Factory magnets',hold:5,mods:false,
+ {id:'stock',sk:1,src:'box',n:'Out of the box',tag:'Factory magnets',hold:5,mods:false,
   c8:AC8_STOCK,c6:{g:'N52',t:2.5,metal:0,hm:null},
   feel:'How it arrives: N52 8 × 2 mm corners with halfmoon pads on the 8 side, and N52 8 × 2.5 mm corners on the 6 side. The starting point for every setup here.'},
+ {id:'washer',sk:1,src:'guide',n:'Out of the box + 6 side washers',tag:'The simplest firmer setup: one change',hold:5,
+  c8:AC8_STOCK,c6:{g:'N52',t:2.5,metal:.2,hm:null},
+  steps:['Work over a metal tray, with a dish for small parts.','6 side (Teflon card): lift out the four corner magnets with a metal tool, or a magnet. Note which way up each one was.','Drop a washer into each of the four corner pockets, then put each magnet back on top, the same way up.','Check every magnet still sits flush with the card. If one stands proud, it will rub the other card, so take that washer out.','Leave everything else as it came, including the 8 side, the middle magnets and the foam pads.','Reassemble and try a few slow slides first: it should hold a little firmer than before.'],
+  parts:{'Washer':4},
+  feel:'Keeps the stock magnets and adds a washer under each 6 side corner magnet. The washer lifts the magnet a little closer to the other card and adds some steel behind it, so the corners hold a little firmer than out of the box. Nothing else changes.'},
  {id:'n45',src:'guide',n:'N45 on halfmoon spacers',tag:'Swaps the corners round; a little softer than stock',hold:3,buy:'4 × N45 8 × 2 mm magnets',
   c8:AC8_PRO,c6:{g:'N45',t:2,metal:0,hm:'spacer'},
   feel:'The corner magnets swap round. The thicker N52 8 × 2.5 mm magnets move to the steel 8 side, and N45 8 × 2 mm magnets go on the Teflon 6 side. Thin plastic halfmoon spacers replace the pads at the corners, keeping the gap small.'},
@@ -966,13 +972,13 @@ function aDiagram(m,mods){
     [[cx-38,48],[cx+38,48],[cx-38,164],[cx+38,164]].forEach(([x,y])=>s+=mag(x,y,c));
     s+=slot(cx-28,106,n,lp)+slot(cx+28,106,n,lp);
     [[cx,82],[cx,130]].forEach(([x,y])=>s+=`<circle cx="${x}" cy="${y}" r="4" fill="${i?'#55595f':'#9a9ea5'}" ${st}/>`);
-    const foam=m.id==='stock'?'AS SUPPLIED':(i===0&&mods.foam==='one'?'FOAM PAD':'');
-    if(foam)s+=`<text x="${cx}" y="109" text-anchor="middle" font-size="7" font-weight="600" fill="${i?'#c9ccd1':INK}" font-family="var(--mono)" letter-spacing=".5">${m.id==='stock'?'FOAM':foam}</text>`;
+    const foam=m.sk?'AS SUPPLIED':(i===0&&mods.foam==='one'?'FOAM PAD':'');
+    if(foam)s+=`<text x="${cx}" y="109" text-anchor="middle" font-size="7" font-weight="600" fill="${i?'#c9ccd1':INK}" font-family="var(--mono)" letter-spacing=".5">${m.sk?'FOAM':foam}</text>`;
   });
   return s+'</svg>';
 }
-const ALEG=`<div class="legend"><span><i style="background:#fff"></i>N52 magnet</span><span><i style="background:#dfe7ee"></i>N45 magnet</span><span><i style="background:var(--sideB)"></i>Halfmoon spacer</span><span><i style="background:#2a2c30"></i>Halfmoon pad</span></div>`;
-const cdesc=c=>`${c.g} 8 × ${c.t} mm${c.metal?` on a ${c.metal} mm metal spacer`:''}${c.hm==='spacer'?', halfmoon spacer':c.hm==='pad'?', halfmoon pad':''}`;
+const ALEG=`<div class="legend"><span><i style="background:#fff"></i>N52 magnet</span><span><i style="background:#dfe7ee"></i>N45 magnet</span><span><i style="background:none;border:2px solid #7d828a"></i>Washer</span><span><i style="background:var(--sideB)"></i>Halfmoon spacer</span><span><i style="background:#2a2c30"></i>Halfmoon pad</span></div>`;
+const cdesc=c=>`${c.g} 8 × ${c.t} mm${c.metal?' on a washer':''}${c.hm==='spacer'?', halfmoon spacer':c.hm==='pad'?', halfmoon pad':''}`;
 // Strength model. Grade: pull goes with remanence squared, so N45 is about 0.86 of N52. Thickness, halfmoon
 // pieces and the 0.2 mm metal spacer are scaled so the guide's setups land in the order its comparisons give
 // (stock > N45 on halfmoon spacers ≈ thick N52 on pads > N52 on pads). Relative, not measured.
@@ -988,9 +994,10 @@ const AXTRA={
 function aXtra(cur,attr){return `<div class="toggles">${Object.entries(AXTRA).map(([k,o])=>`<div class="row"><span class="label">${o.label}</span><div class="xopts">${o.opts.map(([v,t,w])=>`<button class="item" data-${attr}${k}="${v}" aria-pressed="${cur[k]===v}"><span class="nm">${t}</span><span class="tg">${w}</span></button>`).join('')}</div></div>`).join('')}</div>`;}
 const aRelM=(m,mods)=>aRel(m)*(mods&&mods.mid==='spacer'?1.03:1);
 function aHold(m,mods){return Math.max(1,Math.min(5,Math.round(1+(aRelM(m,mods)-.6)/.1)));}
-function aCrunch(m,mods){if(m.id==='stock')return 2;return 2+(mods.mid==='spacer'?1:0)+(mods.foam==='none'?2:1)-(m.c6.hm==='pad'?0:0);}
+function aCrunch(m,mods){if(m.sk)return 2;return 2+(mods.mid==='spacer'?1:0)+(mods.foam==='none'?2:1)-(m.c6.hm==='pad'?0:0);}
 function aSteps(m,mods){
   if(m.id==='stock')return stepsBox(['This is how the slider arrives, so there is nothing to change. Pick another setup for the steps.']);
+  if(m.steps)return stepsBox(m.steps);
   const s=['Work over a metal tray. Cut the halfmoon plastic spacers off the sprue (not the separate pads), then file away any excess so they sit flat in the cassette.',
    'Lift the magnets out of the cassette with a metal tool, such as an Allen key, or a magnet.',
    `8 side (steel card): take out the halfmoon pads and the N52 8 × 2 mm corner magnets. Fit N52 8 × 2.5 mm magnets with a halfmoon spacer (not a pad) in each corner.`];
@@ -1003,18 +1010,18 @@ function aSteps(m,mods){
   s.push('Reassemble and try a few slow tricks before speeding up.');
   return stepsBox(s);
 }
-function aParts(m,mods){const c={};const add=(k,q)=>c[k]=(c[k]||0)+q;if(m.id==='stock')return '<p class="muted" style="font-size:.88rem">Nothing to pull: this is the stock layout.</p>';
+function aParts(m,mods){const c={};const add=(k,q)=>c[k]=(c[k]||0)+q;if(m.parts)return partList(m.parts);if(m.id==='stock')return '<p class="muted" style="font-size:.88rem">Nothing to pull: this is the stock layout.</p>';
   add('N52 8 × 2.5 mm magnet',4);add('Halfmoon spacer',4);
   const k=`${m.c6.g} 8 × ${m.c6.t} mm magnet`;add(k,4);if(m.c6.metal)add('0.2 mm metal spacer',4);add(m.c6.hm==='pad'?'Halfmoon pad':'Halfmoon spacer',4);
   if(mods.mid==='spacer')add('Long halfmoon',2);if(mods.foam==='one')add('Foam pad',1);return partList(c);}
 function aSheet(m){
-  const mods=m.id==='stock'?{mid:'pad',foam:'stock'}:amods,hold=aHold(m,mods),cr=Math.min(5,aCrunch(m,mods)),flow=m.id==='stock'?2:mods.foam==='none'?4:3;
+  const mods=m.sk?{mid:'pad',foam:'stock'}:amods,hold=aHold(m,mods),cr=Math.min(5,aCrunch(m,mods)),flow=m.sk?2:mods.foam==='none'?4:3;
   const y=[`8 side corners: ${cdesc(m.c8)}`,`6 side corners: ${cdesc(m.c6)}`,'Middle magnets: unchanged on both sides',
-    m.id==='stock'?'Foam pads: as supplied':mods.foam==='none'?'Foam pads: none':'Foam pads: one, on the 8 side',
+    m.sk?'Foam pads: as supplied':mods.foam==='none'?'Foam pads: none':'Foam pads: one, on the 8 side',
     `6 side middle: ${mods.mid==='spacer'?'long halfmoon (more crunch)':'long halfmoon pad'}`];
   return `<div class="head"><div class="row"><span class="label">Aura Sand Slim Pro (Ti) · 8 × 6</span></div><h2>${esc(m.n)}</h2><p>${esc(m.feel)}</p>
      ${m.warn?`<p class="changed" style="border-color:var(--warn)"><b>Heads up:</b> ${esc(m.warn)}</p>`:''}${m.buy?`<p class="changed"><b>You'll need to buy:</b> ${esc(m.buy)}. The rest comes from the box.</p>`:''}</div>
-   ${m.id==='stock'?'<p class="muted" style="font-size:.86rem">Out of the box keeps everything as supplied. Every other setup lets you choose the long piece and the foam pads below.</p>':aXtra(amods,'a')}
+   ${m.sk?'<p class="muted" style="font-size:.86rem">This keeps the long piece and foam pads as supplied. The corner-swap setups let you choose them.</p>':aXtra(amods,'a')}
    <div class="meter"><div><span class="label">Hold · ${Math.round(aRelM(m,mods)*100)}%</span>${bars(hold)}</div><div><span class="label">Crunch</span>${bars(cr)}</div><div><span class="label">Flow</span>${bars(flow)}</div></div>
    <p class="muted" style="font-size:.8rem">Hold is relative to out of the box (100%).</p>
    ${aSimHTML()}
@@ -1140,7 +1147,7 @@ function renderAList(){
   $('#aitems').querySelectorAll('[data-aid]').forEach(b=>b.addEventListener('click',()=>{acur=b.dataset.aid;renderAList();renderASheet();if(matchMedia('(max-width:880px)').matches)$('#asheet').scrollIntoView({block:'start'});}));
 }
 function renderASheet(){
-  const m=ASET.find(x=>x.id===acur),el=$('#asheet');el.innerHTML=aSheet(m);mountAura(el.querySelector('[data-asim]'),m,m.id==='stock'?{mid:'pad',foam:'stock'}:amods);
+  const m=ASET.find(x=>x.id===acur),el=$('#asheet');el.innerHTML=aSheet(m);mountAura(el.querySelector('[data-asim]'),m,m.sk?{mid:'pad',foam:'stock'}:amods);
   el.querySelectorAll('[data-amid]').forEach(b=>b.addEventListener('click',()=>{amods.mid=b.dataset.amid;renderASheet();}));
   el.querySelectorAll('[data-afoam]').forEach(b=>b.addEventListener('click',()=>{amods.foam=b.dataset.afoam;renderASheet();}));
   el.querySelectorAll('[data-abuild]').forEach(b=>b.addEventListener('click',()=>{const c=JSON.parse(JSON.stringify(m));Object.assign(ab,{c8:c.c8,c6:c.c6,mid:m.id==='stock'?'pad':amods.mid,foam:m.id==='stock'?'one':amods.foam,from:m.n});showTab('aura','build');renderABuild();window.scrollTo(0,0);}));
@@ -1482,7 +1489,7 @@ function renderJBuild(){
 const GUIDES=[
  {id:'tita',n:'TITA Pro',by:'PEL Studio',type:'Modular magnetic + mechanical',count:`${ALL.length} setups`,blurb:'Buckyballs, detent magnets, limit blocks and spring balls: eight official modes from the manual plus twelve more worked out from them, and a mixer.',tabs:'tita'},
  {id:'groove',n:'MOT Groove',by:'MOT',type:'Bead and spring · push + rotate',count:'4 card plans + builder',blurb:'The four plans from the instruction card, every hole on the straight push face and the rotating face, and a builder to try your own.',tabs:'groove'},
- {id:'aura',n:'Aura Sand Slim Pro',by:'Peacock',type:'Floating · fancy play 8 × 6',count:`${ASET.length} magnet setups`,blurb:'N52 and N45 corner magnet setups with halfmoon spacers or pads, long halfmoon and foam pad options, and what each one changes.',tabs:'aura'},
+ {id:'aura',n:'Aura Sand Slim Pro',by:'Peacock',type:'Floating · fancy play 8 × 6',count:`${ASET.length} magnet setups`,blurb:'Stock plus washers, and N52 and N45 corner magnet setups with halfmoon spacers or pads, long halfmoon and foam pad options, and what each one changes.',tabs:'aura'},
  {id:'jj',n:'Creation Mountain / Shuriken',by:'JJ EDC',type:'Infinite slider · 6 × 8',count:'Standard and Mini',blurb:'The 14-magnet layouts both sliders share, in Standard and Mini, a simulator of where Panel A holds, and a builder.',tabs:'jj'}
 ];
 function thumb(id){
