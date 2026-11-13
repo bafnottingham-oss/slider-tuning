@@ -415,7 +415,6 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
             <li><b>8 side and 6 side</b>Fancy play sliders have one card with 8 magnets and one with 6. On the Aura Sand the 8 side is always the steel card; the 6 side is always the black Teflon card.</li>
             <li><b>Halfmoon spacer vs halfmoon pad</b>The spacers are the thin plastic crescents on the sprue; cut them out and file off any excess so they sit flat in the cassette. The pads are the separate black discs. Most setups here use the spacer, not the pad.</li>
             <li><b>Long halfmoon vs long halfmoon pad</b>The long pieces sit with the middle magnets. Swapping the pad for the plain long halfmoon on the 6 side gives more crunch. The pad is very slightly weaker.</li>
-            <li><b>Washers</b>Thin steel discs in the latest Slim Pro box. One under a corner magnet lifts it closer to the other card, so it holds a little firmer. Check the magnet still sits flush.</li>
             <li><b>Foam pads</b>Leaving them out gives more crunch and, for some, more stability and flow, because the magnets can move a little. One on the 8 side is the middle ground.</li>
             <li><b>Getting magnets out</b>Use a metal tool, such as an Allen key, or a magnet to lift them out of the cassette.</li>
             <li class="warn"><b>Keep the plates clean</b>Debris caught between the plates damages them, especially the Teflon side. Blu Tack lifts grit.</li>
@@ -935,11 +934,6 @@ const ASET=[
  {id:'stock',sk:1,src:'box',n:'Out of the box',tag:'Factory magnets',hold:5,mods:false,
   c8:AC8_STOCK,c6:{g:'N52',t:2.5,metal:0,hm:null},
   feel:'How it arrives: N52 8 × 2 mm corners with halfmoon pads on the 8 side, and N52 8 × 2.5 mm corners on the 6 side. The starting point for every setup here.'},
- {id:'washer',sk:1,src:'guide',n:'Out of the box + 6 side washers',tag:'The simplest firmer setup: one change',hold:5,
-  c8:AC8_STOCK,c6:{g:'N52',t:2.5,metal:.2,hm:null},
-  steps:['Work over a metal tray, with a dish for small parts.','6 side (Teflon card): lift out the four corner magnets with a metal tool, or a magnet. Note which way up each one was.','Drop a washer into each of the four corner pockets, then put each magnet back on top, the same way up.','Check every magnet still sits flush with the card. If one stands proud, it will rub the other card, so take that washer out.','Leave everything else as it came, including the 8 side, the middle magnets and the foam pads.','Reassemble and try a few slow slides first: it should hold a little firmer than before.'],
-  parts:{'Washer':4},
-  feel:'Keeps the stock magnets and adds a washer under each 6 side corner magnet. The washer lifts the magnet a little closer to the other card and adds some steel behind it, so the corners hold a little firmer than out of the box. Nothing else changes.'},
  {id:'n45',src:'guide',n:'N45 on halfmoon spacers',tag:'Swaps the corners round; a little softer than stock',hold:3,buy:'4 × N45 8 × 2 mm magnets',
   c8:AC8_PRO,c6:{g:'N45',t:2,metal:0,hm:'spacer'},
   feel:'The corner magnets swap round. The thicker N52 8 × 2.5 mm magnets move to the steel 8 side, and N45 8 × 2 mm magnets go on the Teflon 6 side. Thin plastic halfmoon spacers replace the pads at the corners, keeping the gap small.'},
@@ -1489,7 +1483,7 @@ function renderJBuild(){
 const GUIDES=[
  {id:'tita',n:'TITA Pro',by:'PEL Studio',type:'Modular magnetic + mechanical',count:`${ALL.length} setups`,blurb:'Buckyballs, detent magnets, limit blocks and spring balls: eight official modes from the manual plus twelve more worked out from them, and a mixer.',tabs:'tita'},
  {id:'groove',n:'MOT Groove',by:'MOT',type:'Bead and spring · push + rotate',count:'4 card plans + builder',blurb:'The four plans from the instruction card, every hole on the straight push face and the rotating face, and a builder to try your own.',tabs:'groove'},
- {id:'aura',n:'Aura Sand Slim Pro',by:'Peacock',type:'Floating · fancy play 8 × 6',count:`${ASET.length} magnet setups`,blurb:'Stock plus washers, and N52 and N45 corner magnet setups with halfmoon spacers or pads, long halfmoon and foam pad options, and what each one changes.',tabs:'aura'},
+ {id:'aura',n:'Aura Sand Slim Pro',by:'Peacock',type:'Floating · fancy play 8 × 6',count:`${ASET.length} magnet setups`,blurb:'N52 and N45 corner magnet setups with halfmoon spacers or pads, long halfmoon and foam pad options, and what each one changes.',tabs:'aura'},
  {id:'jj',n:'Creation Mountain / Shuriken',by:'JJ EDC',type:'Infinite slider · 6 × 8',count:'Standard and Mini',blurb:'The 14-magnet layouts both sliders share, in Standard and Mini, a simulator of where Panel A holds, and a builder.',tabs:'jj'}
 ];
 function thumb(id){
