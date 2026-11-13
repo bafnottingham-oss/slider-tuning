@@ -67,6 +67,8 @@ main{padding-block:18px 40px}
 .item[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
 .item .nm{font:600 .9rem var(--display)}
 .item .tg{grid-column:1/-1;font-size:.8rem;color:var(--muted)}
+.xopts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media (max-width:420px){.xopts{grid-template-columns:1fr}}
 .src{font:600 .6rem var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border-radius:4px;align-self:start;white-space:nowrap}
 .src.off{background:color-mix(in srgb,var(--ok) 20%,transparent);color:var(--ok)}
 .src.var{background:color-mix(in srgb,var(--var) 22%,transparent);color:var(--var)}
@@ -438,6 +440,8 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
           <tr><td>N52 instead of N45 (same size)</td><td class="up">About 15% stronger</td><td>Firmer holds and a sharper snap into each spot. Harder to slip off in fast tricks, but a little more effort to move.</td></tr>
           <tr><td>N45 instead of N52</td><td class="dn">About 15% weaker</td><td>Softer, floatier glide that's easier to move. Slips off sooner when you add power or speed.</td></tr>
           <tr><td>Thicker magnet (8 × 2.5 mm vs 8 × 2 mm)</td><td class="up">Stronger</td><td>Firmer, crunchier holds.</td></tr>
+          <tr><td>Long halfmoon instead of the long halfmoon pad (6 side middle)</td><td class="up">A touch stronger</td><td>More crunch. The pad is smoother and quieter.</td></tr>
+          <tr><td>Foam pads out</td><td>About the same</td><td>More crunch and flow, because the magnets can move a little. One pad on the 8 side is the middle ground.</td></tr>
           <tr><td>More gap between the magnets (pads, plastic spacers, foam)</td><td class="dn">Weaker, and drops off fast as the gap grows</td><td>Softer, quieter holds. Even a thin pad makes a difference you can feel.</td></tr>
         </tbody></table></div>
         <p class="muted" style="font-size:.84rem">Grade, size and gap all add up, so a weaker grade can be balanced by a thicker magnet or a smaller gap. Standard N magnets lose strength for good above about 80 °C, so keep the slider off hot dashboards and radiators.</p>
@@ -989,7 +993,13 @@ const cStr=c=>AF.g[c.g]*AF.t[c.t]*AF.hm[c.hm||'none']*AF.metal[c.metal||0];
 const aStr=m=>Math.pow(cStr(m.c6),.75)*Math.pow(cStr(m.c8)/.92,.25);
 const AREF=Math.pow(1*.85*.92*1.1,.75); // N52 on metal spacers = 100%
 const aRel=m=>aStr(m)/AREF;
-function aHold(m,mods){return Math.max(1,Math.min(5,Math.round(1+(aRel(m)-.6)/.1)));}
+// Extra choices on the Aura: the long piece by the 6 side middle magnets, and the foam pads.
+const AXTRA={
+ mid:{label:'6 side middle · long piece',opts:[['pad','Long halfmoon pad','Smoother and quieter. The pad is very slightly weaker, so a touch less hold.'],['spacer','Long halfmoon','More crunch, and a touch more hold than the pad.']]},
+ foam:{label:'Foam pads',opts:[['none','Leave out','Most crunch and flow: the magnets can move a little. Some find it steadier too.'],['one','One, on the 8 side','The middle ground: some of the crunch, closer to the stock feel.']]}};
+function aXtra(cur,attr){return `<div class="toggles">${Object.entries(AXTRA).map(([k,o])=>`<div class="row"><span class="label">${o.label}</span><div class="xopts">${o.opts.map(([v,t,w])=>`<button class="item" data-${attr}${k}="${v}" aria-pressed="${cur[k]===v}"><span class="nm">${t}</span><span class="tg">${w}</span></button>`).join('')}</div></div>`).join('')}</div>`;}
+const aRelM=(m,mods)=>aRel(m)*(mods&&mods.mid==='spacer'?1.03:1);
+function aHold(m,mods){return Math.max(1,Math.min(5,Math.round(1+(aRelM(m,mods)-.6)/.1)));}
 function aCrunch(m,mods){if(m.id==='stock')return 2;return 2+(mods.mid==='spacer'?1:0)+(mods.foam==='none'?2:1)-(m.c6.hm==='pad'?0:0);}
 function aSteps(m,mods){
   if(m.id==='stock')return stepsBox(['This is how the slider arrives, so there is nothing to change. Pick another setup for the steps.']);
@@ -1016,9 +1026,8 @@ function aSheet(m){
     `6 side middle: ${mods.mid==='spacer'?'long halfmoon (more crunch)':'long halfmoon pad'}`];
   return `<div class="head"><div class="row"><span class="label">Aura Sand Slim Pro (Ti) · 8 × 6</span></div><h2>${esc(m.n)}</h2><p>${esc(m.feel)}</p>
      ${m.warn?`<p class="changed" style="border-color:var(--warn)"><b>Heads up:</b> ${esc(m.warn)}</p>`:''}</div>
-   ${m.id==='stock'?'':`<div class="toggles"><div class="row"><span class="label">6 side middle</span><div class="chips"><button class="chip" data-amid="pad" aria-pressed="${amods.mid==='pad'}">Long halfmoon pad</button><button class="chip" data-amid="spacer" aria-pressed="${amods.mid==='spacer'}">Long halfmoon · more crunch</button></div></div>
-     <div class="row"><span class="label">Foam pads</span><div class="chips"><button class="chip" data-afoam="none" aria-pressed="${amods.foam==='none'}">Leave out</button><button class="chip" data-afoam="one" aria-pressed="${amods.foam==='one'}">One on the 8 side</button></div></div></div>`}
-   <div class="meter"><div><span class="label">Hold · ${Math.round(aRel(m)*100)}%</span>${bars(hold)}</div><div><span class="label">Crunch</span>${bars(cr)}</div><div><span class="label">Flow</span>${bars(flow)}</div></div>
+   ${m.id==='stock'?'<p class="muted" style="font-size:.86rem">Out of the box keeps everything as supplied. Every other setup lets you choose the long piece and the foam pads below.</p>':aXtra(amods,'a')}
+   <div class="meter"><div><span class="label">Hold · ${Math.round(aRelM(m,mods)*100)}%</span>${bars(hold)}</div><div><span class="label">Crunch</span>${bars(cr)}</div><div><span class="label">Flow</span>${bars(flow)}</div></div>
    <p class="muted" style="font-size:.8rem">Hold is relative to N52 on metal spacers (100%).</p>
    ${aSimHTML()}
    <div class="split">${drawBox(aDiagram(m,mods),ALEG,'Numbers are magnet thickness in mm. Simplified drawing.')}
@@ -1116,14 +1125,13 @@ function renderABuild(){
    ${magInfo()}
    <div class="row" style="display:grid;gap:5px"><span class="label">Start from</span><div class="chips">${ASET.map(x=>`<button class="chip" data-abfrom="${x.id}">${esc(x.n)}</button>`).join('')}</div></div>
    ${abSide('c8','8 side · steel card')}${abSide('c6','6 side · Teflon card')}
-   <div class="row" style="display:grid;gap:5px"><span class="label">6 side middle</span><div class="chips"><button class="chip" data-abm="pad" aria-pressed="${ab.mid==='pad'}">Long halfmoon pad</button><button class="chip" data-abm="spacer" aria-pressed="${ab.mid==='spacer'}">Long halfmoon · more crunch</button></div></div>
-   <div class="row" style="display:grid;gap:5px"><span class="label">Foam pads</span><div class="chips"><button class="chip" data-abf="none" aria-pressed="${ab.foam==='none'}">Leave out</button><button class="chip" data-abf="one" aria-pressed="${ab.foam==='one'}">One on the 8 side</button></div></div>`;
+   ${aXtra({mid:ab.mid,foam:ab.foam},'ab')}`;
   const C=$('#abctl');
   C.querySelectorAll('[data-ab]').forEach(b=>b.addEventListener('click',()=>{const [sd,k]=b.dataset.ab.split('.'),v=b.dataset.v;ab[sd][k]=k==='g'||k==='hm'?(v==='none'?null:v):+v;ab.from=null;renderABuild();}));
   C.querySelectorAll('[data-abfrom]').forEach(b=>b.addEventListener('click',()=>{const x=ASET.find(q=>q.id===b.dataset.abfrom);Object.assign(ab,JSON.parse(JSON.stringify({c8:x.c8,c6:x.c6})));ab.from=x.n;renderABuild();}));
-  C.querySelectorAll('[data-abm]').forEach(b=>b.addEventListener('click',()=>{ab.mid=b.dataset.abm;renderABuild();}));
-  C.querySelectorAll('[data-abf]').forEach(b=>b.addEventListener('click',()=>{ab.foam=b.dataset.abf;renderABuild();}));
-  const m={id:'build',src:'mix',n:'Your build',c8:ab.c8,c6:ab.c6},mods={mid:ab.mid,foam:ab.foam},rel=aRel(m),hold=aHold(m,mods),cr=Math.min(5,aCrunch(m,mods)),flow=ab.foam==='none'?4:3;
+  C.querySelectorAll('[data-abmid]').forEach(b=>b.addEventListener('click',()=>{ab.mid=b.dataset.abmid;renderABuild();}));
+  C.querySelectorAll('[data-abfoam]').forEach(b=>b.addEventListener('click',()=>{ab.foam=b.dataset.abfoam;renderABuild();}));
+  const m={id:'build',src:'mix',n:'Your build',c8:ab.c8,c6:ab.c6},mods={mid:ab.mid,foam:ab.foam},rel=aRelM(m,mods),hold=aHold(m,mods),cr=Math.min(5,aCrunch(m,mods)),flow=ab.foam==='none'?4:3;
   const REF={c8:AC8_PRO,c6:{g:'N52',t:2,metal:.2,hm:'spacer'}},eff=[];['c6','c8'].forEach(sd=>{const c=ab[sd],r=REF[sd],n=sd==='c6'?'6 side':'8 side';['g','t','metal','hm'].forEach(k=>{const cv=c[k]??'none',rv=r[k]??'none';if(String(cv)===String(rv))return;const t=AEFF[k][cv]||(k==='metal'?'No metal spacer: a little less pull.':k==='hm'?'No halfmoon piece: nothing softening the pull.':'');if(t)eff.push(`${n}: ${t}`);});});if(!eff.length)eff.push('Same corner magnets as N52 on metal spacers.');
   const W=[];if(rel<.76)W.push('Weaker than N45, no spacers: expect it to come apart with power or speed.');if(rel>1.08)W.push('Stronger than N52 on metal spacers: firmer, but more effort to slide.');
   const ref=ASET.find(x=>x.id!=='build'&&JSON.stringify([x.c8,x.c6].map(c=>[c.g,c.t,c.metal||0,c.hm||null]))===JSON.stringify([ab.c8,ab.c6].map(c=>[c.g,c.t,c.metal||0,c.hm||null])));
