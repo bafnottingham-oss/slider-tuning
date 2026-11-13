@@ -936,20 +936,19 @@ const ASET=[
  {id:'stock',src:'box',n:'Out of the box',tag:'Factory magnets',hold:5,mods:false,
   c8:AC8_STOCK,c6:{g:'N52',t:2.5,metal:0,hm:null},
   feel:'How it arrives: N52 8 × 2 mm corners with halfmoon pads on the 8 side, and N52 8 × 2.5 mm corners on the 6 side. The starting point for every setup here.'},
- {id:'n52',src:'guide',n:'N52 Old Pro setup',tag:'The guide\'s main setup',hold:4,
+ {id:'n52',src:'guide',n:'N52 on metal spacers',tag:'The firmest swap; needs 0.2 mm metal spacers',hold:4,
   c8:AC8_PRO,c6:{g:'N52',t:2,metal:.2,hm:'spacer'},
   feel:'The corner magnets swap sides. The thicker 8 × 2.5 mm magnets go to the steel 8 side, and the 8 × 2 mm magnets go to the Teflon 6 side on a 0.2 mm metal spacer. Plastic halfmoon spacers replace the pads.'},
- {id:'n45',src:'guide',n:'N45 Old Pro setup',tag:'No metal spacers needed',hold:3,
+ {id:'n45',src:'guide',n:'N45, no spacers',tag:'A little softer; no metal spacers needed',hold:3,
   c8:AC8_PRO,c6:{g:'N45',t:2,metal:0,hm:'spacer'},
-  feel:'The same idea with N45 8 × 2 mm magnets on the 6 side, so you don\'t need a metal spacer. Slightly weaker than the N52 setup with its 0.2 mm spacer.'},
- {id:'n52-pad',src:'guide',n:'N52, plastic pad (tested)',tag:'Works, but little room for error',hold:2,warn:'Too much power and it falls off, and it tends to come apart when you speed up some tricks.',
+  feel:'The same idea with N45 8 × 2 mm magnets on the 6 side, so you don\'t need a metal spacer. Slightly weaker than N52 on metal spacers.'},
+ {id:'n52-pad',src:'guide',n:'N52 on halfmoon pads',tag:'Softest; comes apart with speed',hold:2,warn:'Too much power and it falls off, and it tends to come apart when you speed up some tricks.',
   c8:AC8_PRO,c6:{g:'N52',t:2,metal:0,hm:'pad'},
-  feel:'No metal spacer, so the halfmoon pad takes its place under the 8 × 2 mm magnets. It works, but ends up weaker than even the N45 setup.'},
- {id:'n52-pad25',src:'untested',n:'N52, plastic pad (untested)',tag:'The guide\'s suggested fix',hold:3,
+  feel:'No metal spacer, so a black halfmoon pad takes its place with the 8 × 2 mm magnets on the 6 side. It works, but it\'s weaker than N45, no spacers.'},
+ {id:'n52-pad25',src:'guide',n:'Thick N52 on halfmoon pads',tag:'Thicker magnets to make up for the pads',hold:3,
   c8:AC8_PRO,c6:{g:'N52',t:2.5,metal:0,hm:'pad'},
-  feel:'Keeps the stronger 8 × 2.5 mm magnets on the 6 side and adds the halfmoon pad. The extra strength may make up for the plastic. Recommended but untested, and expected to be weaker than stock.'}
+  feel:'Keeps the thicker 8 × 2.5 mm magnets on the 6 side and adds a black halfmoon pad. The extra strength should make up for the pad, but expect it to be weaker than stock.'}
 ];
-const ASRC={box:'Stock',guide:'From the guide',untested:'Untested'};
 const amods={mid:'pad',foam:'none'};
 let acur='n52';
 function aDiagram(m,mods){
@@ -981,11 +980,11 @@ const ALEG=`<div class="legend"><span><i style="background:#fff"></i>N52 magnet<
 const cdesc=c=>`${c.g} 8 × ${c.t} mm${c.metal?` on a ${c.metal} mm metal spacer`:''}${c.hm==='spacer'?', halfmoon spacer':c.hm==='pad'?', halfmoon pad':''}`;
 // Strength model. Grade: pull goes with remanence squared, so N45 is about 0.86 of N52. Thickness, halfmoon
 // pieces and the 0.2 mm metal spacer are scaled so the guide's setups land in the order its comparisons give
-// (stock > N52 Old Pro > N45 ≈ untested pad > tested pad). Relative, not measured.
+// (stock > N52 on metal spacers > N45 ≈ thick N52 on pads > N52 on pads). Relative, not measured.
 const AF={g:{N52:1,N45:.86},t:{2.5:1,2:.85},hm:{none:1,spacer:.92,pad:.66},metal:{0:1,.2:1.1}};
 const cStr=c=>AF.g[c.g]*AF.t[c.t]*AF.hm[c.hm||'none']*AF.metal[c.metal||0];
 const aStr=m=>Math.pow(cStr(m.c6),.75)*Math.pow(cStr(m.c8)/.92,.25);
-const AREF=Math.pow(1*.85*.92*1.1,.75); // N52 Old Pro setup = 100%
+const AREF=Math.pow(1*.85*.92*1.1,.75); // N52 on metal spacers = 100%
 const aRel=m=>aStr(m)/AREF;
 function aHold(m,mods){return Math.max(1,Math.min(5,Math.round(1+(aRel(m)-.6)/.1)));}
 function aCrunch(m,mods){if(m.id==='stock')return 2;return 2+(mods.mid==='spacer'?1:0)+(mods.foam==='none'?2:1)-(m.c6.hm==='pad'?0:0);}
@@ -1012,14 +1011,14 @@ function aSheet(m){
   const y=[`8 side corners: ${cdesc(m.c8)}`,`6 side corners: ${cdesc(m.c6)}`,'Middle magnets: unchanged on both sides',
     m.id==='stock'?'Foam pads: as supplied':mods.foam==='none'?'Foam pads: none':'Foam pads: one, on the 8 side',
     `6 side middle: ${mods.mid==='spacer'?'long halfmoon (more crunch)':'long halfmoon pad'}`];
-  return `<div class="head"><div class="row"><span class="src ${m.src==='box'?'off':m.src==='guide'?'var':'ours'}">${ASRC[m.src]}</span><span class="label">Aura Sand Slim Pro (Ti) · 8 × 6</span></div><h2>${esc(m.n)}</h2><p>${esc(m.feel)}</p>
+  return `<div class="head"><div class="row"><span class="label">Aura Sand Slim Pro (Ti) · 8 × 6</span></div><h2>${esc(m.n)}</h2><p>${esc(m.feel)}</p>
      ${m.warn?`<p class="changed" style="border-color:var(--warn)"><b>Heads up:</b> ${esc(m.warn)}</p>`:''}</div>
    ${m.id==='stock'?'':`<div class="toggles"><div class="row"><span class="label">6 side middle</span><div class="chips"><button class="chip" data-amid="pad" aria-pressed="${amods.mid==='pad'}">Long halfmoon pad</button><button class="chip" data-amid="spacer" aria-pressed="${amods.mid==='spacer'}">Long halfmoon · more crunch</button></div></div>
      <div class="row"><span class="label">Foam pads</span><div class="chips"><button class="chip" data-afoam="none" aria-pressed="${amods.foam==='none'}">Leave out</button><button class="chip" data-afoam="one" aria-pressed="${amods.foam==='one'}">One on the 8 side</button></div></div></div>`}
    <div class="meter"><div><span class="label">Hold · ${Math.round(aRel(m)*100)}%</span>${bars(hold)}</div><div><span class="label">Crunch</span>${bars(cr)}</div><div><span class="label">Flow</span>${bars(flow)}</div></div>
-   <p class="muted" style="font-size:.8rem">Hold is relative to the N52 Old Pro setup (100%).</p>
+   <p class="muted" style="font-size:.8rem">Hold is relative to N52 on metal spacers (100%).</p>
    ${aSimHTML()}
-   <div class="split">${drawBox(aDiagram(m,mods),ALEG,'Numbers are magnet thickness in mm. Drawn from the guide photos; simplified.')}
+   <div class="split">${drawBox(aDiagram(m,mods),ALEG,'Numbers are magnet thickness in mm. Simplified drawing.')}
      <div style="display:grid;gap:12px;align-content:start">${ioList(y,[])}<div style="display:grid;gap:6px"><span class="label">Pull from the box</span>${aParts(m,mods)}</div></div></div>
    ${aSteps(m,mods)}
    <div class="nav"><button class="btn ghost" data-astep="-1">← Previous</button><button class="btn" data-astep="1">Next →</button><button class="btn ghost" data-abuild>Change the magnets</button></div>`;
@@ -1089,7 +1088,7 @@ function mountAura(el,m,mods,opt){
 let minfoOpen=false;
 function magInfo(){const mi=document.querySelector('#g-aura .magnets');if(!mi)return '';return `<details class="minfo"${minfoOpen?' open':''}><summary>How magnet choices change the feel</summary><div class="minfo-b">${mi.querySelector('.head p').outerHTML}${mi.querySelector('.tbl').outerHTML}${mi.querySelector(':scope > p').outerHTML}</div></details>`;}
 document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('minfo'))minfoOpen=e.target.open;},true);
-const ab={c8:{...AC8_PRO},c6:{g:'N52',t:2,metal:.2,hm:'spacer'},mid:'pad',foam:'none',from:'N52 Old Pro setup'};
+const ab={c8:{...AC8_PRO},c6:{g:'N52',t:2,metal:.2,hm:'spacer'},mid:'pad',foam:'none',from:'N52 on metal spacers'};
 const AOPT=[['g','Grade',[['N52','N52 · stronger'],['N45','N45 · softer']]],['t','Thickness',[[2,'8 × 2 mm'],[2.5,'8 × 2.5 mm · stronger']]],
  ['metal','Metal spacer under it',[[0,'None'],[.2,'0.2 mm']]],['hm','Halfmoon piece',[['none','None'],['spacer','Plastic spacer'],['pad','Pad · softer']]]];
 const AEFF={g:{N52:'N52 grade: about 15% more pull than N45. Firmer holds and a sharper snap.',N45:'N45 grade: about 15% less pull than N52. A softer, floatier glide.'},
@@ -1122,13 +1121,13 @@ function renderABuild(){
   C.querySelectorAll('[data-abm]').forEach(b=>b.addEventListener('click',()=>{ab.mid=b.dataset.abm;renderABuild();}));
   C.querySelectorAll('[data-abf]').forEach(b=>b.addEventListener('click',()=>{ab.foam=b.dataset.abf;renderABuild();}));
   const m={id:'build',src:'mix',n:'Your build',c8:ab.c8,c6:ab.c6},mods={mid:ab.mid,foam:ab.foam},rel=aRel(m),hold=aHold(m,mods),cr=Math.min(5,aCrunch(m,mods)),flow=ab.foam==='none'?4:3;
-  const REF={c8:AC8_PRO,c6:{g:'N52',t:2,metal:.2,hm:'spacer'}},eff=[];['c6','c8'].forEach(sd=>{const c=ab[sd],r=REF[sd],n=sd==='c6'?'6 side':'8 side';['g','t','metal','hm'].forEach(k=>{const cv=c[k]??'none',rv=r[k]??'none';if(String(cv)===String(rv))return;const t=AEFF[k][cv]||(k==='metal'?'No metal spacer: a little less pull.':k==='hm'?'No halfmoon piece: nothing softening the pull.':'');if(t)eff.push(`${n}: ${t}`);});});if(!eff.length)eff.push('Same corner magnets as the N52 Old Pro setup.');
-  const W=[];if(rel<.76)W.push('Weaker than the N45 setup: expect it to come apart with power or speed.');if(rel>1.08)W.push('Stronger than the N52 Old Pro setup: firmer, but more effort to slide.');
+  const REF={c8:AC8_PRO,c6:{g:'N52',t:2,metal:.2,hm:'spacer'}},eff=[];['c6','c8'].forEach(sd=>{const c=ab[sd],r=REF[sd],n=sd==='c6'?'6 side':'8 side';['g','t','metal','hm'].forEach(k=>{const cv=c[k]??'none',rv=r[k]??'none';if(String(cv)===String(rv))return;const t=AEFF[k][cv]||(k==='metal'?'No metal spacer: a little less pull.':k==='hm'?'No halfmoon piece: nothing softening the pull.':'');if(t)eff.push(`${n}: ${t}`);});});if(!eff.length)eff.push('Same corner magnets as N52 on metal spacers.');
+  const W=[];if(rel<.76)W.push('Weaker than N45, no spacers: expect it to come apart with power or speed.');if(rel>1.08)W.push('Stronger than N52 on metal spacers: firmer, but more effort to slide.');
   const ref=ASET.find(x=>x.id!=='build'&&JSON.stringify([x.c8,x.c6].map(c=>[c.g,c.t,c.metal||0,c.hm||null]))===JSON.stringify([ab.c8,ab.c6].map(c=>[c.g,c.t,c.metal||0,c.hm||null])));
   $('#about').innerHTML=`<div class="head"><span class="label">${ref?'Matches: '+esc(ref.n):ab.from?'Based on '+esc(ab.from)+', changed':'Your build'}</span>
      <div class="meter"><div><span class="label">Hold · ${Math.round(rel*100)}%</span>${bars(hold)}</div><div><span class="label">Crunch</span>${bars(cr)}</div><div><span class="label">Flow</span>${bars(flow)}</div></div>
-     <p class="muted" style="font-size:.8rem">Hold is relative to the N52 Old Pro setup (100%).</p>
-     <span class="label">Compared with the N52 Old Pro setup</span><ul class="feelbox">${eff.map(x=>`<li>${esc(x)}</li>`).join('')}${W.map(x=>`<li class="w">${esc(x)}</li>`).join('')}</ul></div>
+     <p class="muted" style="font-size:.8rem">Hold is relative to N52 on metal spacers (100%).</p>
+     <span class="label">Compared with N52 on metal spacers</span><ul class="feelbox">${eff.map(x=>`<li>${esc(x)}</li>`).join('')}${W.map(x=>`<li class="w">${esc(x)}</li>`).join('')}</ul></div>
    ${aSimHTML()}
    <div class="split">${drawBox(aDiagram(m,mods),ALEG,'Numbers are magnet thickness in mm. Simplified drawing.')}
      <div style="display:grid;gap:12px;align-content:start">${ioList([`8 side corners: ${cdesc(ab.c8)}`,`6 side corners: ${cdesc(ab.c6)}`,'Middle magnets: unchanged on both sides',`6 side middle: ${ab.mid==='spacer'?'long halfmoon (more crunch)':'long halfmoon pad'}`,ab.foam==='none'?'Foam pads: none':'Foam pads: one, on the 8 side'],[])}<div style="display:grid;gap:6px"><span class="label">You'll need</span>${abParts(m)}</div></div></div>
@@ -1136,9 +1135,9 @@ function renderABuild(){
   mountAura($('#about [data-asim]'),m,mods);
 }
 function renderAList(){
-  $('#aitems').innerHTML=`<div class="grp" style="margin-top:8px"><span class="label">Magnet setups · ${ASET.length}</span>${ASET.map(m=>`<button class="item" data-aid="${m.id}" aria-pressed="${acur===m.id}"><span class="nm">${esc(m.n)}</span><span class="src ${m.src==='box'?'off':m.src==='guide'?'var':'ours'}">${ASRC[m.src]}</span><span class="tg">${esc(m.tag)}</span></button>`).join('')}</div>
+  $('#aitems').innerHTML=`<div class="grp" style="margin-top:8px"><span class="label">Magnet setups · ${ASET.length}</span>${ASET.map(m=>`<button class="item" data-aid="${m.id}" aria-pressed="${acur===m.id}"><span class="nm">${esc(m.n)}</span><span class="tg">${esc(m.tag)}</span></button>`).join('')}</div>
    <div style="margin-top:12px">${magInfo()}</div>
-   <p class="muted" style="font-size:.82rem;margin-top:10px">No 0.2 mm metal spacers in your box? Go for the N45 setup or one of the plastic pad options. See Parts &amp; tips.</p>`;
+   <p class="muted" style="font-size:.82rem;margin-top:10px">No 0.2 mm metal spacers in your box? Go for N45, no spacers, or one of the halfmoon pad setups. See Parts &amp; tips.</p>`;
   $('#aitems').querySelectorAll('[data-aid]').forEach(b=>b.addEventListener('click',()=>{acur=b.dataset.aid;renderAList();renderASheet();if(matchMedia('(max-width:880px)').matches)$('#asheet').scrollIntoView({block:'start'});}));
 }
 function renderASheet(){
@@ -1471,7 +1470,7 @@ function renderJBuild(){
 const GUIDES=[
  {id:'tita',n:'TITA Pro',by:'PEL Studio',type:'Modular magnetic + mechanical',count:`${ALL.length} setups`,blurb:'Buckyballs, detent magnets, limit blocks and spring balls: eight official modes from the manual plus twelve more worked out from them, and a mixer.',tabs:'tita'},
  {id:'groove',n:'MOT Groove',by:'MOT',type:'Bead and spring · push + rotate',count:'4 card plans + builder',blurb:'The four plans from the instruction card, every hole on the straight push face and the rotating face, and a builder to try your own.',tabs:'groove'},
- {id:'aura',n:'Aura Sand Slim Pro',by:'Peacock',type:'Floating · fancy play 8 × 6',count:`${ASET.length} magnet setups`,blurb:'The N52 and N45 "Old Pro" corner magnet setups, with spacer, halfmoon and foam pad options, and what to do if your box has no metal spacers.',tabs:'aura'},
+ {id:'aura',n:'Aura Sand Slim Pro',by:'Peacock',type:'Floating · fancy play 8 × 6',count:`${ASET.length} magnet setups`,blurb:'N52 and N45 corner magnet setups, with metal spacer, halfmoon and foam pad options, and what to do if your box has no metal spacers.',tabs:'aura'},
  {id:'jj',n:'Creation Mountain / Shuriken Mini',by:'JJ EDC',type:'Infinite slider · 6 × 8',count:'Stock layout + builder',blurb:'The 14-magnet layout both sliders share, a simulator of where Panel A holds, and a builder for grade swaps and empty middles.',tabs:'jj'}
 ];
 function thumb(id){
