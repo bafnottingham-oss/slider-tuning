@@ -651,7 +651,7 @@ function inout(m){
   return ioList(y,n);
 }
 const ioList=(y,n)=>`<ul class="inout">${y.map(x=>`<li><span class="y">✓</span><span>${esc(x)}</span></li>`).join('')}${n.map(x=>`<li><span class="n">✕</span><span>${esc(x)}</span></li>`).join('')}</ul>`;
-const partList=c=>`<div class="parts">${Object.entries(c).map(([k,q])=>`<span class="part"><b>${q}×</b>${esc(k)}</span>`).join('')}</div>`;
+const partList=c=>`<div class="parts">${Object.entries(c).map(([k,q])=>`<span class="part"><b>${typeof q==='number'?q+'×':esc(q)}</b>${esc(k)}</span>`).join('')}</div>`;
 function parts(m){
   const c={};const add=(k,q=1)=>c[k]=(c[k]||0)+q;
   if(m.det)add('4x1 magnet',m.det);if(m.blocks){if(m.blockMag==='5x6'){add('EVA pad',m.blocks);add('5x6 magnet',m.blocks);}else{add('limit block',m.blocks);add('5x4 magnet',m.blocks);}}if(m.ret.length)add('4x3 return magnet',m.ret.length);
@@ -935,6 +935,22 @@ const ASET=[
  {id:'stock',sk:1,src:'box',n:'Out of the box',tag:'Factory magnets',hold:5,mods:false,
   c8:AC8_STOCK,c6:{g:'N52',t:2.5,metal:0,hm:null},
   feel:'How it arrives: N52 8 × 2 mm corners with halfmoon pads on the 8 side, and N52 8 × 2.5 mm corners on the 6 side. The starting point for every setup here.'},
+ {id:'trick3d',src:'guide',noMods:1,nobuild:1,n:'3D tricks',tag:'All-rounder for 3D moves and learning tricks',holdTxt:'softer',hold:3,
+  c8:{g:'N52',t:2.5,metal:.2,hm:null},c6:{g:'N52',t:2.5,metal:.3,hm:null},
+  warn:'Written for the Slim SS, which uses N52 8 × 2.5 mm corner magnets on both cards. The Slim Pro\'s 8 side comes with 8 × 2 mm, so you need four more 8 × 2.5 mm to match.',
+  buy:'4 × N52 8 × 2.5 mm magnets for the 8 side, plus 0.1 mm and 0.2 mm metal spacers if your box doesn\'t have them',
+  chg:['8 side corners: N52 8 × 2 mm → N52 8 × 2.5 mm, each on a 0.2 mm metal spacer','6 side corners: N52 8 × 2.5 mm → the same magnets, each on a 0.1 mm and a 0.2 mm metal spacer','Middle magnets: no change'],
+  feel:'Good for 3D moves and for learning all kinds of other tricks. Every corner magnet is N52 8 × 2.5 mm, on metal spacers that sit between it and the other card and soften the pull. Too weak? Take out the 0.1 mm spacers.',
+  io:['8 side corners: N52 8 × 2.5 mm on a 0.2 mm metal spacer (was N52 8 × 2 mm)','6 side corners: N52 8 × 2.5 mm on 0.1 + 0.2 mm metal spacers (same magnets)','Middle magnets: no change','Too weak? Take out the 0.1 mm spacers'],
+  steps:['Work over a metal tray, with a dish for small parts.',
+   'Lift out all eight corner magnets with a metal tool, or a magnet. Note which way up each one was.',
+   '8 side (steel card): working from the back of the card, put a 0.2 mm metal spacer in the bottom of each corner pocket, so it sits between the magnet and the other card. Then fit an N52 8 × 2.5 mm magnet on top in each corner.',
+   '6 side (Teflon card): working from the back, put a 0.1 mm and a 0.2 mm metal spacer in the bottom of each corner pocket, then put the N52 8 × 2.5 mm magnets back on top, the same way up.',
+   'Corner halfmoon pieces: leave them as they are.',
+   'Middle magnets: no change.',
+   'Before closing up, hold the cards together: every corner should pull. If one pushes, flip that magnet.',
+   'Reassemble and try some slow slides. If it feels too weak, take the 0.1 mm spacers out of the 6 side.'],
+  parts:{'N52 8 × 2.5 mm magnet (4 stock, 4 to buy)':8,'0.2 mm metal spacer':8,'0.1 mm metal spacer':4}},
  {id:'n45',src:'guide',chg:['8 side corners: N52 8 × 2 mm with halfmoon pads → N52 8 × 2.5 mm with halfmoon spacers','6 side corners: N52 8 × 2.5 mm → N45 8 × 2 mm with halfmoon spacers','Middle magnets: no change'],n:'N45 on halfmoon spacers',tag:'A little softer than out of the box',hold:3,buy:'4 × N45 8 × 2 mm magnets',
   c8:AC8_PRO,c6:{g:'N45',t:2,metal:0,hm:'spacer'},
   feel:'Thicker N52 8 × 2.5 mm corners on the steel 8 side and N45 8 × 2 mm corners on the Teflon 6 side, with thin halfmoon spacers at the corners to keep the gap small. A little softer than out of the box.'},
@@ -947,19 +963,19 @@ const ASET=[
  {id:'light',src:'guide',noMods:1,nobuild:1,n:'Light and easy',tag:'Soft, fast and easy on the thumb; can be quiet',holdTxt:'light',hold:2,
   c8:{g:'N52',t:2.5,metal:.3,hm:null},c6:{g:'N52',t:2,metal:0,hm:null},
   buy:'4 × 0.3 mm metal spacers, if your box doesn\'t have them',
-  chg:['8 side corners: N52 8 × 2 mm with halfmoon pads → N52 8 × 2.5 mm, each on a 0.3 mm metal spacer','6 side corners: N52 8 × 2.5 mm → N52 8 × 2 mm','Middle magnets: no change (N52 5 × 2 mm), now on plastic long halfmoons'],
+  chg:['8 side corners: N52 8 × 2 mm → N52 8 × 2.5 mm, each on a 0.3 mm metal spacer','6 side corners: N52 8 × 2.5 mm → N52 8 × 2 mm','Middle magnets: same N52 5 × 2 mm magnets, now with plastic spacers (8 side: underneath; 6 side: without the plastic base)'],
   feel:'A weak magnet build for speed, easy on the thumb with a soft feel. The spacer under each 8 side corner magnet sits between it and the other card, which softens the pull. Add the soundproofing foam if you want it quiet too.',
-  io:['8 side corners: N52 8 × 2.5 mm on a 0.3 mm metal spacer (was N52 8 × 2 mm)','6 side corners: N52 8 × 2 mm (was N52 8 × 2.5 mm)','Middle magnets: no change (N52 5 × 2 mm), now on plastic long halfmoons','Foam: optional, for a quieter build'],
+  io:['8 side corners: N52 8 × 2.5 mm on a 0.3 mm metal spacer (was N52 8 × 2 mm)','6 side corners: N52 8 × 2 mm (was N52 8 × 2.5 mm)','Middle magnets: same N52 5 × 2 mm (no change), with plastic spacers: underneath on the 8 side, without the plastic base on the 6 side','Foam: optional, for a quieter build'],
   steps:['Work over a metal tray, with a dish for small parts.',
    'Lift out all eight corner magnets with a metal tool, or a magnet. Note which way up each one was.',
    '8 side (steel card): working from the back of the card, put a 0.3 mm metal spacer in the bottom of each corner pocket, so it sits between the magnet and the other card. Then fit an N52 8 × 2.5 mm magnet on top in each corner.',
    '6 side (Teflon card): fit an N52 8 × 2 mm magnet in each corner. No spacer here.',
    'Corner halfmoon pieces: leave them as they are.',
-   'Middle magnets: keep the stock N52 5 × 2 mm. 8 side: lift them out, fit the plastic long halfmoons underneath, and put them back. 6 side: fit the plastic long halfmoons, but leave out the plastic base underneath.',
+   'Middle magnets: keep the same N52 5 × 2 mm magnets. 8 side: lift out the four middle magnets, put a plastic spacer in underneath each one (between the magnet and the other card, as with the corners), then put the magnets back. 6 side: use the plastic spacers too, but with no plastic base underneath the magnets.',
    'Foam: leave it out for the lightest, fastest feel, or fit the soundproofing foam for a quiet build.',
    'Before closing up, hold the cards together: every corner should pull. If one pushes, flip that magnet.',
    'Reassemble and try some slow slides first.'],
-  parts:{'0.3 mm metal spacer':4,'Plastic long halfmoon':4}}
+  parts:{'N52 8 × 2.5 mm magnet (stock)':4,'N52 8 × 2 mm magnet (stock)':4,'0.3 mm metal spacer':4,'Plastic spacers for the middle magnets':'Both sides'}}
 ];
 const amods={mid:'pad',foam:'none'};
 let acur='n45';
@@ -1013,17 +1029,18 @@ function aSteps(m,mods){
    'Lift the magnets out of the cassette with a metal tool, such as an Allen key, or a magnet.',
    `8 side (steel card): take out the halfmoon pads and the N52 8 × 2 mm corner magnets. Fit N52 8 × 2.5 mm magnets with a halfmoon spacer (not a pad) in each corner.`];
   const c=m.c6;
-  s.push(`6 side (Teflon card): take out the N52 8 × 2.5 mm corner magnets.${c.t===2.5?' Put them back with a halfmoon pad in each corner.':''}`);
-  if(c.t!==2.5)s.push(`Fit ${c.g} 8 × ${c.t} mm magnets${c.metal?` with a ${c.metal} mm metal spacer at the bottom of each pocket`:''}, plus a halfmoon ${c.hm==='pad'?'pad':'spacer (not a pad)'}.`);
+  s.push(c.t===2.5?'6 side (Teflon card): take out the N52 8 × 2.5 mm corner magnets and put them back with a halfmoon pad in each corner.':`6 side (Teflon card): take out the N52 8 × 2.5 mm corner magnets and fit ${c.g} 8 × ${c.t} mm magnets, each with a halfmoon ${c.hm==='pad'?'pad':'spacer (not a pad)'}.`);
   s.push('Leave the middle magnets on both sides as they are.');
   s.push(mods.mid==='spacer'?'6 side only: swap the long halfmoon pad by the middle magnets for the long halfmoon, for more crunch.':'Keep the long halfmoon pad by the 6 side middle magnets.');
   s.push(mods.foam==='none'?'Leave the foam pads out.':'Put one foam pad back, on the 8 side only.');
   s.push('Reassemble and try a few slow tricks before speeding up.');
   return stepsBox(s);
 }
-function aParts(m,mods){const c={};const add=(k,q)=>c[k]=(c[k]||0)+q;if(m.parts)return partList(m.parts);if(m.id==='stock')return '<p class="muted" style="font-size:.88rem">Nothing to pull: this is the stock layout.</p>';
-  add('N52 8 × 2.5 mm magnet',4);add('Halfmoon spacer',4);
-  const k=`${m.c6.g} 8 × ${m.c6.t} mm magnet`;add(k,4);if(m.c6.metal)add('0.2 mm metal spacer',4);add(m.c6.hm==='pad'?'Halfmoon pad':'Halfmoon spacer',4);
+function aParts(m,mods){const c={};const add=(k,q)=>c[k]=(c[k]||0)+q;if(m.parts)return partList(m.parts);if(m.id==='stock')return '<p class="muted" style="font-size:.88rem">Nothing to change: this is the stock layout.</p>';
+  const c6=m.c6,n25=4+(c6.t===2.5?4:0);
+  add(n25>4?'N52 8 × 2.5 mm magnet (4 stock, 4 to buy)':'N52 8 × 2.5 mm magnet (stock)',n25);
+  if(c6.t===2)add(c6.g==='N45'?'N45 8 × 2 mm magnet (to buy)':'N52 8 × 2 mm magnet (stock)',4);
+  add('Halfmoon spacer',4+(c6.hm==='spacer'?4:0));if(c6.hm==='pad')add('Halfmoon pad',4);
   if(mods.mid==='spacer')add('Long halfmoon',2);if(mods.foam==='one')add('Foam pad',1);return partList(c);}
 function aSheet(m){
   const mods=m.sk?{mid:'pad',foam:'stock'}:m.noMods?{mid:'pad',foam:'none'}:amods,hold=aHold(m,mods),cr=Math.min(5,aCrunch(m,mods)),flow=m.sk?2:mods.foam==='none'?4:3;
@@ -1037,7 +1054,7 @@ function aSheet(m){
    <p class="muted" style="font-size:.8rem">Hold is relative to out of the box (100%).</p>
    ${aSimHTML()}
    <div class="split">${drawBox(aDiagram(m,mods),ALEG,'Numbers are magnet thickness in mm. Simplified drawing.')}
-     <div style="display:grid;gap:12px;align-content:start">${ioList(y,[])}<div style="display:grid;gap:6px"><span class="label">Pull from the box</span>${aParts(m,mods)}</div></div></div>
+     <div style="display:grid;gap:12px;align-content:start">${ioList(y,[])}<div style="display:grid;gap:6px"><span class="label">You'll need</span>${aParts(m,mods)}</div></div></div>
    ${aSteps(m,mods)}
    <div class="nav"><button class="btn ghost" data-astep="-1">← Previous</button><button class="btn" data-astep="1">Next →</button>${m.nobuild?'':'<button class="btn ghost" data-abuild>Change the magnets</button>'}</div>`;
 }
