@@ -462,16 +462,19 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
     <div data-panel="parts" hidden>
       <div class="kitgrid">
         <div style="display:grid;gap:10px"><h2>The magnets</h2>
-          <div class="tbl"><table class="htable"><thead><tr><th scope="col">Size</th><th scope="col">Grade</th><th scope="col">Panel A</th><th scope="col">Panel B</th></tr></thead><tbody>
-            <tr><td>7 × 2 mm</td><td>N45</td><td>4 corners</td><td>–</td></tr>
-            <tr><td>7 × 2 mm</td><td>N52</td><td>–</td><td>4 corners</td></tr>
-            <tr><td>5 × 2.5 mm</td><td>N25</td><td>2, middle</td><td>4, two middle rows</td></tr>
+          <div class="tbl"><table class="htable"><thead><tr><th scope="col">Where</th><th scope="col">Standard</th><th scope="col">Mini</th></tr></thead><tbody>
+            <tr><td>Panel A corners ×4</td><td>N35 7 × 3 mm</td><td>N45 7 × 2 mm</td></tr>
+            <tr><td>Panel B corners ×4</td><td>N52 8 × 2 mm</td><td>N52 7 × 2 mm</td></tr>
+            <tr><td>Middles ×6 (2 on A, 4 on B)</td><td>N35 5 × 3 mm</td><td>N25 5 × 2.5 mm</td></tr>
           </tbody></table></div>
           <p class="muted" style="font-size:.86rem">14 magnets in all: 6 in Panel A, 8 in Panel B. Sizes are diameter × thickness.</p>
-          <div class="tbl"><table class="htable"><thead><tr><th scope="col">Slider</th><th scope="col">Size</th><th scope="col">Body</th></tr></thead><tbody>
-            <tr><td>Creation Mountain Mini</td><td>41 × 25 × 11.5 mm</td><td>Titanium, 316 stainless steel base plate</td></tr>
-            <tr><td>Shuriken Mini</td><td>41.5 × 25 × 14.5 mm</td><td>Titanium; central finger groove</td></tr>
+          <div class="tbl"><table class="htable"><thead><tr><th scope="col">Slider</th><th scope="col">Size</th></tr></thead><tbody>
+            <tr><td>Creation Mountain</td><td>46 mm long, 12.6 mm thick</td></tr>
+            <tr><td>Shuriken</td><td>46 × 28 × 16 mm</td></tr>
+            <tr><td>Creation Mountain Mini</td><td>41 × 25 × 11.5 mm</td></tr>
+            <tr><td>Shuriken Mini</td><td>41.5 × 25 × 14.5 mm</td></tr>
           </tbody></table></div>
+          <p class="muted" style="font-size:.86rem">Creation Mountain: titanium with a 316 stainless steel base plate. Shuriken: titanium, with a central finger groove.</p>
         </div>
         <div style="display:grid;gap:10px"><h2>In the box</h2>
           <div class="tbl"><table class="htable boxes"><tbody>
@@ -489,7 +492,7 @@ select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-
             <li><b>Moving a magnet to the other panel</b>The panels face each other, so a magnet moved from A to B goes in dot side down.</li>
             <li><b>Check before closing</b>Hold the panels face to face: they should pull together at every corner. If a spot pushes, flip that magnet.</li>
             <li><b>Swapping sides changes little</b>The pull between two magnets depends on both together, so N45 on A with N52 on B feels about the same as the other way round.</li>
-            <li><b>Grade, in short</b>N52 is about 7% stronger at the surface than N45, so roughly 15% more pull between two magnets. N25 is much weaker, which is why it's only used for the light middle stops.</li>
+            <li><b>Grade, in short</b>The N number is how strong the magnet material is: N52 is strongest, then N45, N35 and N25. Size matters as much: a thicker or wider magnet of the same grade pulls harder.</li>
             <li><b>Getting magnets out</b>Use the magnetic tip of the tool from the box, or another magnet.</li>
             <li class="warn"><b>Keep the faces clean</b>Grit caught between the panels scratches them. Blu Tack lifts debris.</li>
             <li class="warn"><b>Magnet safety</b>Strong magnets. Keep away from young children.</li>
@@ -1345,121 +1348,134 @@ function initGroove(){
 }
 
 /* =========================================================
-   JJ EDC Creation Mountain Mini / Shuriken Mini
-   Both run the same 14-magnet layout (JJ EDC product pages):
-   Panel A: 4 × 7×2 mm N45 corners, 2 × 5×2.5 mm N25 centre row.
-   Panel B: 4 × 7×2 mm N52 corners, 4 × 5×2.5 mm N25 in two middle rows.
-   Positions from JJ EDC's layout drawing (hole spacing there is illustrative), in mm.
+   JJ EDC Creation Mountain / Shuriken, Standard and Mini.
+   Both models run the same 14-magnet layout in each size (JJ EDC product pages).
+   Positions from JJ EDC's layout drawings (hole spacing there is illustrative), in mm.
+   Strength of one magnet: grade (remanence vs N52) × volume (diameter² × thickness).
    ========================================================= */
 const JU=3.75; // layout units per mm, so the hold model matches the Aura one
-const JPOS={cx:7.1,cy:15.5,by:5.4};
-const JF={N52:1,N45:.93,N25:.71}; // surface strength relative to N52 (remanence)
-const jStr=(g,big)=>JF[g]*(big?1:.8); // 5×2.5 mm magnets are smaller than 7×2 mm
+const JBR={N52:1,N45:.93,N35:.83,N25:.71};
+const JSPEC={
+ std:{n:'Standard',W:28,H:46,pos:{cx:8.8,cy:17.7,by:6.0},aC:{d:7,t:3,g:'N35'},bC:{d:8,t:2,g:'N52'},mid:{d:5,t:3,g:'N35'},swap:false,
+  dims:[['Creation Mountain','46 mm long, 12.6 mm thick'],['Shuriken','46 × 28 × 16 mm']]},
+ mini:{n:'Mini',W:25,H:41.5,pos:{cx:7.1,cy:15.5,by:5.4},aC:{d:7,t:2,g:'N45'},bC:{d:7,t:2,g:'N52'},mid:{d:5,t:2.5,g:'N25'},swap:true,
+  dims:[['Creation Mountain Mini','41 × 25 × 11.5 mm'],['Shuriken Mini','41.5 × 25 × 14.5 mm']]}
+};
+const jMom=(g,d,t)=>JBR[g]*d*d*t/128; // 1 = an N52 8 × 2 mm magnet
+const jSz=m=>`${m.d} × ${m.t} mm`;
+function jSpec(c){const sp=JSPEC[c.size];return {sp,aC:{...sp.aC,g:c.aC},bC:{...sp.bC,g:c.bC},mid:sp.mid};}
 function jMags(c){
-  const A=[],B=[],{cx,cy,by}=JPOS;
-  [[-cx,-cy],[cx,-cy],[-cx,cy],[cx,cy]].forEach(([x,y])=>{A.push([x*JU,y*JU,jStr(c.aC,1)]);B.push([x*JU,y*JU,jStr(c.bC,1)]);});
-  if(c.aM)[[-cx,0],[cx,0]].forEach(([x,y])=>A.push([x*JU,y*JU,jStr('N25',0)]));
-  if(c.bM)[[-cx,-by],[cx,-by],[-cx,by],[cx,by]].forEach(([x,y])=>B.push([x*JU,y*JU,jStr('N25',0)]));
-  return {A,B};
+  const {sp,aC,bC,mid}=jSpec(c),{cx,cy,by}=sp.pos,A=[],B=[];
+  [[-cx,-cy],[cx,-cy],[-cx,cy],[cx,cy]].forEach(([x,y])=>{A.push([x*JU,y*JU,jMom(aC.g,aC.d,aC.t)]);B.push([x*JU,y*JU,jMom(bC.g,bC.d,bC.t)]);});
+  if(c.aM)[[-cx,0],[cx,0]].forEach(([x,y])=>A.push([x*JU,y*JU,jMom(mid.g,mid.d,mid.t)]));
+  if(c.bM)[[-cx,-by],[cx,-by],[-cx,by],[cx,by]].forEach(([x,y])=>B.push([x*JU,y*JU,jMom(mid.g,mid.d,mid.t)]));
+  return {A,B,sp};
 }
 function jLayout(c){
-  const {A,B}=jMags(c);
+  const {A,B,sp}=jMags(c);
   const E=(ux,uy)=>{let e=0;B.forEach(a=>A.forEach(b=>{const dx=a[0]-b[0]-ux,dy=a[1]-b[1]-uy;e-=a[2]*b[2]*Math.exp(-(dx*dx+dy*dy)/196);}));return e;};
   const mins=(ax,lim)=>{const out=[0];let prev=null,cur=null;const L0=Math.round(lim*2)/2;
     for(let u=-L0;u<=L0+.01;u+=.5){const e=ax==='x'?E(u,0):E(0,u);if(prev!==null&&cur.e<prev&&cur.e<e&&Math.abs(cur.u)>1)out.push(cur.u);prev=cur?cur.e:null;cur={u,e};}
     return out.sort((p,q)=>p-q);};
-  const XS=mins('x',25*JU*.62),YS=mins('y',41.5*JU*.72),g=[];
+  const XS=mins('x',sp.W*JU*.62),YS=mins('y',sp.H*JU*.72),g=[];
   YS.forEach(y=>XS.forEach(x=>g.push({x,y,d:-E(x,y)})));const mx=Math.max(...g.map(h=>h.d));g.forEach(h=>h.d/=mx);
   return {XS,YS,HOLDS:g,E0:-E(0,0)};
 }
-const JSTOCK={aC:'N45',bC:'N52',aM:1,bM:1};
-const JREF=jLayout(JSTOCK).E0;
-const jRel=c=>jLayout(c).E0/JREF;
+const jStock=size=>({size,aC:JSPEC[size].aC.g,bC:JSPEC[size].bC.g,aM:1,bM:1});
+const jSame=(a,b)=>['size','aC','bC','aM','bM'].every(k=>String(a[k])===String(b[k]));
+const jRel=c=>jLayout(c).E0/jLayout(jStock(c.size)).E0;
 const jHold=c=>Math.max(1,Math.min(5,Math.round(3+(jRel(c)-1)/.06)));
-const JSET=[
- {id:'stock',src:'box',n:'Out of the box',tag:'The layout both sliders ship with',c:JSTOCK,
-  feel:'Panel A has four N45 7 × 2 mm corner magnets and two N25 5 × 2.5 mm magnets across the middle. Panel B has four N52 7 × 2 mm corner magnets and four N25 5 × 2.5 mm magnets in two middle rows. The corners hold the panels together; the small middle magnets add the extra stops as Panel A slides past.'}
-];
-let jcur='stock';
-const jb={...JSTOCK};
+let jsize='std',jcur='stock';
+const jb=jStock('std');
+const JSET=[{id:'stock',n:'Out of the box',tag:'The layout both sliders ship with'}];
+function jFeel(c){const {aC,bC,mid}=jSpec(c);
+  return `Panel A has four ${aC.g} ${jSz(aC)} corner magnets and two ${mid.g} ${jSz(mid)} magnets across the middle. Panel B has four ${bC.g} ${jSz(bC)} corner magnets and four ${mid.g} ${jSz(mid)} magnets in two middle rows. The corners hold the panels together; the smaller middle magnets add the extra stops as Panel A slides past.`;}
 function jDiagram(c){
-  const st=`stroke="${INK}" stroke-width="1.1"`,s5=4.6;
+  const {sp,aC,bC,mid}=jSpec(c),st=`stroke="${INK}" stroke-width="1.1"`,k=4.2,kx=k,ky=k*.8;
   let s=`<svg viewBox="0 0 300 200" role="img" aria-label="Drawing of the Panel A and Panel B magnet layouts">`;
   const lab=(t,x)=>`<text x="${x}" y="13" text-anchor="middle" font-size="8" fill="#6b7077" font-family="var(--mono)" letter-spacing=".6">${t}</text>`;
   s+=lab(`PANEL A · ${4+(c.aM?2:0)} MAGNETS`,78)+lab(`PANEL B · ${4+(c.bM?4:0)} MAGNETS`,222);
-  const fill=g=>g==='N52'?'#ffffff':g==='N45'?'#dfe7ee':'#f3dc8a';
-  const mag=(x,y,g,big)=>`<circle cx="${x}" cy="${y}" r="${big?16:11.5}" fill="${fill(g)}" ${st}/><text x="${x}" y="${y+3}" text-anchor="middle" font-size="${big?7.5:6.5}" font-weight="600" fill="${INK}" font-family="var(--mono)">${g}</text>`;
-  const empty=(x,y)=>`<circle cx="${x}" cy="${y}" r="11.5" fill="none" stroke="#9a9ea5" stroke-width="1" stroke-dasharray="2.5 2.5"/>`;
-  [[78,c.aC,c.aM,[0]],[222,c.bC,c.bM,[-JPOS.by,JPOS.by]]].forEach(([cx,g,mid,rows])=>{
-    const w=25*s5,h=41.5*s5*0.84,x=cx-w/2,y=22;
+  const fill=g=>({N52:'#ffffff',N45:'#dfe7ee',N35:'#cfe3d2',N25:'#f3dc8a'})[g];
+  const mag=(x,y,m,small)=>`<circle cx="${x}" cy="${y}" r="${m.d*2.2}" fill="${fill(m.g)}" ${st}/><text x="${x}" y="${y+3}" text-anchor="middle" font-size="${small?6.5:7.5}" font-weight="600" fill="${INK}" font-family="var(--mono)">${m.g}</text>`;
+  const empty=(x,y,m)=>`<circle cx="${x}" cy="${y}" r="${m.d*2.2}" fill="none" stroke="#9a9ea5" stroke-width="1" stroke-dasharray="2.5 2.5"/>`;
+  [[78,aC,c.aM,[0]],[222,bC,c.bM,[-sp.pos.by,sp.pos.by]]].forEach(([cx,cm,on,rows])=>{
+    const w=sp.W*kx,h=sp.H*ky,x=cx-w/2,y=24+(46-sp.H)*ky/2,my=y+h/2;
     s+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="16" fill="#d7d9dd" ${st}/>`;
-    const my=y+h/2,ky=v=>my+v*s5*0.84;
-    [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>s+=mag(cx+a*JPOS.cx*s5,ky(b*JPOS.cy),g,1));
-    rows.forEach(r=>[-1,1].forEach(a=>s+=mid?mag(cx+a*JPOS.cx*s5,ky(r),'N25',0):empty(cx+a*JPOS.cx*s5,ky(r))));
+    [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>s+=mag(cx+a*sp.pos.cx*kx,my+b*sp.pos.cy*ky,cm));
+    rows.forEach(r=>[-1,1].forEach(a=>s+=on?mag(cx+a*sp.pos.cx*kx,my+r*ky,mid,1):empty(cx+a*sp.pos.cx*kx,my+r*ky,mid)));
   });
   return s+'</svg>';
 }
-const JLEG=`<div class="legend"><span><i style="background:#fff"></i>N52 · 7 × 2 mm</span><span><i style="background:#dfe7ee"></i>N45 · 7 × 2 mm</span><span><i style="background:#f3dc8a"></i>N25 · 5 × 2.5 mm</span><span><i style="background:none;border:1px dashed #9a9ea5"></i>Left empty</span></div>`;
-const jDesc=c=>[`Panel A corners: 4 × ${c.aC} 7 × 2 mm`,`Panel B corners: 4 × ${c.bC} 7 × 2 mm`,`Panel A middle: ${c.aM?'2 × N25 5 × 2.5 mm':'empty'}`,`Panel B middle: ${c.bM?'4 × N25 5 × 2.5 mm, two rows':'empty'}`];
-function jSimHTML(L){return `<div class="sim" data-asim><div class="sim-head"><span class="label">Try it · slide Panel A up, down, left or right</span><span class="label" data-count>0 holds</span>${sndBtn()}</div>
-  <div class="fstage"><div class="fdots"></div><div class="fplate fbase" style="width:44px;height:73px"></div><div class="fplate ftop" style="width:44px;height:73px" tabindex="0" role="slider" aria-label="Panel A. Arrow keys move it between held positions.">A</div></div>
+function jLeg(c){const {aC,bC,mid}=jSpec(c),fill=g=>({N52:'#fff',N45:'#dfe7ee',N35:'#cfe3d2',N25:'#f3dc8a'})[g],seen=new Set(),it=[];
+  [aC,bC,mid].forEach(m=>{const k=m.g+jSz(m);if(seen.has(k))return;seen.add(k);it.push(`<span><i style="background:${fill(m.g)}"></i>${m.g} · ${jSz(m)}</span>`);});
+  return `<div class="legend">${it.join('')}<span><i style="background:none;border:1px dashed #9a9ea5"></i>Left empty</span></div>`;}
+const jDesc=c=>{const {aC,bC,mid}=jSpec(c);return [`Panel A corners: 4 × ${aC.g} ${jSz(aC)}`,`Panel B corners: 4 × ${bC.g} ${jSz(bC)}`,`Panel A middle: ${c.aM?`2 × ${mid.g} ${jSz(mid)}`:'empty'}`,`Panel B middle: ${c.bM?`4 × ${mid.g} ${jSz(mid)}, two rows`:'empty'}`];};
+function jSimHTML(c,L){const sp=JSPEC[c.size],pw=Math.round(sp.W*1.76),ph=Math.round(sp.H*1.76);
+  return `<div class="sim" data-asim><div class="sim-head"><span class="label">Try it · slide Panel A up, down, left or right</span><span class="label" data-count>0 holds</span>${sndBtn()}</div>
+  <div class="fstage"><div class="fdots"></div><div class="fplate fbase" style="width:${pw}px;height:${ph}px"></div><div class="fplate ftop" style="width:${pw}px;height:${ph}px" tabindex="0" role="slider" aria-label="Panel A. Arrow keys move it between held positions.">A</div></div>
   <div class="dpadwrap"><div class="dpad">${tapBtn('y-1','▲','Step up')}${tapBtn('x-1','◀','Step left')}${tapBtn('y1','▼','Step down')}${tapBtn('x1','▶','Step right')}</div><span class="label">Or tap to step · feel each hold on iPhone</span></div>
   <div class="sim-meta"><span class="label">Held at</span><span class="last" data-last>centre</span></div>
   <p class="hint">Worked out from the magnet layout: Panel A is held wherever its magnets line up with Panel B's (${L.HOLDS.length} spots). Bigger dots hold harder. Hole spacing in the maker's drawing is illustrative, so real stops may sit a little differently.</p></div>`;}
 function jMount(el,c){const L=jLayout(c);mountAura(el,null,null,{XS:L.XS,YS:L.YS,HOLDS:L.HOLDS,hold:jHold(c),crunch:2});}
-function jCount(c){const n52=(c.aC==='N52')+(c.bC==='N52'),n45=(c.aC==='N45')+(c.bC==='N45');return {n52:n52*4,n45:n45*4};}
+function jSizeBar(){return `<div class="row" style="display:grid;gap:5px"><span class="label">Size</span><div class="chips">${Object.entries(JSPEC).map(([k,v])=>`<button class="chip" data-jsize="${k}" aria-pressed="${jsize===k}">${v.n}</button>`).join('')}</div></div>`;}
 function jNotes(c){
-  const N=[],W=[],r=jRel(c),k=jCount(c);
-  if(c.aC===JSTOCK.bC&&c.bC===JSTOCK.aC)N.push('Corners swapped between panels: the pull between two magnets depends on both of them together, so this feels almost the same as stock.');
+  const N=[],W=[],r=jRel(c),st=jStock(c.size),{aC}=jSpec(c),n=g=>(c.aC===g)+(c.bC===g);
+  if(c.aC===st.bC&&c.bC===st.aC)N.push('Corners swapped between panels: the pull between two magnets depends on both of them together, so this feels almost the same as stock.');
   else if(c.aC==='N52'&&c.bC==='N52')N.push('N52 corners on both panels: firmer holds and a sharper snap, and a little more effort to slide.');
   else if(c.aC==='N45'&&c.bC==='N45')N.push('N45 corners on both panels: a softer, floatier glide that comes apart sooner with speed.');
   if(!c.aM)N.push('Panel A middle empty: fewer stops in the middle, so longer, smoother runs between the corner holds.');
   if(!c.bM)N.push('Panel B middle empty: fewer stops in the middle, so longer, smoother runs between the corner holds.');
-  if(k.n52>4)W.push(`You'll need ${k.n52} N52 7 × 2 mm magnets. The slider only comes with 4, so buy spares of the same size and grade.`);
-  if(k.n45>4)W.push(`You'll need ${k.n45} N45 7 × 2 mm magnets. The slider only comes with 4, so buy spares of the same size and grade.`);
+  ['N52','N45'].forEach(g=>{if(n(g)>1)W.push(`You'll need 8 ${g} ${jSz(aC)} magnets. The slider only comes with 4, so buy spares of the same size and grade.`);});
   if(!N.length)N.push('This is the stock layout.');
   return {N,W,r};
 }
 function jSteps(c){
-  if(JSON.stringify(c)===JSON.stringify(JSTOCK))return stepsBox(['This is how both sliders arrive, so there is nothing to change. Use Build your own to try a change.']);
+  if(jSame(c,jStock(c.size)))return stepsBox(['This is how both sliders arrive, so there is nothing to change. Use Build your own to try a change.']);
+  const {aC,bC,mid}=jSpec(c),st=jStock(c.size);
   const s=['Lay the panels on the metal plate from the box, with a dish for small parts.','Before you lift a magnet, put a marker dot on its top face. A magnet that goes back upside down pushes instead of pulls.','Lift magnets out with the magnetic tip of the tool from the box.'];
-  const sw=c.aC!==JSTOCK.aC||c.bC!==JSTOCK.bC;
-  if(sw)s.push(`Fit ${c.aC} 7 × 2 mm magnets in Panel A's four corners and ${c.bC} 7 × 2 mm magnets in Panel B's. A magnet moved to the other panel goes in dot side down, because the panels face each other.`);
-  if(!c.aM)s.push("Take the two N25 5 × 2.5 mm magnets out of Panel A's middle and keep them safe.");
-  if(!c.bM)s.push("Take the four N25 5 × 2.5 mm magnets out of Panel B's middle and keep them safe.");
+  if(c.aC!==st.aC||c.bC!==st.bC)s.push(`Fit ${aC.g} ${jSz(aC)} magnets in Panel A's four corners and ${bC.g} ${jSz(bC)} magnets in Panel B's. A magnet moved to the other panel goes in dot side down, because the panels face each other.`);
+  if(!c.aM)s.push(`Take the two ${mid.g} ${jSz(mid)} magnets out of Panel A's middle and keep them safe.`);
+  if(!c.bM)s.push(`Take the four ${mid.g} ${jSz(mid)} magnets out of Panel B's middle and keep them safe.`);
   s.push('Before closing it up, hold the panels face to face. They should pull together at every corner; if one spot pushes, flip that magnet.');
   s.push('Reassemble and try a few slow slides before speeding up.');
   return stepsBox(s);
 }
-function jSheet(m){const c=m.c,L=jLayout(c),h=jHold(c);
-  return `<div class="head"><div class="row"><span class="src off">Stock</span><span class="label">Creation Mountain Mini · Shuriken Mini · 6 × 8</span></div><h2>${esc(m.n)}</h2><p>${esc(m.feel)}</p></div>
-   <div class="meter"><div><span class="label">Hold · 100%</span>${bars(h)}</div><div><span class="label">Stops</span><span style="font:600 .9rem var(--mono)">${L.HOLDS.length}</span></div><div></div></div>
-   ${jSimHTML(L)}
-   <div class="split">${drawBox(jDiagram(c),JLEG,'Drawn from JJ EDC\'s layout drawing; spacing is approximate.')}
-     <div style="display:grid;gap:12px;align-content:start">${ioList(jDesc(c),[])}<p class="muted" style="font-size:.86rem">Same layout in both sliders. Creation Mountain Mini is 41 × 25 × 11.5 mm; Shuriken Mini is 41.5 × 25 × 14.5 mm.</p></div></div>
+function jSheet(){const c=jStock(jsize),sp=JSPEC[jsize],L=jLayout(c);
+  return `<div class="head"><div class="row"><span class="label">Creation Mountain · Shuriken · ${sp.n} · 6 × 8</span></div><h2>Out of the box</h2><p>${esc(jFeel(c))}</p></div>
+   <div class="meter"><div><span class="label">Hold · 100%</span>${bars(jHold(c))}</div><div><span class="label">Stops</span><span style="font:600 .9rem var(--mono)">${L.HOLDS.length}</span></div><div></div></div>
+   ${jSimHTML(c,L)}
+   <div class="split">${drawBox(jDiagram(c),jLeg(c),'Drawn from JJ EDC\'s layout drawing; spacing is approximate.')}
+     <div style="display:grid;gap:12px;align-content:start">${ioList(jDesc(c),[])}<p class="muted" style="font-size:.86rem">Same layout in both sliders. ${sp.dims.map(([a,b])=>`${a}: ${b}`).join('. ')}.</p></div></div>
    ${jSteps(c)}
    <div class="nav"><button class="btn ghost" data-jbuild>Change the magnets</button></div>`;}
+function jSetSize(k){jsize=k;Object.assign(jb,jStock(k));renderJList();renderJSheet();renderJBuild();}
 function renderJList(){
-  $('#jitems').innerHTML=`<div class="grp" style="margin-top:8px"><span class="label">Magnet setups · ${JSET.length}</span>${JSET.map(m=>`<button class="item" data-jid="${m.id}" aria-pressed="${jcur===m.id}"><span class="nm">${esc(m.n)}</span><span class="src off">Stock</span><span class="tg">${esc(m.tag)}</span></button>`).join('')}</div>
-   <p class="muted" style="font-size:.82rem;margin-top:10px">The Creation Mountain box also has three-hole inserts that make it a three-click slider; see Parts &amp; tips. Use Build your own to try grade swaps or empty middles.</p>`;
+  $('#jitems').innerHTML=`${jSizeBar()}<div class="grp" style="margin-top:10px"><span class="label">Magnet setups · ${JSET.length}</span>${JSET.map(m=>`<button class="item" data-jid="${m.id}" aria-pressed="${jcur===m.id}"><span class="nm">${esc(m.n)}</span><span class="tg">${esc(m.tag)}</span></button>`).join('')}</div>
+   <p class="muted" style="font-size:.82rem;margin-top:10px">The Creation Mountain box also has three-hole inserts that make it a three-click slider; see Parts &amp; tips. Use Build your own to try ${JSPEC[jsize].swap?'grade swaps or ':''}empty middles.</p>`;
+  $('#jitems').querySelectorAll('[data-jsize]').forEach(b=>b.addEventListener('click',()=>jSetSize(b.dataset.jsize)));
 }
-function renderJSheet(){const m=JSET.find(x=>x.id===jcur),el=$('#jsheet');el.innerHTML=jSheet(m);jMount(el.querySelector('[data-asim]'),m.c);
-  el.querySelectorAll('[data-jbuild]').forEach(b=>b.addEventListener('click',()=>{Object.assign(jb,m.c);showTab('jj','build');renderJBuild();window.scrollTo(0,0);}));}
-const JOPT=[['aC','Panel A corners · 4 × 7 × 2 mm',[['N45','N45 · stock'],['N52','N52']]],['bC','Panel B corners · 4 × 7 × 2 mm',[['N52','N52 · stock'],['N45','N45']]],
- ['aM','Panel A middle · 2 × N25 5 × 2.5 mm',[[1,'In · stock'],[0,'Leave empty']]],['bM','Panel B middle · 4 × N25 5 × 2.5 mm',[[1,'In · stock'],[0,'Leave empty']]]];
+function renderJSheet(){const el=$('#jsheet');el.innerHTML=jSheet();jMount(el.querySelector('[data-asim]'),jStock(jsize));
+  el.querySelectorAll('[data-jbuild]').forEach(b=>b.addEventListener('click',()=>{Object.assign(jb,jStock(jsize));showTab('jj','build');renderJBuild();window.scrollTo(0,0);}));}
 function renderJBuild(){
-  $('#jctl').innerHTML=`<div class="head"><span class="src ours" style="justify-self:start">Your build</span><h2>Build your own</h2><p class="muted">Swap magnets between the panels or leave the middles empty. Hold, stops and the simulator update as you go. It's an estimate from the magnet layout, so test by hand.</p></div>`+
-   JOPT.map(([k,l,o])=>`<div class="row" style="display:grid;gap:5px"><span class="label">${l}</span><div class="chips">${o.map(([v,t])=>`<button class="chip" data-jk="${k}" data-v="${v}" aria-pressed="${String(jb[k])===String(v)}">${t}</button>`).join('')}</div></div>`).join('')+
+  const sp=JSPEC[jsize],st=jStock(jsize),{aC,bC,mid}=jSpec(jb);
+  const OPT=[];
+  if(sp.swap){OPT.push(['aC',`Panel A corners · 4 × ${jSz(sp.aC)}`,[[st.aC,st.aC+' · stock'],[st.bC,st.bC]]]);OPT.push(['bC',`Panel B corners · 4 × ${jSz(sp.bC)}`,[[st.bC,st.bC+' · stock'],[st.aC,st.aC]]]);}
+  OPT.push(['aM',`Panel A middle · 2 × ${mid.g} ${jSz(mid)}`,[[1,'In · stock'],[0,'Leave empty']]]);
+  OPT.push(['bM',`Panel B middle · 4 × ${mid.g} ${jSz(mid)}`,[[1,'In · stock'],[0,'Leave empty']]]);
+  $('#jctl').innerHTML=`<div class="head"><span class="src ours" style="justify-self:start">Your build</span><h2>Build your own</h2><p class="muted">${sp.swap?'Swap magnets between the panels or leave the middles empty.':'Leave the middle magnets in or out.'} Hold, stops and the simulator update as you go. It's an estimate from the magnet layout, so test by hand.</p></div>${jSizeBar()}`+
+   OPT.map(([k,l,o])=>`<div class="row" style="display:grid;gap:5px"><span class="label">${l}</span><div class="chips">${o.map(([v,t])=>`<button class="chip" data-jk="${k}" data-v="${v}" aria-pressed="${String(jb[k])===String(v)}">${t}</button>`).join('')}</div></div>`).join('')+
+   (sp.swap?'':`<p class="muted" style="font-size:.84rem">On the Standard, Panel A's corner magnets are 7 mm across and Panel B's are 8 mm, so the corners can't swap between panels.</p>`)+
    `<div class="nav"><button class="btn ghost" id="jreset">Reset to stock</button></div>`;
+  $('#jctl').querySelectorAll('[data-jsize]').forEach(b=>b.addEventListener('click',()=>jSetSize(b.dataset.jsize)));
   $('#jctl').querySelectorAll('[data-jk]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.jk,v=b.dataset.v;jb[k]=isNaN(+v)?v:+v;renderJBuild();}));
-  $('#jreset').addEventListener('click',()=>{Object.assign(jb,JSTOCK);renderJBuild();});
+  $('#jreset').addEventListener('click',()=>{Object.assign(jb,jStock(jsize));renderJBuild();});
   const c={...jb},L=jLayout(c),{N,W,r}=jNotes(c);
-  $('#jout').innerHTML=`<div class="head"><span class="label">${JSON.stringify(c)===JSON.stringify(JSTOCK)?'Matches: Out of the box':'Your build'}</span>
+  $('#jout').innerHTML=`<div class="head"><span class="label">${jSame(c,st)?'Matches: Out of the box':'Your build'} · ${sp.n}</span>
      <div class="meter"><div><span class="label">Hold · ${Math.round(r*100)}%</span>${bars(jHold(c))}</div><div><span class="label">Stops</span><span style="font:600 .9rem var(--mono)">${L.HOLDS.length}</span></div><div></div></div>
-     <p class="muted" style="font-size:.8rem">Hold is relative to stock (100%).</p>
+     <p class="muted" style="font-size:.8rem">Hold is relative to the ${sp.n} out of the box (100%).</p>
      <ul class="feelbox">${N.map(x=>`<li>${esc(x)}</li>`).join('')}${W.map(x=>`<li class="w">${esc(x)}</li>`).join('')}</ul></div>
-   ${jSimHTML(L)}
-   <div class="split">${drawBox(jDiagram(c),JLEG,'Simplified drawing; spacing is approximate.')}<div style="display:grid;gap:12px;align-content:start">${ioList(jDesc(c),[])}</div></div>
+   ${jSimHTML(c,L)}
+   <div class="split">${drawBox(jDiagram(c),jLeg(c),'Simplified drawing; spacing is approximate.')}<div style="display:grid;gap:12px;align-content:start">${ioList(jDesc(c),[])}</div></div>
    ${jSteps(c)}`;
   jMount($('#jout [data-asim]'),c);
 }
@@ -1471,12 +1487,12 @@ const GUIDES=[
  {id:'tita',n:'TITA Pro',by:'PEL Studio',type:'Modular magnetic + mechanical',count:`${ALL.length} setups`,blurb:'Buckyballs, detent magnets, limit blocks and spring balls: eight official modes from the manual plus twelve more worked out from them, and a mixer.',tabs:'tita'},
  {id:'groove',n:'MOT Groove',by:'MOT',type:'Bead and spring · push + rotate',count:'4 card plans + builder',blurb:'The four plans from the instruction card, every hole on the straight push face and the rotating face, and a builder to try your own.',tabs:'groove'},
  {id:'aura',n:'Aura Sand Slim Pro',by:'Peacock',type:'Floating · fancy play 8 × 6',count:`${ASET.length} magnet setups`,blurb:'N52 and N45 corner magnet setups, with metal spacer, halfmoon and foam pad options, and what to do if your box has no metal spacers.',tabs:'aura'},
- {id:'jj',n:'Creation Mountain / Shuriken Mini',by:'JJ EDC',type:'Infinite slider · 6 × 8',count:'Stock layout + builder',blurb:'The 14-magnet layout both sliders share, a simulator of where Panel A holds, and a builder for grade swaps and empty middles.',tabs:'jj'}
+ {id:'jj',n:'Creation Mountain / Shuriken',by:'JJ EDC',type:'Infinite slider · 6 × 8',count:'Standard and Mini',blurb:'The 14-magnet layouts both sliders share, in Standard and Mini, a simulator of where Panel A holds, and a builder.',tabs:'jj'}
 ];
 function thumb(id){
   if(id==='tita')return diagram(OFF[0]);
   if(id==='groove')return gvDiagram(GPLANS[2].en.h);
-  if(id==='jj')return jDiagram(JSTOCK);
+  if(id==='jj')return jDiagram(jStock('std'));
   return aDiagram(ASET[1],{mid:'spacer',foam:'none'});
 }
 function renderMenu(){
